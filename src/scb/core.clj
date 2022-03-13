@@ -1,22 +1,28 @@
 (ns scb.core
   (:require
    [clj-http.client :as http]
-   [clojure.tools.namespace.repl :as tns :refer [refresh]])
+   [me.raynes.fs :as fs]
+   [clojure.tools.namespace.repl :as tns :refer [refresh]]
+   [taoensso.timbre :as timbre :refer [debug info warn error spy]])
   (:import
-   [java.util.concurrent LinkedBlockingQueue]
-   ))
+   [java.util Vector]
+   [java.lang InterruptedException]
+   [java.util.concurrent LinkedBlockingQueue]))
+
+(def testing? false)
 
 ;; --- state wrangling
 
 (def -state-template
   {:download-queue nil
    :downloaded-content-queue nil
+   :parsed-content-queue nil
    :error-queue nil
-   :cleanup []
-   
-   })
+   :cleanup []})
 
+(def queue-list [:download-queue :downloaded-content-queue :parsed-content-queue :error-queue])
 (def state nil)
+(def state-path "/tmp/scb-state.edn")
 
 (defn get-state
   [& path]
@@ -36,22 +42,32 @@
   call `return-fn` to return the given item to the origin queue."
   [q]
   (let [item (.take q)]
-    [item #(put-item q item)]))
+    [item #(do (debug "restoring item")
+               (put-item q item))]))
 
 (defn new-queue
-  []
-  (LinkedBlockingQueue.))
+  [& [c]]
+  (if c
+    (LinkedBlockingQueue. c)
+    (LinkedBlockingQueue.)))
+
+(defn drain-queue
+  [q]
+  (let [c (Vector.)]
+    (.drainTo q c)
+    (vec c)))
+
+;; --- utils
 
 (defn add-cleanup
   [f]
   (swap! state update :cleanup conj f))
 
-;; --- utils
-
 (defn err
-  [x & {:keys [payload]}]
+  [x & {:keys [payload exc]}]
   (cond-> {:error x}
-    (some? payload) (merge {:payload payload})))
+    (some? payload) (merge {:payload payload})
+    (some? exc) (merge {:exc exc})))
 
 (defn err?
   [x]
@@ -62,19 +78,30 @@
   [e]
   (put-item (get-state :error-queue) e))
 
-(defn download
+(defn put-err-exc
+  [exc & {:keys [payload]}]
+  (put-err (err (.getMessage exc) :payload payload :exc exc)))
+
+(defn -download
   "downloads url and deserialises to given serialisation type.
   returns a pair of `[http-resp, response]`.
   `http-resp` is the raw http response but may be `nil` if an exception occurs.
   `response` is the deserialised output or an error struct."
-  [url serialisation]
+  [url]
   (try
-    (let [response (http/get url {:as serialisation})]
+    (let [response (http/get url)]
       [response, nil])
     (catch Exception e
-      [nil (err e)])))
+      [nil e])))
 
-;; ---
+;; --- downloading
+
+(defn download
+  [url]
+  (let [[response exc] (-download url)]
+    (if response
+      (put-item (get-state :downloaded-content-queue) {:url url :result response})
+      (put-err (err (format "failed to download url '%s': %s" url (.getMessage exc)) :payload response :exc exc)))))
 
 (defn download-worker
   "pulls urls from the `:download-queue` and calls `download` with a connection pool.
@@ -84,54 +111,123 @@
   []
   (http/with-connection-pool {:timeout 5 :threads 4 :insecure? false :default-per-route 10}
     (while true
-      (let [[item restore-item] (take-item (get-state :download-queue))]
+      (let [[url restore-item] (take-item (get-state :download-queue))]
         (try
-          (apply download item)
+          (download url)
+
+          ;; todo: recoverable exceptions like throttling or timeouts should use `restore-item`
+
           (catch Exception e
-            (put-err (err e :payload item))
-            (restore-item)))))))
+            (put-err-exc e :payload url)))))))
+
+;; --- parsing
+
+(defn -parse
+  [thing]
+  [thing nil])
+
+(defn parse
+  [thing]
+  (let [[parsed-content exc] (-parse thing)]
+    (if parsed-content
+      (put-item (get-state :parsed-content-queue) parsed-content)
+      (put-err (err "failed to parse item" :payload thing :exc exc)))))
+
+(defn parser-worker
+  []
+  (while true
+    (let [[item restore-item] (take-item (get-state :downloaded-content-queue))]
+      (try
+        (parse item)
+
+        ;; under what conditions would we attempt to parse the item again?
+
+        (catch Exception e
+          (put-err-exc e :payload item))))))
 
 ;; ---
+
+(defn drain-queues
+  "drains all queues from a map of BlockingQueues into a map of vectors"
+  []
+  (info "draining queues")
+  (into {} (mapv (fn [qn]
+                   [qn (drain-queue (get-state qn))]) queue-list)))
+
+(defn freeze-state
+  [path]
+  (info "freezing state:" path)
+  (let [queue-state (drain-queues)]
+    (spit path queue-state)))
+
+(defn thaw-state
+  [path]
+  (when (fs/exists? path)
+    (info "thawing state:" path)
+    (let [old-state (slurp path)
+          lists-to-queues (into {}
+                                (mapv (fn [qn]
+                                        [qn (new-queue (get old-state qn))]) queue-list))
+
+          ;; do we want to restore errors?
+          ;; freezing them is helpful to inspect errors later but what do we do with them while the app is running?
+          ;; print to screen and discard? print to screen and keep?
+          lists-to-queues (assoc lists-to-queues :error-queue (new-queue))]
+      (swap! state merge lists-to-queues))
+    nil))
+
+(defn run-worker
+  [worker-fn]
+  (let [f (future
+            (try
+              (worker-fn)
+              (catch java.lang.InterruptedException ie
+                (warn "interrupted"))
+              (catch Exception e
+                (error e (format "uncaught exception in worker '%s': %s" worker-fn e)))
+              (finally
+                (info "worker is done"))))]
+    (add-cleanup #(future-cancel f))
+    nil))
+
+;; --- init
 
 (defn -start
   []
   (let [new-state {:download-queue (new-queue)
                    :downloaded-content-queue (new-queue)
+                   :parsed-content-queue (new-queue)
                    :error-queue (new-queue)}]
     (atom (merge -state-template new-state))))
 
 (defn start
   []
+  (info "starting")
   (alter-var-root #'state (constantly (-start)))
-  (let [downloader (future
-                     (try 
-                       (download-worker)
-                       (catch Exception e
-                         (println "error" e))))
-        ]
-    (add-cleanup #(future-cancel downloader)))
-
-  ;; todo: restore state 
-        
+  (thaw-state state-path)
+  (run-worker download-worker)
+  (run-worker parser-worker)
   nil)
 
 (defn stop
   []
+  (info "stopping")
   (when-not (nil? state)
     (doseq [cleanup-fn (get-state :cleanup)]
-      (cleanup-fn)))
-
-  ;; todo: freeze state
-
+      (debug "cleaned up" cleanup-fn (cleanup-fn)))
+    (freeze-state state-path))
   nil)
 
 (defn restart
   []
+  (info "restarting")
   (stop)
   (tns/refresh :after 'scb.core/start))
+
+;; --- bootstrap
 
 (defn -main
   [& args]
   (start))
-  
+
 
