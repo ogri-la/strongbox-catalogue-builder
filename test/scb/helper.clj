@@ -1,6 +1,9 @@
 (ns scb.helper
   (:require
-   [scb.core :as core]
+   [taoensso.timbre :as timbre :refer [debug info warn error spy]]
+   [scb
+    [core :as core]
+    [utils :as utils]]
    [clj-http.fake :refer [with-global-fake-routes-in-isolation]]
    [me.raynes.fs :as fs]))
 
@@ -9,6 +12,21 @@
 (defn fixture-path
   [filename]
   (str (fs/file fixture-dir filename)))
+
+(defn temp-state-dir
+  "each `deftest` is executed in a new and self-contained location, accessible as fs/*cwd*.
+  `(testing ...` sections share the same fixture. beware of cache hits."
+  [f]
+  (let [;; /tmp/scb-test.1642030630883-1255099235
+        temp-dir-path (-> "scb-test." fs/temp-dir str utils/expand-path)]
+    (try
+      (with-redefs [utils/temp-dir (constantly temp-dir-path)]
+        (fs/with-cwd temp-dir-path
+          (debug "created temp working directory" fs/*cwd*)
+          (f)))
+      (finally
+        (warn "deleting dir" temp-dir-path)
+        (fs/delete-dir temp-dir-path)))))
 
 (defn no-http
   [f]

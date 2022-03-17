@@ -14,6 +14,13 @@
                  [clj-http-fake "1.0.3"] ;; fake http responses for testing
                  
                  [com.taoensso/timbre "5.1.2"]
+
+                 [com.taoensso/nippy "3.1.1"] ;; great serialisation/deserialisation
+                 [org.clojure/spec.alpha "0.2.176"]
+                 [orchestra "2018.12.06-2"] ;; improved clojure.spec instrumentation
+                 [enlive "1.1.6"]
+                 [clojure.java-time "0.3.3"] ;; date/time handling library, https://github.com/dm3/clojure.java-time
+                 [slugger "1.0.1"]
                  ]
   
   :managed-dependencies [[org.flatland/ordered "1.5.9"]

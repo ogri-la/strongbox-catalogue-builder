@@ -1,6 +1,13 @@
 (ns scb.core
   (:require
-   [clj-http.client :as http]
+   [scb
+    [specs :as sp]
+    ;;[wowi :as wowi]
+    [utils :as utils]]
+   [clojure.spec.alpha :as s]
+   [orchestra.core :refer [defn-spec]]
+   [scb.http :as http]
+   [clj-http.client :as client]
    [me.raynes.fs :as fs]
    [clojure.tools.namespace.repl :as tns :refer [refresh]]
    [taoensso.timbre :as timbre :refer [debug info warn error spy]])
@@ -22,7 +29,10 @@
 
 (def queue-list [:download-queue :downloaded-content-queue :parsed-content-queue :error-queue])
 (def state nil)
-(def state-path "/tmp/scb-state.edn")
+
+(def ^:dynamic *state-path* (-> (utils/temp-dir) (fs/file "scb") str)) ;; /path/to/state
+(def state-file-path (->> "state.edn" (fs/file *state-path*) str)) ;; /path/to/state/state.edn
+(def state-http-cache-path (->> "http" (fs/file *state-path*) str)) ;; /path/to/state/http
 
 (defn get-state
   [& path]
@@ -82,25 +92,32 @@
   [exc & {:keys [payload]}]
   (put-err (err (.getMessage exc) :payload payload :exc exc)))
 
+;; --- http
+
 (defn -download
-  "downloads url and deserialises to given serialisation type.
-  returns a pair of `[http-resp, response]`.
+  "downloads given `url`.
+  returns a pair of `[http-resp, error]`.
   `http-resp` is the raw http response but may be `nil` if an exception occurs.
-  `response` is the deserialised output or an error struct."
-  [url]
+  `error` is any exception thrown while attempting to download."
+  [url & [request-opts]]
   (try
-    (let [response (http/get url)]
+    (let [user-agent "strongbox-catalogue-builder 0.0.1 (https://github.com/ogri-la/strongbox-catalogue-builder)"
+          default-request-opts {:headers {"User-Agent" user-agent}
+                                :cache-root state-http-cache-path}
+          request-opts (merge default-request-opts request-opts)
+          response (http/download url request-opts)]
       [response, nil])
     (catch Exception e
       [nil e])))
 
 ;; --- downloading
 
-(defn download
-  [url]
-  (let [[response exc] (-download url)]
+(defn-spec download nil?
+  [url (s/or :url-string ::sp/url, :url-map ::sp/url-map)]
+  (let [[url label] (if (map? url) (utils/select-vals map [:url :label]) [url nil])
+        [response exc] (-download url)]
     (if response
-      (put-item (get-state :downloaded-content-queue) {:url url :result response})
+      (put-item (get-state :downloaded-content-queue) {:url url :label label :response response})
       (put-err (err (format "failed to download url '%s': %s" url (.getMessage exc)) :payload response :exc exc)))))
 
 (defn download-worker
@@ -109,7 +126,7 @@
   errors are added to the `:error-queue`.
   if the queue is a blocking queue, the thread will block until a new url arrives, this worker should be run in a separate thread."
   []
-  (http/with-connection-pool {:timeout 5 :threads 4 :insecure? false :default-per-route 10}
+  (client/with-connection-pool {:timeout 5 :threads 4 :insecure? false :default-per-route 10}
     (while true
       (let [[url restore-item] (take-item (get-state :download-queue))]
         (try
@@ -122,13 +139,14 @@
 
 ;; --- parsing
 
-(defn -parse
-  [thing]
-  [thing nil])
+(defmulti parse-content
+  "figure out what we downloaded and dispatch to the best parsing function"
+  (fn [downloaded-item]
+    (-> downloaded-item :url java.net.URL. .getHost)))
 
 (defn parse
   [thing]
-  (let [[parsed-content exc] (-parse thing)]
+  (let [[parsed-content exc] (parse-content thing)]
     (if parsed-content
       (put-item (get-state :parsed-content-queue) parsed-content)
       (put-err (err "failed to parse item" :payload thing :exc exc)))))
@@ -192,6 +210,10 @@
 
 ;; --- init
 
+(defn init-state-dirs
+  []
+  (run! fs/mkdirs [*state-path* state-http-cache-path]))
+
 (defn -start
   []
   (let [new-state {:download-queue (new-queue)
@@ -204,7 +226,8 @@
   []
   (info "starting")
   (alter-var-root #'state (constantly (-start)))
-  (thaw-state state-path)
+  (init-state-dirs)
+  (thaw-state state-file-path)
   (run-worker download-worker)
   (run-worker parser-worker)
   nil)
@@ -215,7 +238,7 @@
   (when-not (nil? state)
     (doseq [cleanup-fn (get-state :cleanup)]
       (debug "cleaned up" cleanup-fn (cleanup-fn)))
-    (freeze-state state-path))
+    (freeze-state state-file-path))
   nil)
 
 (defn restart

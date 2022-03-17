@@ -1,8 +1,11 @@
 (ns scb.user
   (:require
    [clojure.test]
+   [me.raynes.fs :as fs]
    [gui.diff :refer [with-gui-diff]]
-   [scb.core :as core]))
+   [scb
+    [wowi :as wowi]
+    [core :as core]]))
 
 (comment "user interface to catalogue builder")
 
@@ -49,23 +52,38 @@
       nil)))
 
 (comment "this is probably the 'proper' way to do it, but it means I can't target specific tests/ns"
-  (defn -test
-    []
-    (try
-      (with-redefs [;;core/testing? true
+         (defn -test
+           []
+           (try
+             (with-redefs [;;core/testing? true
                   ;;http/*default-pause* 1 ;; ms
                   ;;http/*default-attempts* 1
-                    ]
-        (with-gui-diff
-          (clojure.test/run-all-tests #"scb\..*-test")))
-      (finally
-        nil)))
+                           ]
+               (with-gui-diff
+                 (clojure.test/run-all-tests #"scb\..*-test")))
+             (finally
+               nil)))
 
-  (defn test
-    []
-    (core/stop)
-    (clojure.tools.namespace.repl/refresh :after 'scb.user/-test)) ;; reloads all namespaces, including strongbox.whatever-test ones
-  )
+         (defn test
+           []
+           (core/stop)
+           (clojure.tools.namespace.repl/refresh :after 'scb.user/-test)) ;; reloads all namespaces, including strongbox.whatever-test ones
+         )
+
+;; ---
+
+(defn wowi
+  []
+  (->> "test/fixtures/wowinterface--landing.html" fs/absolute fs/normalized str wowi/to-html wowi/parse-category-group-page))
+
+;; ---
+
+(defn status
+  []
+  (run! (fn [qkw]
+          (println (format "%s items in %s" (.size (core/get-state qkw)) qkw)))
+        core/queue-list))
+
 (defn download-url
   "adds a url to the queue to be downloaded."
   [url serialisation]

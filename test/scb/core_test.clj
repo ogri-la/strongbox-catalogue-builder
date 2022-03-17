@@ -7,6 +7,7 @@
    [scb.core :as core]))
 
 (use-fixtures :once helper/no-http)
+(use-fixtures :each helper/temp-state-dir)
 
 (deftest download-queue
   (testing ""
@@ -16,7 +17,7 @@
       (with-global-fake-routes-in-isolation fake-routes
         (helper/with-running-app
           (core/put-item (core/get-state :download-queue) url)
-          (Thread/sleep 100)
+          (Thread/sleep 200) ;; 100 is typically enough, but is slower on a first run
           (is (nil? (.peek (core/get-state :error-queue))))
           (is (nil? (.peek (core/get-state :download-queue))))
           (is (nil? (.peek (core/get-state :downloaded-content-queue))))
@@ -26,7 +27,7 @@
   (testing "receiving a bad item from the download queue doesn't cause a crash"
     (helper/with-running-app
       (core/put-item (core/get-state :download-queue) "foo!")
-      (Thread/sleep 100)
+      (Thread/sleep 150)
       (is (nil? (.peek (core/get-state :download-queue))))
       (is (nil? (.peek (core/get-state :downloaded-content-queue))))
       (is (nil? (.peek (core/get-state :parsed-content-queue))))
