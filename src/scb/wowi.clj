@@ -102,7 +102,7 @@
                     {:label (-> cat :content first)
                      :url (-> cat :attrs :href final-url)})]
     (debug (format "%s categories found" (count cat-list)))
-    (mapv extractor cat-list)))
+    {:download (mapv extractor cat-list)}))
 
 (defn extract-addon-summary
   [snippet]
@@ -145,23 +145,28 @@
                 {:url (clojure.string/replace url #"page=\d+" (str "page=" page-num))})]
     (mapv mkurl page-range)))
 
-(defn parse-category-listing
+(defn-spec parse-category-listing :result/map
   "returns a mixed list of urls and addon data."
-  [downloaded-item]
+  [downloaded-item :result/downloaded-item]
   (let [url (:url downloaded-item)
-        html-snippet (-> downloaded-item :response :body to-html)
+        html-snippet (to-html downloaded-item)
 
-        first-page? (-> url utils/url-params :page (= 1))
-        page-range (if first-page? (scrape-category-page-range html-snippet url) [])
+        ;; on the first page, make a list of all other pages to download
+        first-page? (-> url utils/url-params :page (= "1"))
+        listing-page-list (if first-page?
+                            (rest ;; skip the first page, we're parsing it right here
+                             (scrape-category-page-range html-snippet url))
+                            [])
 
         addon-list-html (select html-snippet [:#filepage :div.file])
         extractor (fn [addon-html-snippet]
                     (assoc (extract-addon-summary addon-html-snippet) :category-list #{(:label downloaded-item)}))
         addon-list (mapv extractor addon-list-html)]
 
-    (into page-range addon-list)))
+    {:download listing-page-list
+     :parsed addon-list}))
 
-(defmethod core/parse-content "wowinterface.com"
+(defmethod core/parse-content "www.wowinterface.com"
   [downloaded-item]
   ;; figure out what sort of item we have to parse.
   ;; we can't rely on the url to know if we have a 'category' page, like the index page or the 'standalone addons' pages.
@@ -170,5 +175,4 @@
   ;; so we need to parse the content and look at the structure.
   (cond
     (category-group-page? (:url downloaded-item)) (parse-category-group-page (to-html downloaded-item))
-    (category-listing-page? (:url downloaded-item)) (parse-category-listing downloaded-item)
-    :else []))
+    (category-listing-page? (:url downloaded-item)) (parse-category-listing downloaded-item)))

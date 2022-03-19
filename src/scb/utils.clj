@@ -1,11 +1,25 @@
 (ns scb.utils
   (:require
+   [taoensso.timbre :as timbre :refer [debug info warn error spy]]
    [me.raynes.fs :as fs]
    [clojure.spec.alpha :as s]
-
+   [orchestra.spec.test :as st]
+   [clj-http.client]
    [orchestra.core :refer [defn-spec]]
    [scb
-    [specs :as sp]]))
+    [specs :as sp]]
+   ))
+
+(defn instrument
+  "if `flag` is true, enables spec checking instrumentation, otherwise disables it."
+  [flag]
+  (if flag
+    (do
+      (st/instrument)
+      (info "instrumentation is ON"))
+    (do
+      (st/unstrument)
+      (info "instrumentation is OFF"))))
 
 (defn nilable
   "converts a false-y `x` to `nil`, else `x`"
@@ -46,6 +60,13 @@
   [x]
   (with-out-str (clojure.pprint/pprint x)))
 
+;; amalloy:
+;; - https://stackoverflow.com/questions/6591604/how-to-parse-url-parameters-in-clojure#answer-6591708
+(defn request-to-keywords
+  [req]
+  (into {} (for [[_ k v] (re-seq #"([^&=]+)=([^&]+)" req)]
+             [(keyword k) v])))
+
 (defn url-params
   [url]
-  {})
+  (some-> url clj-http.client/parse-url :query-string request-to-keywords))

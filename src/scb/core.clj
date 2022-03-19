@@ -34,6 +34,10 @@
 (def state-file-path (->> "state.edn" (fs/file *state-path*) str)) ;; /path/to/state/state.edn
 (def state-http-cache-path (->> "http" (fs/file *state-path*) str)) ;; /path/to/state/http
 
+(defn started?
+  []
+  (not (nil? state)))
+
 (defn get-state
   [& path]
   (if (nil? state)
@@ -45,6 +49,10 @@
 (defn put-item
   [q i]
   (.add q i))
+
+(defn put-all
+  [q l]
+  (run! (partial put-item q) l))
 
 (defn take-item
   "removes and returns item from the given queue.
@@ -118,7 +126,8 @@
         [response exc] (-download url)]
     (if response
       (put-item (get-state :downloaded-content-queue) {:url url :label label :response response})
-      (put-err (err (format "failed to download url '%s': %s" url (.getMessage exc)) :payload response :exc exc)))))
+      (put-err (err (format "failed to download url '%s': %s" url (.getMessage exc)) :payload response :exc exc))))
+  nil)
 
 (defn download-worker
   "pulls urls from the `:download-queue` and calls `download` with a connection pool.
@@ -144,24 +153,29 @@
   (fn [downloaded-item]
     (-> downloaded-item :url java.net.URL. .getHost)))
 
-(defn parse
-  [thing]
-  (let [[parsed-content exc] (parse-content thing)]
-    (if parsed-content
-      (put-item (get-state :parsed-content-queue) parsed-content)
-      (put-err (err "failed to parse item" :payload thing :exc exc)))))
-
 (defn parser-worker
+  "pulls items from the `downloaded-content-queue`, parses it and adds the items in the `:result/map` to the proper queues."
   []
   (while true
     (let [[item restore-item] (take-item (get-state :downloaded-content-queue))]
       (try
-        (parse item)
+        (let [{:keys [download parsed error]} (parse-content item)]
+          (put-all (get-state :download-queue) download)
+          (put-all (get-state :parsed-content-queue) parsed)
+          (put-all (get-state :error-queue error)))
 
         ;; under what conditions would we attempt to parse the item again?
 
         (catch Exception e
           (put-err-exc e :payload item))))))
+
+;; ---
+
+(defn error-monitor
+  []
+  (while true
+    (let [[item restore-item] (take-item (get-state :error-queue))]
+      (error item))))
 
 ;; ---
 
@@ -198,13 +212,14 @@
   [worker-fn]
   (let [f (future
             (try
+              (info "starting worker" worker-fn)
               (worker-fn)
               (catch java.lang.InterruptedException ie
                 (warn "interrupted"))
               (catch Exception e
                 (error e (format "uncaught exception in worker '%s': %s" worker-fn e)))
               (finally
-                (info "worker is done"))))]
+                (info "worker is done."))))]
     (add-cleanup #(future-cancel f))
     nil))
 
@@ -225,11 +240,13 @@
 (defn start
   []
   (info "starting")
+  (utils/instrument true)
   (alter-var-root #'state (constantly (-start)))
   (init-state-dirs)
   (thaw-state state-file-path)
   (run-worker download-worker)
   (run-worker parser-worker)
+  (run-worker error-monitor)
   nil)
 
 (defn stop
@@ -252,5 +269,3 @@
 (defn -main
   [& args]
   (start))
-
-

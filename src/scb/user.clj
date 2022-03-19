@@ -74,18 +74,30 @@
 
 (defn wowi
   []
-  (->> "test/fixtures/wowinterface--landing.html" fs/absolute fs/normalized str wowi/to-html wowi/parse-category-group-page))
+  ;;(clojure.pprint/pprint (->> "test/fixtures/wowinterface--landing.html" fs/absolute fs/normalized str wowi/to-html wowi/parse-category-group-page))
+  (let [html-snippet (->> "test/fixtures/wowinterface--listing.html" fs/absolute fs/normalized str slurp)
+        downloaded-item {:url "https://www.wowinterface.com/downloads/index.php?cid=100&sb=dec_date&so=desc&pt=f&page=1"
+                         :label "The Burning Crusade Classic"
+                         :response {:body html-snippet}}
+        ]
+    (wowi/parse-category-listing downloaded-item)))
 
 ;; ---
 
+(def stop core/stop)
+(def start core/start)
+(def restart core/restart)
+
 (defn status
   []
-  (run! (fn [qkw]
-          (println (format "%s items in %s" (.size (core/get-state qkw)) qkw)))
-        core/queue-list))
+  (if-not (core/started?)
+    (println "start app first: `(core/start)`")
+    (run! (fn [qkw]
+            (println (format "%s items in %s" (.size (core/get-state qkw)) qkw)))
+          core/queue-list)))
 
 (defn download-url
   "adds a url to the queue to be downloaded."
-  [url serialisation]
-  (core/put-item (core/get-state :download-queue) [url serialisation])
+  [url]
+  (core/put-item (core/get-state :download-queue) url)
   nil)

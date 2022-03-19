@@ -116,10 +116,9 @@
 (defn download
   "downloads the given `url` and returns the http response.
   use `download-file` to download a large/non-textual file.
-  accepts a map with the keys:
-  * `cache-root`, default `/tmp`"
+  accepts a map with the keys: `cache-root`, default is the system temp dir. pass `nil` or use `-download` directly to skip caching."
   [url & [{:keys [cache-root], :or {cache-root :temp-dir}  :as opts}]]
-  (let [;; it means we can rebind utils/temp-dir during tests
+  (let [;; lets us rebind utils/temp-dir during tests
         cache-root (if (= cache-root :temp-dir)
                      (utils/temp-dir)
                      cache-root)]
