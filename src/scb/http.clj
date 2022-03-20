@@ -6,7 +6,7 @@
    [orchestra.core :refer [defn-spec]]
    [clj-http
     [core :as clj-http-core]
-    [conn-mgr :as conn]
+    ;;[conn-mgr :as conn]
     [client :as http]]
    ;;[clojure.core.cache :as cache]
    [taoensso.nippy :as nippy]
@@ -50,11 +50,11 @@
   [url ::sp/url, request-opts map?, cache-root ::sp/extant-dir]
   (str (fs/file cache-root (-cache-key url request-opts))))
 
-(defn slurp-cache-file
-  [cache-file]
+(defn-spec slurp-cache-file any?
+  [cache-file ::sp/extant-file]
   (debug "Cache hit:" cache-file)
   (let [;; fml: https://stackoverflow.com/questions/26790881/clojure-file-to-byte-array
-        f (java.io.File. cache-file)
+        f (java.io.File. ^String cache-file)
         ary (byte-array (.length f))
         is (java.io.FileInputStream. f)
         _ (.read is ary)
@@ -62,11 +62,11 @@
     (.close is)
     data))
 
-(defn spit-cache-file
-  [response cache-file]
+(defn-spec spit-cache-file :http/response
+  [response :http/response, cache-file ::sp/extant-file]
   (debug "Cache miss:" cache-file)
   (when (http/success? response)
-    (let [f (java.io.File. cache-file)
+    (let [f (java.io.File. ^String cache-file)
           os (java.io.FileOutputStream. f)
           data (-> response
                    (dissoc :http-client)

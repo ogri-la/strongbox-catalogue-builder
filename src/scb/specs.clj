@@ -9,7 +9,7 @@
                             false))))
 
 (s/def ::file (s/and string?
-                     #(try (and % (java.io.File. %))
+                     #(try (and % (java.io.File. ^String %))
                            (catch java.lang.IllegalArgumentException e
                              false))))
 
@@ -48,14 +48,12 @@
                                     :addon/url ::url
                                     :addon/updated-date
                                     :addon/download-count
-                                    :addon/category-list ::set-of-strings
-
-                                    ]))
+                                    :addon/category-list ::set-of-strings]))
 
 (s/def :result/download (s/coll-of ::url-map))
 (s/def :result/parsed (s/coll-of :addon/part))
 
-(s/def :result/map (s/keys :opt-un [:result/download :result/parsed :result/error]))
+(s/def :result/map (s/keys :opt-un [:result/download :result/parsed]))
 
 (s/def :http/headers map?)
 (s/def :http/response (s/or :html-or-json string?

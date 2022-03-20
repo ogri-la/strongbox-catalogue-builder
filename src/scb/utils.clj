@@ -6,9 +6,9 @@
    [orchestra.spec.test :as st]
    [clj-http.client]
    [orchestra.core :refer [defn-spec]]
+   [clojure.pprint]
    [scb
-    [specs :as sp]]
-   ))
+    [specs :as sp]]))
 
 (defn instrument
   "if `flag` is true, enables spec checking instrumentation, otherwise disables it."

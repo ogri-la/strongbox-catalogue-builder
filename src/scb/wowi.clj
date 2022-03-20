@@ -122,8 +122,7 @@
        :updated-date (-> snippet (select [:div.updated html/content]) first extract-updated-date)
        :download-count (-> snippet (select [:div.downloads html/content]) first (clojure.string/replace #"\D*" "") utils/to-int)})
     (catch RuntimeException re
-      (error re (format "failed to scrape snippet with '%s', excluding from results: %s" (.getMessage re) (utils/pprint snippet)))
-      nil)))
+      (error re (format "failed to scrape snippet with, excluding from results: %s" (.getMessage re)) :payload snippet))))
 
 (defn scrape-category-page-range
   "extract the number of results from the page navigation"

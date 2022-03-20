@@ -24,15 +24,15 @@
   {:download-queue nil
    :downloaded-content-queue nil
    :parsed-content-queue nil
-   :error-queue nil
    :cleanup []})
 
-(def queue-list [:download-queue :downloaded-content-queue :parsed-content-queue :error-queue])
+(def queue-list [:download-queue :downloaded-content-queue :parsed-content-queue])
 (def state nil)
 
 (def ^:dynamic *state-path* (-> (utils/temp-dir) (fs/file "scb") str)) ;; /path/to/state
 (def state-file-path (->> "state.edn" (fs/file *state-path*) str)) ;; /path/to/state/state.edn
 (def state-http-cache-path (->> "http" (fs/file *state-path*) str)) ;; /path/to/state/http
+(def state-log-file-path (->> "log" (fs/file *state-path*) str)) ;; /path/to/state/log
 
 (defn started?
   []
@@ -52,7 +52,8 @@
 
 (defn put-all
   [q l]
-  (run! (partial put-item q) l))
+  (when-not (empty? l)
+    (run! (partial put-item q) l)))
 
 (defn take-item
   "removes and returns item from the given queue.
@@ -81,25 +82,6 @@
   [f]
   (swap! state update :cleanup conj f))
 
-(defn err
-  [x & {:keys [payload exc]}]
-  (cond-> {:error x}
-    (some? payload) (merge {:payload payload})
-    (some? exc) (merge {:exc exc})))
-
-(defn err?
-  [x]
-  (and (map? x)
-       (contains? x :error)))
-
-(defn put-err
-  [e]
-  (put-item (get-state :error-queue) e))
-
-(defn put-err-exc
-  [exc & {:keys [payload]}]
-  (put-err (err (.getMessage exc) :payload payload :exc exc)))
-
 ;; --- http
 
 (defn -download
@@ -108,25 +90,26 @@
   `http-resp` is the raw http response but may be `nil` if an exception occurs.
   `error` is any exception thrown while attempting to download."
   [url & [request-opts]]
-  (try
-    (let [user-agent "strongbox-catalogue-builder 0.0.1 (https://github.com/ogri-la/strongbox-catalogue-builder)"
-          default-request-opts {:headers {"User-Agent" user-agent}
-                                :cache-root state-http-cache-path}
-          request-opts (merge default-request-opts request-opts)
-          response (http/download url request-opts)]
-      [response, nil])
-    (catch Exception e
-      [nil e])))
+  (let [user-agent "strongbox-catalogue-builder 0.0.1 (https://github.com/ogri-la/strongbox-catalogue-builder)"
+        default-request-opts {:headers {"User-Agent" user-agent}
+                              :cache-root state-http-cache-path}
+        request-opts (merge default-request-opts request-opts)]
+    (try
+      (http/download url request-opts)
+
+      ;; todo: re-raise recoverable errors so they go back on the queue
+
+      (catch Exception exc
+        (error exc (format "failed to download url '%s': %s" url (.getMessage exc)) :payload {:url url, :opts request-opts})))))
 
 ;; --- downloading
 
 (defn-spec download nil?
   [url (s/or :url-string ::sp/url, :url-map ::sp/url-map)]
-  (let [[url label] (if (map? url) (utils/select-vals map [:url :label]) [url nil])
-        [response exc] (-download url)]
-    (if response
-      (put-item (get-state :downloaded-content-queue) {:url url :label label :response response})
-      (put-err (err (format "failed to download url '%s': %s" url (.getMessage exc)) :payload response :exc exc))))
+  (let [[url label] (if (map? url) (utils/select-vals url [:url :label]) [url nil])]
+    (debug "got url" url "with label" label)
+    (when-let [response (-download url)]
+      (put-item (get-state :downloaded-content-queue) {:url url :label label :response response})))
   nil)
 
 (defn download-worker
@@ -137,14 +120,14 @@
   []
   (client/with-connection-pool {:timeout 5 :threads 4 :insecure? false :default-per-route 10}
     (while true
-      (let [[url restore-item] (take-item (get-state :download-queue))]
+      (let [[url _] (take-item (get-state :download-queue))]
         (try
           (download url)
 
           ;; todo: recoverable exceptions like throttling or timeouts should use `restore-item`
 
-          (catch Exception e
-            (put-err-exc e :payload url)))))))
+          (catch Exception exc
+            (error exc (str "unhandled exception downloading url: " url) :payload url)))))))
 
 ;; --- parsing
 
@@ -157,25 +140,17 @@
   "pulls items from the `downloaded-content-queue`, parses it and adds the items in the `:result/map` to the proper queues."
   []
   (while true
-    (let [[item restore-item] (take-item (get-state :downloaded-content-queue))]
+    (let [[item _] (take-item (get-state :downloaded-content-queue))]
       (try
         (let [{:keys [download parsed error]} (parse-content item)]
           (put-all (get-state :download-queue) download)
           (put-all (get-state :parsed-content-queue) parsed)
-          (put-all (get-state :error-queue error)))
+          (put-all (get-state :error-queue) error))
 
         ;; under what conditions would we attempt to parse the item again?
 
-        (catch Exception e
-          (put-err-exc e :payload item))))))
-
-;; ---
-
-(defn error-monitor
-  []
-  (while true
-    (let [[item restore-item] (take-item (get-state :error-queue))]
-      (error item))))
+        (catch Exception exc
+          (error exc "unhandled exception parsing content" :payload item))))))
 
 ;; ---
 
@@ -199,12 +174,7 @@
     (let [old-state (slurp path)
           lists-to-queues (into {}
                                 (mapv (fn [qn]
-                                        [qn (new-queue (get old-state qn))]) queue-list))
-
-          ;; do we want to restore errors?
-          ;; freezing them is helpful to inspect errors later but what do we do with them while the app is running?
-          ;; print to screen and discard? print to screen and keep?
-          lists-to-queues (assoc lists-to-queues :error-queue (new-queue))]
+                                        [qn (new-queue (get old-state qn))]) queue-list))]
       (swap! state merge lists-to-queues))
     nil))
 
@@ -225,6 +195,80 @@
 
 ;; --- init
 
+(def colour-log-map
+  {:debug :blue
+   :info nil
+   :warn :yellow
+   :error :red
+   :fatal :purple
+   :report :blue})
+
+(defn custom-println-appender
+  "removes the hostname from the output format string"
+  [data]
+  (let [{:keys [;;?err
+                timestamp_ msg_ level]} data
+        level-colour (colour-log-map level)
+        pattern "%s [%s] %s"
+        msg (force msg_)]
+    ;;(when ?err
+    ;;  (println (timbre/stacktrace ?err)))
+
+    (when-not (empty? msg)
+      ;; looks like: "11:17:57.009 [info] checking for updates"
+      (println
+       (timbre/color-str level-colour
+                         (format
+                          pattern
+                          (force timestamp_)
+                          (name level)
+                          msg))))))
+
+;; https://github.com/ptaoussanis/timbre/blob/7bb3d648e1a49cf835233785fe2c07e43b2395da/src/taoensso/timbre/appenders/core.cljc#L90
+(defn custom-spit-appender
+  "Returns a simple `spit` file appender for Clojure."
+  [fname]
+  (let [lock (Object.)]
+    (fn self [{:keys [output_] :as data}]
+      (let [output (force output_) ; Must deref outside lock, Ref. #330
+            payload-output (if-let [p (:payload data)]
+                             (str "payload:\n" (utils/pprint p))
+                             (str "payload: nil"))]
+        (locking lock
+          (try
+            (with-open [^java.io.BufferedWriter w (clojure.java.io/writer fname :append true)]
+              (.write w ^String output)
+              (.newLine w)
+              (.write w ^String payload-output)
+              (.newLine w))
+
+            (catch java.io.IOException e
+              (throw e) ; Unexpected error
+              )))))))
+
+(defn init-logging
+  []
+  (timbre/merge-config! timbre/default-config) ;; reset
+  (let [default-logging-config
+        {:min-level :info
+
+         :timestamp-opts {;;:pattern "yyyy-MM-dd HH:mm:ss.SSS"
+                          :pattern "HH:mm:ss.SSS"
+                          ;; default is `:utc`, `nil` sets tz to current locale.
+                          :timezone nil}
+
+         :appenders {:spit {:enabled? true
+                            :async? false
+                            :output-fn :inherit
+                            :min-level :warn
+                            :fn (custom-spit-appender state-log-file-path)}
+                     :println {:enabled? true
+                               :async? false
+                               :output-fn :inherit
+                               :fn custom-println-appender}}}]
+
+    (timbre/merge-config! default-logging-config)))
+
 (defn init-state-dirs
   []
   (run! fs/mkdirs [*state-path* state-http-cache-path]))
@@ -242,11 +286,11 @@
   (info "starting")
   (utils/instrument true)
   (alter-var-root #'state (constantly (-start)))
+  (init-logging)
   (init-state-dirs)
   (thaw-state state-file-path)
   (run-worker download-worker)
   (run-worker parser-worker)
-  (run-worker error-monitor)
   nil)
 
 (defn stop
