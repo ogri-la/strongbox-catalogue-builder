@@ -2,7 +2,6 @@
   (:require
    [scb
     [specs :as sp]
-    ;;[wowi :as wowi]
     [utils :as utils]]
    [clojure.spec.alpha :as s]
    [orchestra.core :refer [defn-spec]]
@@ -17,6 +16,14 @@
    [java.util.concurrent LinkedBlockingQueue]))
 
 (def testing? false)
+
+;;---
+
+(defn error*
+  [msg & {:keys [payload]}]
+  (if payload
+    (timbre/error ^:meta {:payload payload} msg)
+    (timbre/error msg)))
 
 ;; --- state wrangling
 
@@ -229,9 +236,9 @@
   "Returns a simple `spit` file appender for Clojure."
   [fname]
   (let [lock (Object.)]
-    (fn self [{:keys [output_] :as data}]
+    (fn self [{:keys [output_ ?meta] :as data}]
       (let [output (force output_) ; Must deref outside lock, Ref. #330
-            payload-output (if-let [p (:payload data)]
+            payload-output (if-let [p (some-> ?meta :payload)]
                              (str "payload:\n" (utils/pprint p))
                              (str "payload: nil"))]
         (locking lock

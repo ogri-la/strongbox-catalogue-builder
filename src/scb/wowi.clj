@@ -8,9 +8,10 @@
    [taoensso.timbre :as timbre :refer [debug info warn error spy]]
    [net.cgrand.enlive-html :as html :refer [select]]
    [scb
-    [core :as core]
+    [core :as core :refer [error*]]
     [utils :as utils]
-    [specs :as sp]]
+    [specs :as sp]
+    ]
    [java-time]
    [java-time.format]))
 
@@ -28,14 +29,22 @@
    "/downloads/cat144.html" ;; Utilities
    "/downloads/cat145.html" ;; Optional
    ])
-(defn category-group-page?
-  [url]
-  (let [filename (-> url java.net.URL. .getPath)] ;; "https://wowinterface.com/foo/addons.php?foo=bar" => "/foo/addons.php"
-    (boolean (some #{filename} category-group-page-list))))
 
-(defn category-listing-page?
-  [url]
-  false)
+(defn-spec category-group-page? boolean?
+  "returns `true` if the given `url` is a list of category groups"
+  [url ::sp/url]
+  ;; landing page (`index.php` and `addons.php`) and the category group pages should have no URL parameters.
+  (let [params (utils/url-params url)
+        filename (-> url java.net.URL. .getPath)] ;; "https://wowinterface.com/foo/addons.php?foo=bar" => "/foo/addons.php"
+    (boolean
+     (and (empty? params)
+          (some #{filename} category-group-page-list)))))
+
+(defn-spec category-listing-page? boolean?
+  "returns `true` if the given `url` is a list of addons."
+  [url ::sp/url]
+  ;; check for presence of a 'page' url parameter. addons and category group pages won't be paginated. 
+  (boolean (some-> url utils/url-params :page Integer/valueOf)))
 
 (defn to-html
   [downloaded-item]
@@ -114,7 +123,7 @@
       {:url (extract-addon-url anchor)
        :name (-> label slugify)
        :label label
-       :source "wowinterface"
+       :source :wowinterface
        :source-id (extract-source-id anchor)
        ;;:description nil ;; not available in summary
        ;;:category-list [] ;; not available in summary, added by caller
@@ -122,7 +131,7 @@
        :updated-date (-> snippet (select [:div.updated html/content]) first extract-updated-date)
        :download-count (-> snippet (select [:div.downloads html/content]) first (clojure.string/replace #"\D*" "") utils/to-int)})
     (catch RuntimeException re
-      (error re (format "failed to scrape snippet with, excluding from results: %s" (.getMessage re)) :payload snippet))))
+      (error* re (format "failed to scrape snippet, excluding from results: %s" (.getMessage re)) :payload snippet))))
 
 (defn scrape-category-page-range
   "extract the number of results from the page navigation"

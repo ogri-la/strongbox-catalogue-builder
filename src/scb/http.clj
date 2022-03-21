@@ -75,7 +75,7 @@
       (.close os)))
   response)
 
-(def expiry-offset-hours 5) ;; doesn't matter too much at this stage.
+(def expiry-offset-hours 48) ;; doesn't matter too much at this stage.
 
 (defn file-older-than
   [path offset-hours]

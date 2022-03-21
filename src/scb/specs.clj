@@ -56,12 +56,14 @@
 (s/def :result/map (s/keys :opt-un [:result/download :result/parsed]))
 
 (s/def :http/headers map?)
-(s/def :http/response (s/or :html-or-json string?
-                            :bytes bytes?
-                            ;; ...
-                            ))
+
+(s/def :http/body (s/or :html-or-json string?
+                        :bytes bytes?
+                        ;; ...
+                        ))
+
 (s/def :http/response (s/keys :req-un [:http/headers
-                                       :http/response
+                                       :http/body
                                        ;; ...
                                        ]))
 
