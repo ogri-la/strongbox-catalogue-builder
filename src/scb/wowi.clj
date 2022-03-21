@@ -135,7 +135,7 @@
 
 (defn scrape-category-page-range
   "extract the number of results from the page navigation"
-  [html-snippet url]
+  [html-snippet url url-label]
   (let [page-count (some-> html-snippet
                            (select [:.pagenav [:td.alt1 html/last-of-type] :a])
                            utils/nilable
@@ -150,7 +150,8 @@
         page-range (range 1 (inc page-count))
 
         mkurl (fn [page-num]
-                {:url (clojure.string/replace url #"page=\d+" (str "page=" page-num))})]
+                {:url (clojure.string/replace url #"page=\d+" (str "page=" page-num))
+                 :label url-label})]
     (mapv mkurl page-range)))
 
 (defn-spec parse-category-listing :result/map
@@ -163,12 +164,16 @@
         first-page? (-> url utils/url-params :page (= "1"))
         listing-page-list (if first-page?
                             (rest ;; skip the first page, we're parsing it right here
-                             (scrape-category-page-range html-snippet url))
+                             (scrape-category-page-range html-snippet url (:label downloaded-item)))
                             [])
 
         addon-list-html (select html-snippet [:#filepage :div.file])
         extractor (fn [addon-html-snippet]
-                    (assoc (extract-addon-summary addon-html-snippet) :category-list #{(:label downloaded-item)}))
+                    (let [category (:label downloaded-item)
+                          addon-summary (extract-addon-summary addon-html-snippet)]
+                      (if category
+                        (assoc addon-summary :category-list #{category})
+                        addon-summary)))
         addon-list (mapv extractor addon-list-html)]
 
     {:download listing-page-list

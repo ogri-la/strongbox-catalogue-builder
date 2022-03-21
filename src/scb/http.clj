@@ -63,7 +63,7 @@
     data))
 
 (defn-spec spit-cache-file :http/response
-  [response :http/response, cache-file ::sp/extant-file]
+  [response :http/response, cache-file ::sp/file]
   (debug "Cache miss:" cache-file)
   (when (http/success? response)
     (let [f (java.io.File. ^String cache-file)
@@ -111,6 +111,7 @@
 
         ;; clj-http options that can be passed through to the request, if they exist
         config (merge config (select-keys opts [:as :http-client :query-params]))]
+    (info "downloading" url) ;; "with opts" config)
     (http/get url config)))
 
 (defn download

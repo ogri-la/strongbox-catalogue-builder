@@ -20,10 +20,10 @@
 ;;---
 
 (defn error*
-  [msg & {:keys [payload]}]
+  [msg & {:keys [payload exc]}]
   (if payload
-    (timbre/error ^:meta {:payload payload} msg)
-    (timbre/error msg)))
+    (timbre/error ^:meta {:payload payload} exc msg)
+    (timbre/error exc msg)))
 
 ;; --- state wrangling
 
@@ -107,7 +107,9 @@
       ;; todo: re-raise recoverable errors so they go back on the queue
 
       (catch Exception exc
-        (error exc (format "failed to download url '%s': %s" url (.getMessage exc)) :payload {:url url, :opts request-opts})))))
+        (error* (format "failed to download url '%s': %s" url (.getMessage exc))
+               :exc exc
+               :payload {:url url, :opts request-opts})))))
 
 ;; --- downloading
 
@@ -116,7 +118,8 @@
   (let [[url label] (if (map? url) (utils/select-vals url [:url :label]) [url nil])]
     (debug "got url" url "with label" label)
     (when-let [response (-download url)]
-      (put-item (get-state :downloaded-content-queue) {:url url :label label :response response})))
+      (put-item (get-state :downloaded-content-queue) (cond-> {:url url :response response}
+                                                        label (assoc :label label)))))
   nil)
 
 (defn download-worker
@@ -134,7 +137,7 @@
           ;; todo: recoverable exceptions like throttling or timeouts should use `restore-item`
 
           (catch Exception exc
-            (error exc (str "unhandled exception downloading url: " url) :payload url)))))))
+            (error* (str "unhandled exception downloading url: " url) :exc exc :payload url)))))))
 
 ;; --- parsing
 
@@ -157,7 +160,7 @@
         ;; under what conditions would we attempt to parse the item again?
 
         (catch Exception exc
-          (error exc "unhandled exception parsing content" :payload item))))))
+          (error* "unhandled exception parsing content" :exc exc :payload item))))))
 
 ;; ---
 
@@ -257,7 +260,7 @@
   []
   (timbre/merge-config! timbre/default-config) ;; reset
   (let [default-logging-config
-        {:min-level :info
+        {:min-level :debug
 
          :timestamp-opts {;;:pattern "yyyy-MM-dd HH:mm:ss.SSS"
                           :pattern "HH:mm:ss.SSS"
