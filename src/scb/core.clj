@@ -181,7 +181,7 @@
   [path]
   (when (fs/exists? path)
     (info "thawing state:" path)
-    (let [old-state (slurp path)
+    (let [old-state (read-string (slurp path))
           lists-to-queues (into {}
                                 (mapv (fn [qn]
                                         [qn (new-queue (get old-state qn))]) queue-list))]
