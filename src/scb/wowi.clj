@@ -15,7 +15,7 @@
    [java-time]
    [java-time.format]))
 
-(def host "https://www.wowinterface.com/downloads/")
+(def host "https://www.wowinterface.com")
 
 (def category-group-page-list
   ["/downloads/index.php" "/addons.php" ;; landing page
@@ -86,7 +86,7 @@
 
 (defn extract-addon-url
   [a]
-  (str host "info" (extract-source-id a)))
+  (str host "/downloads/info" (extract-source-id a)))
 
 ;; ---
 
@@ -106,7 +106,7 @@
                         ;; preserve links to category group pages so we can identify them later
                         href
                         ;; => https://www.wowinterface.com/downloads/index.php?cid=160&sb=dec_date&so=desc&pt=f&page=1
-                        (str host, cat-id, sort-by, another-sort-by, pt, page))))
+                        (str host, "/downloads", cat-id, sort-by, another-sort-by, pt, page))))
         extractor (fn [cat]
                     {:label (-> cat :content first)
                      :url (-> cat :attrs :href final-url)})]
@@ -154,6 +154,53 @@
                  :label url-label})]
     (mapv mkurl page-range)))
 
+
+
+(defn-spec parse-addon-detail-page any?
+  [html-snippet any?]
+  (let [coerce-releases
+        (fn [row]
+          {;; this could be guessed by splitting on the hyphen and then removing common elements between releases.
+           ;; would only work on multiple downloads.
+           ;; wouldn't work on single releases
+           ;;:version nil 
+           :download-url (str host (:href row))
+           :game-track (case (:title row)
+                         "WoW Retail" :retail
+                         "WoW Classic" :classic
+                         "The Burning Crusade WoW Classic" :classic-tbc)})
+
+        version-strings
+          (->> (select html-snippet [:#version]) first :content first)
+
+        version-strings (mapv (fn [version-string]
+                                (clojure.string/split version-string #": "))
+                              (clojure.string/split version-strings #", "))
+        
+        [compat-key compat-val
+         _ dt-updated
+         _ dt-created
+         _ num-downloads
+         _ num-favourites
+         _ md5
+         _ categories]
+        (select html-snippet [ :.TabTab second :td])
+        
+        ]
+    
+    {:dt-updated (-> dt-updated :content first format-wowinterface-dt)
+     :dt-created (-> dt-created :content first format-wowinterface-dt)
+     :download-count (-> num-downloads :content first (clojure.string/replace #"," "") Integer/parseInt)
+     :favourite-count (-> num-favourites :content first (clojure.string/replace #"," "") Integer/parseInt)
+     :md5 (-> md5 :content first :attrs :value)
+     :category-list (set (select categories [:a html/text]))
+     :latest-release-versions version-strings
+     :latest-release (->> (select html-snippet [:.infobox :div#download :a])
+                           (map :attrs)
+                           (map coerce-releases))
+
+     }))
+
 (defn-spec parse-category-listing :result/map
   "returns a mixed list of urls and addon data."
   [downloaded-item :result/downloaded-item]
@@ -174,10 +221,12 @@
                       (if category
                         (assoc addon-summary :category-list #{category})
                         addon-summary)))
-        addon-list (mapv extractor addon-list-html)]
-
-    {:download listing-page-list
+        addon-list (mapv extractor addon-list-html)
+        addon-url-list (mapv :url addon-list)]
+    {:download (into listing-page-list addon-url-list)
      :parsed addon-list}))
+
+;;
 
 (defmethod core/parse-content "www.wowinterface.com"
   [downloaded-item]
