@@ -31,7 +31,9 @@
   {:download-queue nil
    :downloaded-content-queue nil
    :parsed-content-queue nil
-   :cleanup []})
+   :cleanup []
+   :catalogue {}
+   })
 
 (def queue-list [:download-queue :downloaded-content-queue :parsed-content-queue])
 (def state nil)
@@ -161,6 +163,18 @@
 
         (catch Exception exc
           (error* "unhandled exception parsing content" :exc exc :payload item))))))
+
+;; --- storing
+
+(defn store-content-worker
+  "takes parsed content and sticks into a database"
+  []
+  (while true
+    (let [[item _] (take-item (get-state :parsed-content-queue))]
+      (try
+        (swap! state update-in [:catalogue (:source item) (:source-id item)] merge item)
+        (catch Exception exc
+          (error* "unhandled exception storing content" :exc exc :payload item))))))
 
 ;; ---
 
@@ -301,6 +315,7 @@
   (thaw-state state-file-path)
   (run-worker download-worker)
   (run-worker parser-worker)
+  (run-worker store-content-worker)
   nil)
 
 (defn stop
