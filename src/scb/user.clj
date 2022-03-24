@@ -76,18 +76,16 @@
 (defn wowi
   []
   ;;(clojure.pprint/pprint (->> "test/fixtures/wowinterface--landing.html" fs/absolute fs/normalized str wowi/to-html wowi/parse-category-group-page))
-  
+
   #_(let [html-snippet (->> "test/fixtures/wowinterface--listing.html" fs/absolute fs/normalized str slurp)
-        downloaded-item {:url "https://www.wowinterface.com/downloads/index.php?cid=100&sb=dec_date&so=desc&pt=f&page=1"
-                         :label "The Burning Crusade Classic"
-                         :response {:headers {}
-                                    :body html-snippet}}]
+          downloaded-item {:url "https://www.wowinterface.com/downloads/index.php?cid=100&sb=dec_date&so=desc&pt=f&page=1"
+                           :label "The Burning Crusade Classic"
+                           :response {:headers {}
+                                      :body html-snippet}}]
       (wowi/parse-category-listing downloaded-item))
 
   (clojure.pprint/pprint
-   (->> "test/fixtures/wowinterface--addon-detail--multiple-downloads--no-tabber.html" fs/absolute fs/normalized str wowi/to-html wowi/parse-addon-detail-page))
-
-  )
+   (->> "test/fixtures/wowinterface--addon-detail--multiple-downloads--no-tabber.html" fs/absolute fs/normalized str wowi/to-html wowi/parse-addon-detail-page)))
 
 ;; ---
 

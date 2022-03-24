@@ -32,8 +32,7 @@
    :downloaded-content-queue nil
    :parsed-content-queue nil
    :cleanup []
-   :catalogue {}
-   })
+   :catalogue {}})
 
 (def queue-list [:download-queue :downloaded-content-queue :parsed-content-queue])
 (def state nil)
@@ -110,8 +109,8 @@
 
       (catch Exception exc
         (error* (format "failed to download url '%s': %s" url (.getMessage exc))
-               :exc exc
-               :payload {:url url, :opts request-opts})))))
+                :exc exc
+                :payload {:url url, :opts request-opts})))))
 
 ;; --- downloading
 

@@ -10,8 +10,7 @@
    [scb
     [core :as core :refer [error*]]
     [utils :as utils]
-    [specs :as sp]
-    ]
+    [specs :as sp]]
    [java-time]
    [java-time.format]))
 
@@ -168,13 +167,14 @@
                          "WoW Classic" :classic
                          "The Burning Crusade WoW Classic" :classic-tbc)})
 
+        ;; the 'Version: 9.2.0.0, Classic: 9.1.5.0' string to the left of the downloads.
+        ;; I haven't seen a 'TBC' version string yet ...
         version-strings
-          (->> (select html-snippet [:#version]) first :content first)
+        (-> (select html-snippet [:#version html/text])
+            first
+            (clojure.string/split #", "))
+        version-strings (mapv #(clojure.string/split % #": ") version-strings)
 
-        version-strings (mapv (fn [version-string]
-                                (clojure.string/split version-string #": "))
-                              (clojure.string/split version-strings #", "))
-        
         [compat-key compat-val
          _ dt-updated
          _ dt-created
@@ -182,8 +182,8 @@
          _ num-favourites
          _ md5
          _ categories]
-        (select html-snippet #{[:.TabTab second :td]
-                               [:.tomboxinner :td]})
+        (select html-snippet #{[:.TabTab second :td] ;; handles tabber when images are present
+                               [:.tomboxinner :td]}) ;; no tabber
 
         ;; "archived files"
         arc (select html-snippet [:div#other_t [:div (html/nth-of-type 3)] :tr])
@@ -210,13 +210,12 @@
                      [:tr [html/first-of-type :td]] (kv :size) ;; todo: convert to bytes perhaps?
                      [:tr [html/first-of-type :td]] (kv :author)
                      ;; comp'ing `kv` here seems to work as `html/text` returns text if given text :) 
-                     [:tr [html/first-of-type :td]] (comp (kv :date) format-wowinterface-dt html/text)
-                     )
+                     [:tr [html/first-of-type :td]] (comp (kv :date) format-wowinterface-dt html/text))
 
         ;; we now have something like: [{:tag :tr, :content [{:name "..."}, {:size "..."}, ...]}, ...]
         ;; convert it into a single list of maps [{...}, {...}, ...]
         archived-files (mapv #(into {} (:content %)) arc)]
-    
+
     {:dt-updated (some-> dt-updated :content first format-wowinterface-dt)
      :dt-created (some-> dt-created :content first format-wowinterface-dt)
      :download-count (some-> num-downloads :content first (clojure.string/replace #"," "") Integer/parseInt)
@@ -225,11 +224,9 @@
      :category-list (set (select categories [:a html/text]))
      :latest-release-versions version-strings
      :latest-release (->> (select html-snippet [:.infobox :div#download :a])
-                           (map :attrs)
-                           (map coerce-releases))
-     :archived-files archived-files
-
-     }))
+                          (map :attrs)
+                          (map coerce-releases))
+     :archived-files archived-files}))
 
 (defn-spec parse-category-listing :result/map
   "returns a mixed list of urls and addon data."
