@@ -85,7 +85,7 @@
       (wowi/parse-category-listing downloaded-item))
 
   (clojure.pprint/pprint
-   (->> "test/fixtures/wowinterface--addon-detail--multiple-downloads--tabber.html" fs/absolute fs/normalized str wowi/to-html wowi/parse-addon-detail-page))
+   (->> "test/fixtures/wowinterface--addon-detail--multiple-downloads--no-tabber.html" fs/absolute fs/normalized str wowi/to-html wowi/parse-addon-detail-page))
 
   )
 

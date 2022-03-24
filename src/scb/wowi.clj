@@ -184,15 +184,16 @@
          _ num-favourites
          _ md5
          _ categories]
-        (select html-snippet [ :.TabTab second :td])
+        (select html-snippet #{[:.TabTab second :td]
+                               [:.tomboxinner :td]})
         
         ]
     
-    {:dt-updated (-> dt-updated :content first format-wowinterface-dt)
-     :dt-created (-> dt-created :content first format-wowinterface-dt)
-     :download-count (-> num-downloads :content first (clojure.string/replace #"," "") Integer/parseInt)
-     :favourite-count (-> num-favourites :content first (clojure.string/replace #"," "") Integer/parseInt)
-     :md5 (-> md5 :content first :attrs :value)
+    {:dt-updated (some-> dt-updated :content first format-wowinterface-dt)
+     :dt-created (some-> dt-created :content first format-wowinterface-dt)
+     :download-count (some-> num-downloads :content first (clojure.string/replace #"," "") Integer/parseInt)
+     :favourite-count (some-> num-favourites :content first (clojure.string/replace #"," "") Integer/parseInt)
+     :md5 (some-> md5 :content first :attrs :value)
      :category-list (set (select categories [:a html/text]))
      :latest-release-versions version-strings
      :latest-release (->> (select html-snippet [:.infobox :div#download :a])

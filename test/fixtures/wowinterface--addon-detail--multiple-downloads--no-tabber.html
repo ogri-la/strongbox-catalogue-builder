@@ -1,0 +1,2387 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en">
+<head>
+<title>Skillet-Classic : Classic - General  : World of Warcraft AddOns</title>
+<meta property="og:title" content="Skillet-Classic" />
+<meta property="og:site_name" content="WoWInterface" />
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<meta name="keywords" content="wow, world of warcraft, worlds of warcraft, xml, lua, interface, skins, mods, addon, addons, 5.3, 5.4, 6.0, Siege of Orgrimmar, Mists of Pandaria, Warlords of Draenor" />
+<meta name="description" content="World of Warcraft Addons, Interfaces, Skins, Mods &amp; Community." />
+<!--[if IE 6]><link rel="stylesheet" type="text/css" href="/clientscript/ie6.css?3"/><![endif]-->
+
+<link rel="stylesheet" type="text/css" href="//cdn-wow.mmoui.com/clientscript/vbulletin_css/style-8f494fb1-00036.css" id="vbulletin_css" />
+
+<script type="text/javascript">
+<!--
+var SESSIONURL = "s=b5918f5bc99d817f5c9cf423e12f342a&";
+var SECURITYTOKEN = "48a2eb27e1e3e436400f11b5a34307f19d46b008";
+var IMGDIR_MISC = "//cdn-wow.mmoui.com/images/style_mmoi_wowi2/misc";
+var vb_disable_ajax = parseInt("0", 10);
+// -->
+</script>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
+<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+<link rel="apple-touch-icon" href="/images/apple-webclip.jpg" />
+<link rel="search" type="application/opensearchdescription+xml" href="/wowisearch.xml" title="WoWInterface" />
+<link rel="alternate" type="application/rss+xml" title="WoWInterface News" href="/rss/news.xml" />
+<link rel="alternate" type="application/rss+xml" title="WoWInterface Latest Interfaces" href="/rss/latest.xml" />
+<link rel="alternate" type="application/rss+xml" title="WoWInterface Latest New Interfaces" href="/rss/latest-new.xml" />
+<link rel="alternate" type="application/rss+xml" title="WoWInterface Latest Updated Interfaces" href="/rss/latest-updated.xml" />
+<link rel="alternate" type="application/rss+xml" title="WoWInterface Weekly Picks" href="/rss/pickofweek.xml" />
+<link rel="alternate" type="application/rss+xml" title="WoWInterface Latest Threads" href="/rss/threads.xml" />
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-1459431-33', 'auto');
+ga('create', 'UA-1459431-57', 'auto', {'name' : 'generic1'});
+ga('create', 'UA-1459431-59', 'auto', {'name' : 'generic2'});
+ga('create', 'UA-1459431-63', 'auto', {'name' : 'generic3'});
+ga('create', 'UA-63671015-4', 'auto', {'name' : 'mmouiwowi'});
+ga('create', 'UA-63671015-13', 'auto', {'name' : 'mmouiglobal'});
+ga('send', 'pageview');
+ga('generic1.send', 'pageview');
+ga('generic2.send', 'pageview');
+ga('generic3.send', 'pageview');
+ga('mmouiwowi.send', 'pageview');
+ga('mmouiglobal.send', 'pageview');
+</script>
+<script type='text/javascript' src='//cdn-wow.mmoui.com/clientscript/qchoice.js?v2' async=true></script>
+<script type="text/javascript" src='https://www.googletagservices.com/tag/js/gpt.js'></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+<script async src="//cdn-wow.mmoui.com/clientscript/jquery.cookies.2.2.0.min.js" type="text/javascript"></script>
+<script async src="//cdn-wow.mmoui.com/clientscript/jquery.overlay-1.0.1.js?v2" type="text/javascript"></script>
+<script src="//cdn-wow.mmoui.com/clientscript/jquery.lightbox.js?v2" type="text/javascript"></script>
+<script src="//cdn-wow.mmoui.com/clientscript/site-start.js?v4" type="text/javascript"></script>
+<script src="//cdn-wow.mmoui.com/clientscript/vbulletin_global.js?v=3612" type="text/javascript"></script>
+<script async type="text/javascript" src="//wowjs.zamimg.com/widgets/power.js"></script><script>var wowhead_tooltips = { "colorlinks": true, "iconizelinks": true, "renamelinks": false }</script>
+<script type="text/javascript">isIE=false;isIE6=false</script>
+<!--[if IE]><script type="text/javascript">isIE=true</script><![endif]-->
+<script src="https://pagead2.googlesyndication.com/pagead/js/google_top_exp.js"></script>
+<script type="text/javascript" src='https://cdn.swinterface.com/stable/js/ab/mmoui.js'></script>
+<script type="text/javascript">
+(function() {
+    var script = document.createElement('script'), i = (((window.location.search||'').match(/zaf=([^&]*)/))||[])[1];
+    script.setAttribute("async", "async");
+    script.src = 'https://zaf.services.zam.com/stable/js/mmoui.js' + (i ? ('?id=' + i) : '');
+    document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+
+<script type="text/javascript">
+var _qevents = _qevents || [];
+
+(function() {
+var elem = document.createElement('script');
+elem.src = (document.location.protocol == "https:" ? "https://secure" : "http://edge") + ".quantserve.com/quant.js";
+elem.async = true;
+elem.type = "text/javascript";
+var scpt = document.getElementsByTagName('script')[0];
+scpt.parentNode.insertBefore(elem, scpt);
+})();
+
+_qevents.push({
+qacct:"p-Reh74eM5VFun3"
+});
+</script>
+<noscript>
+<div style="display:none;">
+<img src="//pixel.quantserve.com/pixel/p-Reh74eM5VFun3.gif" border="0" height="1" width="1" alt="Quantcast"/>
+</div>
+</noscript>
+
+<script>
+(function(window) {
+  if (window.location !== window.top.location) {
+    window.top.location = window.location;
+  }
+})(this);
+</script><script type="text/javascript" src="//cdn-wow.mmoui.com/clientscript/ncode_imageresizer.js?v=1.0.1"></script>
+<style type="text/css">
+<!--
+table.ncode_imageresizer_warning {
+	background: #333;
+	color: #fff;
+	border: 1px solid #555;
+	cursor: pointer;
+}
+table.ncode_imageresizer_warning:hover {
+	background: #FFFFE1;
+	color: #000000;
+	border: 1px solid #CCC;
+	cursor: pointer;
+}
+
+table.ncode_imageresizer_warning td {
+	font-size: 10px;
+	vertical-align: middle;
+	text-decoration: none;
+}
+
+table.ncode_imageresizer_warning td.td1 {
+	padding: 5px;
+}
+
+table.ncode_imageresizer_warning td.td1 {
+	padding: 2px;
+}
+-->
+</style>
+<script type="text/javascript">
+<!--
+NcodeImageResizer.MODE = 'enlarge';
+NcodeImageResizer.MAXWIDTH = 620;
+NcodeImageResizer.MAXHEIGHT = 0;
+
+NcodeImageResizer.BBURL = 'https://www.wowinterface.com/forums';
+
+vbphrase['ncode_imageresizer_warning_small'] = 'Click this bar to view the full image.';
+vbphrase['ncode_imageresizer_warning_filesize'] = 'This image has been resized. Click this bar to view the full image. The original image is sized %1$sx%2$s and weights %3$sKB.';
+vbphrase['ncode_imageresizer_warning_no_filesize'] = 'This image has been resized. Click this bar to view the full image. The original image is sized %1$sx%2$s.';
+vbphrase['ncode_imageresizer_warning_fullsize'] = 'Click this bar to view the small image.';
+//-->
+</script>
+<script async src='/cdn-cgi/bm/cv/669835187/api.js'></script></head>
+<body>
+<a name="top"></a>
+<div id="mmoitooltipbox" style="z-index:6000;"></div>
+<div class="wrapper">
+<div class="logo">
+<a href="https://www.wowinterface.com"></a>
+</div>
+</div>
+<div class="header">
+<div class="wrapper wrapperfix">
+<nav class="navigation">
+<ul class="menu">
+<li class="item"><a href="https://www.wowinterface.com/addons.php?s=b5918f5bc99d817f5c9cf423e12f342a">AddOns</a>
+<ul>
+<li><a href="https://www.minion.gg"><i class="fa fa-refresh"></i> AddOn Manager</a></li><li><a href="https://www.wowinterface.com/downloads/latest.php?s=b5918f5bc99d817f5c9cf423e12f342a"><i class="fa fa-clock-o"></i> Latest 200</a></li><li><a href="https://www.wowinterface.com/addons.php"><i class="fa fa-folder-open"></i> Browse</a></li><li><a href="https://www.wowinterface.com/downloads/upload-update.php?s=b5918f5bc99d817f5c9cf423e12f342a"><i class="fa fa-upload"></i> Upload AddOn</a></li>
+<li><a href="https://www.wowinterface.com/downloads/search.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;"><i class="fa fa-search"></i> Search AddOns</a></li>
+
+<li><i class="fa fa-chevron-right hassub"></i><a href=""><i class="fa fa-wrench"></i> Projects</a>
+<ul>
+<li><a href="https://www.wowinterface.com/listportals.php?s=b5918f5bc99d817f5c9cf423e12f342a"><i class="fa fa-home"></i> Author Portals</a></li>
+<li><a href="http://git.wowinterface.com"><i class="fa fa-file-code-o"></i> Git Repositories</a></li>
+<li><a href="http://svn.wowinterface.com"><i class="fa fa-file-code-o"></i> SVN Repositories</a></li>
+</ul>
+</li>
+<li><i class="fa fa-chevron-right hassub"></i><a href=""><i class="fa fa-cogs"></i> Options</a>
+<ul>
+<li><a href="https://www.wowinterface.com/downloads/filecpl.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;action=feeds"><i class="fa fa-envelope-o"></i> Email Feeds</a></li>
+<li><a href="https://www.wowinterface.com/downloads/filecpl.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;action=modifyoptions"><i class="fa fa-cog"></i> Preference</a></li>
+<li><a href="https://www.wowinterface.com/downloads/filecpl.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;action=showdlhistory"><i class="fa fa-hourglass-half"></i> Download History</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><div class="divider"></div></li>
+<li class="item"><a href="https://www.wowinterface.com/community.php?s=b5918f5bc99d817f5c9cf423e12f342a">News</a></li>
+<li><div class="divider"></div></li>
+<li class="item"><a href="https://www.wowinterface.com/forums/index.php?s=b5918f5bc99d817f5c9cf423e12f342a">Forums</a>
+<ul>
+<li><a href="https://www.wowinterface.com/forums/search.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;do=getnew"><i class="fa fa-newspaper-o"></i> New posts</a></li>
+<li><a href="https://www.wowinterface.com/forums/search.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;do=getdaily"><i class="fa fa-clock-o"></i> Today's Posts</a></li>
+<li><a href="https://www.wowinterface.com/forums/search.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;"><i class="fa fa-search"></i> Search Forum</a></li>
+<li><i class="fa fa-chevron-right hassub"></i><a href="https://www.wowinterface.com/forums/index.php?s=b5918f5bc99d817f5c9cf423e12f342a"><i class="fa fa-comments-o"></i> Categories</a>
+<ul>
+<li><a href="https://www.wowinterface.com/forums/forumdisplay.php?f=142"><i class="fa fa-comment-o"></i> General</a></li>
+<li><a href="https://www.wowinterface.com/forums/forumdisplay.php?f=8"><i class="fa fa-comment-o"></i> AddOns, Comps, Macros</a></li>
+<li><a href="https://www.wowinterface.com/forums/forumdisplay.php?f=27"><i class="fa fa-comment-o"></i> Featured Projects</a></li>
+<li><a href="https://www.wowinterface.com/forums/forumdisplay.php?f=11"><i class="fa fa-comment-o"></i> Developer</a></li>
+<li><a href="https://www.wowinterface.com/forums/forumdisplay.php?f=4"><i class="fa fa-comment-o"></i> Site Forums</a></li>
+</ul>
+</li>
+<li><a href="https://www.wowinterface.com/forums/forumdisplay.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;do=markread"><i class="fa fa-times"></i> Mark Forums Read</a></li>
+<li><a href="https://www.wowinterface.com/forums/subscription.php?s=b5918f5bc99d817f5c9cf423e12f342a" rel="nofollow"><i class="fa fa-thumbs-o-up"></i> Subscribed Threads</a></li>
+<li><a href="#" onclick="window.open('https://www.wowinterface.com/forums/misc.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;do=buddylist&amp;focus=1','buddylist','statusbar=no,menubar=no,toolbar=no,scrollbars=yes,resizable=yes,width=250,height=300'); return false;"><i class="fa fa-users"></i> Open Buddy List</a></li>
+<li><a href="https://www.wowinterface.com/forums/memberlist.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;"><i class="fa fa-users"></i> Members List</a></li>
+</ul>
+</li>
+<li><div class="divider"></div></li>
+<li class="item"><a href="https://www.wowinterface.com/forums/faq.php?s=b5918f5bc99d817f5c9cf423e12f342a">Help</a></li>
+<li><div class="divider"></div></li>
+<li class="login"><a href="https://www.wowinterface.com/login.php" rel="nofollow"><i class="fa fa-sign-in"></i> Login</a></li>
+<li class="signup"><a href="https://www.wowinterface.com/forums/register.php?s=b5918f5bc99d817f5c9cf423e12f342a" rel="nofollow">Sign up</a></li>
+<li><div class="divider"></div></li>
+<li>
+<form name="downloadsearch" action="/downloads/search.php" method="post">
+<div class="searchinput">
+<div class="spyglass"><input type="image" src="/images/style_mmoi_wowi2/layout/spyglass.png" style="width:18px; height:17px; border:none" alt="Search" value="Go"></div>
+<input tabindex="1" type="text" name="search" maxlength="35" value="AddOns..." onfocus="if(!this._haschanged){this.value=''};this._haschanged=true;" style="background-image: none; background-position: 0% 0%; background-repeat: repeat;">
+</div>
+</form>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+<div class="wrapper wrapperfix">
+<div class="header-filler-ad"></div>
+</div>
+<div class="wrapper">
+<div id="wrapper-noads">
+<div id="header-ad"><div id="header-inner-ad"><div class="horz-atf">
+<div id='Horizontal_ATF'></div><div id='Mobile_320x50'></div>
+</div></div></div>
+<div class="page clearfix">
+
+<div style="padding:0px 8px 0px 8px">
+<div class="navbar" style="padding: 10px 0 10px 0"><a href="index.php?s=b5918f5bc99d817f5c9cf423e12f342a" accesskey="1"><i class="fa fa-cog"></i></a> <span class="navbar"><a href="index.php?s=b5918f5bc99d817f5c9cf423e12f342a" accesskey="1">World of Warcraft AddOns</a></span>
+<span class="navbar">&raquo; <a href="index.php?cid=158">Addons for WoW Classic</a></span>
+<span class="navbar">&raquo; <a href="index.php?cid=160">Classic - General</a></span>
+&raquo; <strong>
+Skillet-Classic
+</strong></div>
+<div class="vbmenu_popup" id="pagenav_menu" style="display:none">
+<table cellpadding="4" cellspacing="1" border="0">
+<tr>
+<td class="thead" nowrap="nowrap">Go to Page...</td>
+</tr>
+<tr>
+<td class="vbmenu_option" title="nohilite">
+<form action="index.php" method="get" onsubmit="return this.gotopage()" id="pagenav_form">
+<input type="text" class="bginput" id="pagenav_itxt" style="font-size:11px" size="4" />
+<input type="button" class="button" id="pagenav_ibtn" value="Go" />
+</form>
+</td>
+</tr>
+</table>
+</div>
+<div id="innerpage">
+<script type="text/javascript">
+    $(document).ready(function(){		
+        $(".lightbox").lightbox({
+            fitToScreen: true,
+            scaleImages: true,
+            displayDownloadLink: true
+        });
+    });
+    </script>
+
+<script language="JavaScript">
+    $(function() { 
+        $("#DonateOverlay").overlay({finish: {top: 300, left: 50, absolute: true}});
+    });
+    </script>
+<![endif]- ->
+<noscript><style type="text/css">
+    <!--
+    .boxtab-section-hide {
+        margin-top: 6px;
+        display: block;
+    }
+    .boxtablist {
+        display: none;
+    }
+    #securelink {
+        display: none;
+    }
+    #non-securelink {
+        display: block;
+    }
+    -->
+    </style></noscript>
+<div class="tabwrapper" id="tabwrapper">
+<div class="boxtablist">
+<li class="current" onclick="tablistview(this.childNodes[0]);"><a id="info_tab" href="javascript:;" onclick="tablistview(this);">Addon Info.</a></li>
+<li onclick="tablistview(this.childNodes[0]);"><a id="changelog_tab" href="javascript:;" onclick="tablistview(this);">Change Log</a></li>
+<li onclick="tablistview(this.childNodes[0]);"><a id="other_tab" href="javascript:;" onclick="tablistview(this);">Other Files (104)</a></li>
+<li onclick="tablistview(this.childNodes[0]);"><a id="comments_tab" href="javascript:;" onclick="tablistview(this);">Comments (42)</a></li>
+</div>
+<div id="lvert-effect"></div>
+<div id="lhorz-effect">
+<div id="managementlinks"> </div>
+</div>
+<div style="clear:both;" /></div>
+<div class="boxtab-section" id="info_t">
+<div id="fileinfo">
+<div class="distroscale">
+<div class="infobox">
+<div id="downloadbutton">
+<div id="iconnew">
+<a href="/downloads/landing.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;fileid=25287" title="WoW Retail">R</a>
+</div>
+<div id="download">
+<div id="size">(653Kb)</div>
+<a href="/downloads/landing.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;fileid=25287" title="WoW Retail">Download</a>
+</div>
+<div id="safe">Updated: 03-22-22 11:26 AM</div>
+</div>
+<div id="downloadbutton" style="margin-top: 10px">
+<div id="iconnew" class="tbc">
+<a chref="/downloads/download3111-Skillet-Classic" title="The Burning Crusade WoW Classic">BC</a>
+</div>
+<div id="download">
+<div id="size">(652kB)</div>
+<a href="/downloads/dlfile3111/03-22-22-Skillet-Classic-1.43-bcc.zip?1647968949" title="The Burning Crusade WoW Classic">Download</a>
+</div>
+<div id="safe">Updated: 03-22-22 11:09 AM</div>
+</div>
+<div id="buttonbox"><div class="tombox">
+<div><div class="tomboxinner" id="addfav">
+<a href="/login.php">Add Favorite</a>
+</div>
+<div class="tomboxinner" id="help">
+<a href="http://faq.wowinterface.com">Install Help</a>
+</div></div>
+<div><div class="tomboxinner" id="portal">
+<a href="https://www.wowinterface.com/portal.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;uid=11524">Portal</a>
+</div>
+<div class="tomboxinner" id="bugs">
+<a href="https://www.wowinterface.com/portal.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;uid=11524&amp;a=listbugs">Bugs</a>
+</div>
+<div class="tomboxinner" id="features">
+<a href="https://www.wowinterface.com/portal.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;uid=11524&amp;a=listfeatures">Features</a>
+</div></div>
+</div></div>
+<div id="screen-info">
+<div class="tombox">
+<div class="tomboxinner">
+<table cellpadding="5" cellspacing="0" border="0" width="100%">
+<tr>
+<td class="alt1 titletext" valign="top">Compatibility:</td><td class="alt1"><div>Classic Patch (1.14.2)</div></td>
+</tr>
+<tr>
+<td class="alt2 titletext">Updated:</td><td class="alt2">03-22-22 11:26 AM</td>
+</tr>
+<tr>
+<td class="alt1 titletext">Created:</td><td class="alt1">09-11-19 02:22 PM</td>
+</tr>
+<tr>
+<td class="alt2 titletext">Downloads:</td><td class="alt2">16,693</td>
+</tr>
+<tr>
+<td class="alt1 titletext">Favorites:</td><td class="alt1">67</td>
+</tr>
+<tr>
+<td class="alt2 titletext">MD5:</td><td class="alt2"><input class="bginput" type="text" size="18" readonly="readonly" value="a8514e32021458d492512c2ed2459dc2" /></td>
+</tr>
+<tr>
+<td class="alt1 titletext" valign="top">Categories:</td><td class="alt1"><b><a href="cat160.html">Classic - General</a></b>, <a href="cat161.html">The Burning Crusade Classic</a>, <a href="cat40.html">TradeSkill Mods</a></td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div id="ac-lre-player-ph" style="margin-bottom:10px">
+<div id="ac-lre-player"></div>
+</div>
+<script id="lre-player-widget" src="https://player.anyclip.com/anyclip-widget/lre-widget/prod/v1/src/lre.js" pubname="wowheadcom" widgetname="0011r00001yyEBx_310"></script>
+<div id="cubeAd"><div id='Vertical_ATF'></div></div>
+</div>
+<div class="divline">
+<div id="patch"></div>
+<h1>Skillet-Classic&nbsp; <img src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/downloads/updated_3.gif" border=0 alt="Updated less than 3 days ago!" />&nbsp; <img src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/downloads/popular.gif" border=0 alt="Popular! (More than 5000 hits)"></h1>
+</div>
+<div id="author">
+<div id="version">Version: 1.44</div>by: <a href="https://www.wowinterface.com/forums/member.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;action=getinfo&amp;userid=11524"><b>bsmorgan</b></a> [<a href="https://www.wowinterface.com/downloads/author-11524.html">More</a>]
+</div>
+<div class="postmessage"><p><font size="3"><b>Skillet-Classic</b>:</font> A trade skill window replacement for Classic WoW<br />
+<br />
+This download supports both Classic Era and Burning Crusade Classic.<br />
+<br />
+For Skillet on Shadowlands, see <a href="https://www.wowinterface.com/downloads/info7571-Skillet.html">https://www.wowinterface.com/downloa...1-Skillet.html</a><br />
+<br />
+If you find any bugs, you can report them here: <a href="https://github.com/b-morgan/Skillet-Classic/issues" target="_blank" rel="nofollow">https://github.com/b-morgan/Skillet-Classic/issues</a><br />
+If you would like to contribute to localization, you can do so at <a href="https://www.curseforge.com/wow/addons/skillet-classic/localization" target="_blank" rel="nofollow">https://www.curseforge.com/wow/addon...c/localization</a><br />
+<br />
+<br />
+<font size="3"><b>Features</b></font><ul><li>Larger the the standard tradeskill window</li>
+<li>Built-in queue for creating multiple, different items</li>
+<li>Queued items are saved when you log out and are restored on log in</li>
+<li>Automatically buy reagents for queued recipes when visiting a vendor</li>
+<li>If you can craft a reagent needed by a recipe, then clicking on that reagent will take you to its recipe (same features as <i>Reverse Engineering</i>)</li>
+<li>If the item to be crafted requires a minimum level to use, that level can be displayed along with the recipe (disabled by default)</li>
+<li>The shopping list of items needed for all queued recipes for all alts can be displayed at banks, auction houses, or from the command line</li>
+<li>Items needed for crafting queued items can be automatically retrieved from your bank (by using the shopping list)</li>
+<li>User editable list of notes attached to reagents and crafted items</li>
+<li>Queued counts added to (optional) notes display</li>
+<li>Crafted counts can be adjusted with Right-click and Shift-right-click on the item icon in the detail frame</li>
+<li>Recipes can be filtered by name, whether or not you could level when creating the item, and whether or not you have the mats available</li>
+<li>Sorting of recipes (name, difficulty, level, and quality of crafted item)</li>
+<li>Tracking inventory on alternate characters</li>
+<li>Plugin support for (limited) modification of the Skillet frame by other addons</li>
+<li>Custom grouping</li>
+<li>User managed <a href="https://www.wowace.com/addons/skillet/pages/ignored-materials-list" target="_blank" rel="nofollow">Ignored Materials List</a></li>
+<li>Complete or mostly complete localizations for deDE, esES, frFR, ruRU, koKR, zhCN, zhTW</li>
+</ul><br />
+<font size="3"><b>FAQ</b></font><ul><li><b>What are the numbers in the middle and how to hide them?</b> - It's the number of craftable items using reagents in your bag, bank, alts. Right+Click on the bag icon to turn them off</li>
+<li><b>How to search in the item name only?</b> - Start your search phrase with exclamation mark: !ink</li>
+<li><b>How to search in Auction House?</b> - Alt+Click on shopping list</li>
+<li><b>How to retrieve items from bank?</b> - Turn on &quot;Display shopping list at banks&quot;</li>
+<li><b>How to turn off Skillet temporarily?</b> - Shift+Click your profession button/link.</li>
+</ul></p></div>
+</div>
+</div>
+</div>
+<div class="boxtab-section-hide" id="changelog_t">
+<div class="postmessage"><font size="5">Skillet-Classic -Ace3-</font><br />
+<font size="4"><a href="https://github.com/b-morgan/Skillet-Classic/tree/1.44" target="_blank" rel="nofollow">1.44</a> (2022-03-22)</font><br />
+<a href="https://github.com/b-morgan/Skillet-Classic/compare/1.43...1.44" target="_blank" rel="nofollow">Full Changelog</a> <a href="https://github.com/b-morgan/Skillet-Classic/releases" target="_blank" rel="nofollow">Previous Releases</a><ul><li>Update TOC</li>
+<li>Add ProcessQueue plugin hook</li>
+<li>Update addon name</li>
+</ul></div>
+</div>
+<div class="boxtab-section-hide" id="other_t">
+<div class="divline"><div class="title">Optional Files (0)</div></div>
+<br />
+<br />
+<div class="divline"><div class="title">Archived Files (104)</div></div>
+<div style="border:none; padding:0px; max-height:220px; overflow:auto">
+<table cellpadding="8" cellspacing="1" border="0" width="100%">
+<tr>
+<td class="thead"><div class="smallfont"><b>File Name</b></div></td>
+<td class="thead"><div class="smallfont"><b>Version</b></div></td>
+<td class="thead"><div class="smallfont"><b>Size</b></div></td>
+<td class="thead"><div class="smallfont"><b>Author</b></div></td>
+<td class="thead"><div class="smallfont"><b>Date</b></div></td>
+</tr>
+<tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=122516"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=122516">Skillet-Classic</a></div></td>
+<td class="alt1"><div class="smallfont">1.43</div></td>
+<td class="alt1"><div class="smallfont">652kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">03-22-22 11:09 AM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=122515"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=122515">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.43</div></td>
+<td class="alt2"><div class="smallfont">652kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">01-18-22 05:02 PM</div></td>
+</tr> <tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=122514"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=122514">Skillet-Classic</a></div></td>
+<td class="alt1"><div class="smallfont">1.43</div></td>
+<td class="alt1"><div class="smallfont">652kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">01-18-22 05:02 PM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=121425"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=121425">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.43-alpha2</div></td>
+<td class="alt2"><div class="smallfont">652kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">01-18-22 04:39 PM</div></td>
+</tr> <tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=121424"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=121424">Skillet-Classic</a></div></td>
+<td class="alt1"><div class="smallfont">1.43-alpha2</div></td>
+<td class="alt1"><div class="smallfont">652kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">01-18-22 04:39 PM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=121423"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=121423">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.43-alpha1</div></td>
+<td class="alt2"><div class="smallfont">652kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">01-17-22 03:37 PM</div></td>
+</tr> <tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=121422"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=121422">Skillet-Classic</a></div></td>
+ <td class="alt1"><div class="smallfont">1.43-alpha1</div></td>
+<td class="alt1"><div class="smallfont">652kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">01-17-22 03:37 PM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=121396"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=121396">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.42</div></td>
+<td class="alt2"><div class="smallfont">652kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">01-04-22 09:26 PM</div></td>
+</tr> <tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=121395"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=121395">Skillet-Classic</a></div></td>
+<td class="alt1"><div class="smallfont">1.42</div></td>
+<td class="alt1"><div class="smallfont">652kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">01-04-22 09:26 PM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=121273"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=121273">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.42-alpha1</div></td>
+<td class="alt2"><div class="smallfont">653kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">11-21-21 11:59 AM</div></td>
+</tr> <tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=121272"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=121272">Skillet-Classic</a></div></td>
+<td class="alt1"><div class="smallfont">1.42-alpha1</div></td>
+<td class="alt1"><div class="smallfont">653kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">11-21-21 11:59 AM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120908"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120908">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.41</div></td>
+<td class="alt2"><div class="smallfont">653kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">11-19-21 09:46 AM</div></td>
+</tr> <tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120909"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120909">Skillet-Classic</a></div></td>
+<td class="alt1"><div class="smallfont">1.41</div></td>
+<td class="alt1"><div class="smallfont">653kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">11-19-21 09:46 AM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120396"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120396">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.38</div></td>
+<td class="alt2"><div class="smallfont">652kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">10-23-21 06:10 AM</div></td>
+</tr> <tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120395"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120395">Skillet-Classic</a></div></td>
+<td class="alt1"><div class="smallfont">1.38</div></td>
+<td class="alt1"><div class="smallfont">652kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">10-23-21 06:10 AM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120393"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120393">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.38</div></td>
+<td class="alt2"><div class="smallfont">652kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">10-23-21 06:10 AM</div></td>
+</tr> <tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120405"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120405">Skillet-Classic</a></div></td>
+<td class="alt1"><div class="smallfont">1.38</div></td>
+<td class="alt1"><div class="smallfont">652kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">10-23-21 06:10 AM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120878"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120878">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.38</div></td>
+<td class="alt2"><div class="smallfont">652kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">10-23-21 06:10 AM</div></td>
+</tr> <tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120742"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120742">Skillet-Classic</a></div></td>
+<td class="alt1"><div class="smallfont">1.38</div></td>
+<td class="alt1"><div class="smallfont">652kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">10-23-21 06:10 AM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120370"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120370">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.38-alpha3</div></td>
+<td class="alt2"><div class="smallfont">652kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">10-16-21 09:37 AM</div></td>
+</tr> <tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120377"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120377">Skillet-Classic</a></div></td>
+<td class="alt1"><div class="smallfont">1.38-alpha3</div></td>
+<td class="alt1"><div class="smallfont">652kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">10-16-21 09:37 AM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120376"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120376">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.38-alpha3</div></td>
+<td class="alt2"><div class="smallfont">652kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">10-16-21 09:37 AM</div></td>
+</tr> <tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120330"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120330">Skillet-Classic</a></div></td>
+<td class="alt1"><div class="smallfont">1.38-alpha2</div></td>
+<td class="alt1"><div class="smallfont">651kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">10-15-21 10:24 AM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120326"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120326">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.38-alpha1</div></td>
+<td class="alt2"><div class="smallfont">651kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">10-13-21 10:13 AM</div></td>
+</tr> <tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120304"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120304">Skillet-Classic</a></div></td>
+<td class="alt1"><div class="smallfont">1.37</div></td>
+<td class="alt1"><div class="smallfont">651kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">10-13-21 05:42 AM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120302"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120302">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.37-alpha12</div></td>
+<td class="alt2"><div class="smallfont">651kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">10-10-21 08:42 AM</div></td>
+</tr> <tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120264"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120264">Skillet-Classic</a></div></td>
+<td class="alt1"><div class="smallfont">1.37-alpha11</div></td>
+<td class="alt1"><div class="smallfont">651kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">10-07-21 12:43 PM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120227"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120227">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.37-alpha10</div></td>
+<td class="alt2"><div class="smallfont">651kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">10-07-21 05:52 AM</div></td>
+</tr> <tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120226"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120226">Skillet-Classic</a></div></td>
+<td class="alt1"><div class="smallfont">1.37-alpha9</div></td>
+<td class="alt1"><div class="smallfont">651kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">10-05-21 12:02 PM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120218"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120218">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.37-alpha8</div></td>
+<td class="alt2"><div class="smallfont">650kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">10-03-21 07:24 AM</div></td>
+</tr> <tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120196"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120196">Skillet-Classic</a></div></td>
+<td class="alt1"><div class="smallfont">1.37-alpha7</div></td>
+<td class="alt1"><div class="smallfont">650kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">10-02-21 09:04 AM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120185"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120185">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.37-alpha5</div></td>
+<td class="alt2"><div class="smallfont">650kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">10-02-21 08:13 AM</div></td>
+</tr> <tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120182"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120182">Skillet-Classic</a></div></td>
+<td class="alt1"><div class="smallfont">1.37-alpha4</div></td>
+<td class="alt1"><div class="smallfont">649kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">09-30-21 10:18 AM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120146"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120146">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.37-alpha3</div></td>
+<td class="alt2"><div class="smallfont">649kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">09-29-21 01:34 PM</div></td>
+</tr> <tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120142"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120142">Skillet-Classic</a></div></td>
+<td class="alt1"><div class="smallfont">1.37-alpha2</div></td>
+<td class="alt1"><div class="smallfont">649kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">09-29-21 07:54 AM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120133"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120133">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.37-alpha1</div></td>
+<td class="alt2"><div class="smallfont">649kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">09-29-21 06:41 AM</div></td>
+</tr> <tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120132"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120132">Skillet-Classic</a></div></td>
+<td class="alt1"><div class="smallfont">1.36</div></td>
+<td class="alt1"><div class="smallfont">649kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">09-29-21 05:11 AM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120131"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=120131">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.35</div></td>
+<td class="alt2"><div class="smallfont">649kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">09-16-21 01:16 PM</div></td>
+</tr> <tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=119985"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=119985">Skillet-Classic</a></div></td>
+<td class="alt1"><div class="smallfont">1.34</div></td>
+<td class="alt1"><div class="smallfont">649kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">09-13-21 06:08 AM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=119920"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=119920">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.34-alpha5</div></td>
+<td class="alt2"><div class="smallfont">649kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">09-12-21 04:46 AM</div></td>
+</tr> <tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=119911"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=119911">Skillet-Classic</a></div></td>
+<td class="alt1"><div class="smallfont">1.34-alpha4</div></td>
+<td class="alt1"><div class="smallfont">648kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">09-11-21 10:00 AM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=119906"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=119906">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.34-alpha3</div></td>
+<td class="alt2"><div class="smallfont">646kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">09-06-21 06:33 AM</div></td>
+</tr> <tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=119861"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=119861">Skillet-Classic</a></div></td>
+<td class="alt1"><div class="smallfont">1.34-alpha2</div></td>
+<td class="alt1"><div class="smallfont">646kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">09-01-21 09:38 AM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=119762"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=119762">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.34-alpha1</div></td>
+<td class="alt2"><div class="smallfont">646kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">08-31-21 02:03 PM</div></td>
+</tr> <tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=119721"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=119721">Skillet-Classic</a></div></td>
+<td class="alt1"><div class="smallfont">1.33</div></td>
+<td class="alt1"><div class="smallfont">646kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">08-26-21 06:18 AM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=119689"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=119689">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.33-alpha2</div></td>
+<td class="alt2"><div class="smallfont">646kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">08-25-21 05:34 PM</div></td>
+</tr> <tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=119684"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=119684">Skillet-Classic</a></div></td>
+<td class="alt1"><div class="smallfont">1.32</div></td>
+<td class="alt1"><div class="smallfont">646kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">08-20-21 08:59 AM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=119628"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=119628">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.32-alpha3</div></td>
+<td class="alt2"><div class="smallfont">646kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">08-15-21 01:38 PM</div></td>
+</tr> <tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=119577"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=119577">Skillet-Classic</a></div></td>
+<td class="alt1"><div class="smallfont">1.31</div></td>
+<td class="alt1"><div class="smallfont">646kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">07-31-21 10:36 AM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=119445"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=119445">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.31-beta1</div></td>
+<td class="alt2"><div class="smallfont">645kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">07-25-21 03:33 PM</div></td>
+</tr> <tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=119377"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=119377">Skillet-Classic</a></div></td>
+<td class="alt1"><div class="smallfont">1.31-alpha4</div></td>
+<td class="alt1"><div class="smallfont">645kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">07-25-21 08:43 AM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=119370"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=119370">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.31-alpha3</div></td>
+<td class="alt2"><div class="smallfont">645kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">07-25-21 07:59 AM</div></td>
+</tr> <tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=119368"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=119368">Skillet-Classic</a></div></td>
+<td class="alt1"><div class="smallfont">1.31-alpha2</div></td>
+<td class="alt1"><div class="smallfont">630kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">07-24-21 08:02 AM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=119357"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=119357">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.31-alpha1</div></td>
+<td class="alt2"><div class="smallfont">630kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">07-23-21 03:42 PM</div></td>
+</tr> <tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=119353"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=119353">Skillet-Classic</a></div></td>
+<td class="alt1"><div class="smallfont">1.30</div></td>
+<td class="alt1"><div class="smallfont">630kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">07-12-21 05:18 AM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=119152"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=119152">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.30-alpha4</div></td>
+<td class="alt2"><div class="smallfont">630kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">07-11-21 05:28 PM</div></td>
+</tr> <tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=119141"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=119141">Skillet-Classic</a></div></td>
+<td class="alt1"><div class="smallfont">1.30-alpha3</div></td>
+<td class="alt1"><div class="smallfont">629kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">07-06-21 08:03 AM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=119024"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=119024">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.30-alpha2</div></td>
+<td class="alt2"><div class="smallfont">629kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">07-05-21 01:00 PM</div></td>
+</tr> <tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=118987"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=118987">Skillet-Classic</a></div></td>
+<td class="alt1"><div class="smallfont">1.30-alpha1</div></td>
+<td class="alt1"><div class="smallfont">629kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">07-05-21 09:12 AM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=118984"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=118984">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.29</div></td>
+<td class="alt2"><div class="smallfont">629kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">06-30-21 07:54 AM</div></td>
+</tr> <tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=118711"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=118711">Skillet-Classic</a></div></td>
+<td class="alt1"><div class="smallfont">1.29-alpha8</div></td>
+<td class="alt1"><div class="smallfont">629kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">06-27-21 12:45 PM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=118409"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=118409">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.29-alpha7</div></td>
+<td class="alt2"><div class="smallfont">629kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">06-27-21 11:53 AM</div></td>
+</tr> <tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=118407"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=118407">Skillet-Classic</a></div></td>
+<td class="alt1"><div class="smallfont">1.29-alpha6</div></td>
+<td class="alt1"><div class="smallfont">629kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">06-27-21 11:35 AM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=118406"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=118406">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.29-alpha5</div></td>
+<td class="alt2"><div class="smallfont">629kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">06-26-21 06:21 AM</div></td>
+</tr> <tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=118386"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=118386">Skillet-Classic</a></div></td>
+<td class="alt1"><div class="smallfont">1.29-alpha4</div></td>
+<td class="alt1"><div class="smallfont">629kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">06-23-21 09:53 PM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=118361"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=118361">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.29-alpha3</div></td>
+<td class="alt2"><div class="smallfont">629kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">06-23-21 09:13 PM</div></td>
+</tr> <tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=118360"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=118360">Skillet-Classic</a></div></td>
+<td class="alt1"><div class="smallfont">1.29-alpha2</div></td>
+<td class="alt1"><div class="smallfont">629kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">06-23-21 01:26 PM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=118358"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=118358">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.29-alpha1</div></td>
+<td class="alt2"><div class="smallfont">628kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">06-19-21 06:03 AM</div></td>
+</tr> <tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=118282"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=118282">Skillet-Classic</a></div></td>
+<td class="alt1"><div class="smallfont">1.28</div></td>
+<td class="alt1"><div class="smallfont">628kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">06-16-21 01:35 PM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=118216"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=118216">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.28-alpha1</div></td>
+<td class="alt2"><div class="smallfont">628kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">06-08-21 12:54 PM</div></td>
+</tr> <tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=118036"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=118036">Skillet-Classic</a></div></td>
+<td class="alt1"><div class="smallfont">1.27</div></td>
+<td class="alt1"><div class="smallfont">628kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">06-07-21 07:51 AM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=117991"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=117991">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.27-alpha2</div></td>
+<td class="alt2"><div class="smallfont">628kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">06-05-21 05:58 AM</div></td>
+</tr> <tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=117900"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=117900">Skillet-Classic</a></div></td>
+<td class="alt1"><div class="smallfont">1.27-alpha1</div></td>
+<td class="alt1"><div class="smallfont">628kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">06-04-21 03:30 PM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=117886"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=117886">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.26</div></td>
+<td class="alt2"><div class="smallfont">626kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">06-03-21 05:23 AM</div></td>
+</tr> <tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=117839"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=117839">Skillet-Classic</a></div></td>
+<td class="alt1"><div class="smallfont">1.25</div></td>
+<td class="alt1"><div class="smallfont">627kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">05-31-21 09:25 AM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=117668"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=117668">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.25-alpha1</div></td>
+<td class="alt2"><div class="smallfont">627kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">05-31-21 08:18 AM</div></td>
+</tr> <tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=117665"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=117665">Skillet-Classic</a></div></td>
+<td class="alt1"><div class="smallfont">1.24</div></td>
+<td class="alt1"><div class="smallfont">626kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">05-21-21 02:59 PM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=117308"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=117308">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.24-alpha</div></td>
+<td class="alt2"><div class="smallfont">626kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">05-20-21 04:44 PM</div></td>
+</tr> <tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=117254"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=117254">Skillet-Classic</a></div></td>
+<td class="alt1"><div class="smallfont">1.23</div></td>
+<td class="alt1"><div class="smallfont">625kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">05-20-21 12:46 PM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=117235"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=117235">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.23-beta4</div></td>
+<td class="alt2"><div class="smallfont">625kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">05-19-21 03:37 PM</div></td>
+</tr> <tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=117168"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=117168">Skillet-Classic</a></div></td>
+<td class="alt1"><div class="smallfont">1.23-beta4</div></td>
+<td class="alt1"><div class="smallfont">625kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">05-19-21 03:37 PM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=117167"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=117167">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.23-beta3</div></td>
+<td class="alt2"><div class="smallfont">624kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">05-18-21 02:29 PM</div></td>
+</tr> <tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=117054"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=117054">Skillet-Classic</a></div></td>
+<td class="alt1"><div class="smallfont">1.23-beta3</div></td>
+<td class="alt1"><div class="smallfont">624kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">05-18-21 02:29 PM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=117051"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=117051">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.23-beta2</div></td>
+<td class="alt2"><div class="smallfont">624kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">05-15-21 02:10 PM</div></td>
+</tr> <tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=116922"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=116922">Skillet-Classic</a></div></td>
+<td class="alt1"><div class="smallfont">1.23-beta</div></td>
+<td class="alt1"><div class="smallfont">624kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">05-15-21 01:34 PM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=116919"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=116919">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.23-alpha2</div></td>
+<td class="alt2"><div class="smallfont">624kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">05-14-21 02:42 PM</div></td>
+</tr> <tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=116894"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=116894">Skillet-Classic</a></div></td>
+<td class="alt1"><div class="smallfont">1.23-alpha1</div></td>
+<td class="alt1"><div class="smallfont">624kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">05-02-21 07:31 AM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=116625"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=116625">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.22</div></td>
+<td class="alt2"><div class="smallfont">624kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">04-20-21 10:03 AM</div></td>
+</tr> <tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=116315"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=116315">Skillet-Classic</a></div></td>
+<td class="alt1"><div class="smallfont">1.21</div></td>
+<td class="alt1"><div class="smallfont">624kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">02-18-21 12:53 PM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=114849"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=114849">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.20</div></td>
+<td class="alt2"><div class="smallfont">625kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">02-17-21 08:34 AM</div></td>
+</tr> <tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=114835"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=114835">Skillet-Classic</a></div></td>
+<td class="alt1"><div class="smallfont">1.19</div></td>
+<td class="alt1"><div class="smallfont">598kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">11-30-20 09:18 AM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=113226"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=113226">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.17</div></td>
+<td class="alt2"><div class="smallfont">615kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">10-21-20 06:52 AM</div></td>
+</tr> <tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=111782"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=111782">Skillet-Classic</a></div></td>
+<td class="alt1"><div class="smallfont">1.14</div></td>
+<td class="alt1"><div class="smallfont">609kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">04-10-20 08:10 AM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=108567"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=108567">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.13</div></td>
+<td class="alt2"><div class="smallfont">606kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">03-11-20 02:12 PM</div></td>
+</tr> <tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=108255"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=108255">Skillet-Classic</a></div></td>
+<td class="alt1"><div class="smallfont">1.12</div></td>
+<td class="alt1"><div class="smallfont">606kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">03-10-20 04:49 PM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=108237"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=108237">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.08</div></td>
+<td class="alt2"><div class="smallfont">604kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">12-13-19 07:55 AM</div></td>
+</tr> <tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=106824"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=106824">Skillet-Classic</a></div></td>
+<td class="alt1"><div class="smallfont">1.06</div></td>
+<td class="alt1"><div class="smallfont">600kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">11-12-19 10:36 AM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=106434"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=106434">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.05</div></td>
+<td class="alt2"><div class="smallfont">600kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">11-09-19 02:51 PM</div></td>
+</tr> <tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=106395"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=106395">Skillet-Classic</a></div></td>
+<td class="alt1"><div class="smallfont">1.04</div></td>
+<td class="alt1"><div class="smallfont">599kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">11-06-19 01:56 PM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=106349"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=106349">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.03</div></td>
+<td class="alt2"><div class="smallfont">599kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">11-02-19 04:20 PM</div></td>
+</tr> <tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=106296"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=106296">Skillet-Classic</a></div></td>
+<td class="alt1"><div class="smallfont">1.02</div></td>
+<td class="alt1"><div class="smallfont">598kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">10-31-19 06:29 PM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=106263"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=106263">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.00</div></td>
+<td class="alt2"><div class="smallfont">598kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">10-29-19 10:27 AM</div></td>
+</tr> <tr>
+<td class="alt1"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=106228"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=106228">Skillet-Classic</a></div></td>
+<td class="alt1"><div class="smallfont">1.00-beta9</div></td>
+<td class="alt1"><div class="smallfont">598kB</div></td>
+<td class="alt1"><div class="smallfont">bsmorgan</div></td>
+<td class="alt1"><div class="smallfont">10-26-19 01:12 PM</div></td>
+</tr> <tr>
+<td class="alt2"><div class="smallfont"><a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=106177"><i class="fa fa-download"></i></a>&nbsp;<a href="/downloads/getfile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;aid=106177">Skillet-Classic</a></div></td>
+<td class="alt2"><div class="smallfont">1.00-beta8</div></td>
+<td class="alt2"><div class="smallfont">597kB</div></td>
+<td class="alt2"><div class="smallfont">bsmorgan</div></td>
+<td class="alt2"><div class="smallfont">10-24-19 12:53 PM</div></td>
+</tr>
+</table>
+</div>
+<br />
+<br />
+</div>
+<div class="boxtab-section-hide" id="comments_t">
+<script language="javascript" type="text/javascript">
+<!--
+function aimwindow(aimid) {
+	window.open("member.php?s=b5918f5bc99d817f5c9cf423e12f342a&action=aimmessage&aim="+aimid,"_blank","toolbar=no,location=no,menubar=no,scrollbars=no,width=175,height=275,resizeable=yes,status=no")
+
+
+}
+// -->
+</script>
+<table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-bottom:3px">
+<tr valign="bottom">
+<td class="smallfont" width="130"><a href="addcomment.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;action=addcomment&amp;fileid=25287"><img src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/buttons/reply.gif" border="0" alt="Post A Reply"></a></td>
+<td id="cmnt_opt" class="smallfont" width="140" align="left" valign="middle" nowrap="norwrap"><a href="#goto_cmntopt">Comment Options</a> <script type="text/javascript"> vbmenu_register("cmnt_opt"); </script></td>
+<td align="right"><div class="pagenav" align="right">
+<table class="tborder" cellpadding="3" cellspacing="1" border="0">
+<tr>
+<td class="vbmenu_control" style="font-weight:normal">Page 1 of 3</td>
+<td class="alt2"><span class="smallfont" title="Showing results 1 to 15 of 42"><strong>1</strong></span></td>
+<td class="alt1"><a class="smallfont" href="fileinfo.php?id=25287&amp;so=DESC&amp;page=2#comments" title="Show results 16 to 30 of 42">2</a></td><td class="alt1"><a class="smallfont" href="fileinfo.php?id=25287&amp;so=DESC&amp;page=3#comments" title="Show results 31 to 42 of 42">3</a></td>
+<td class="alt1"><a class="smallfont" href="fileinfo.php?id=25287&amp;so=DESC&amp;page=2#comments" title="Next Page - Results 16 to 30 of 42">&gt;</a></td>
+</tr>
+</table>
+</div></td>
+</tr>
+</table>
+
+<table class="tborder" cellpadding="8" cellspacing="0" border="0" width="100%" align="center">
+<tr>
+<td class="thead" style="font-weight:normal">
+
+<a name="cmnt490386"><img class="inlineimg" src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/statusicon/post_new.gif" alt="Unread" border="0" /></a>
+09-19-21, 05:18 AM
+
+</td>
+<td class="thead" style="font-weight:normal" align="right">
+&nbsp;
+</td>
+</tr>
+<tr valign="top">
+<td class="alt2-author" width="175">
+<div class="postbit-carrot">
+<div id="postmenu_490386">
+<a style="font-size:14pt" href="/forums/member.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;u=11524">bsmorgan</a>
+<script type="text/javascript"> vbmenu_register("postmenu_490386", true); </script>
+</div>
+<div class="smallfont">A Cobalt Mageweaver
+<div class="smallfont">
+<div><a href="https://www.wowinterface.com/portal11524.html"><img src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/misc/badges/author-list-link.gif" width="110" height="20" border="0" alt="AddOn Author - Click to view AddOns"></a></div>
+<br />
+<div>Forum posts: 215</div>
+<div>File comments: 156</div>
+<div>Uploads: 3</div>
+<div> </div>
+</div>
+</div>
+</td>
+<td class="alt1-author" style="padding: 10px">
+
+<div class="postmessage"><div style="margin:10px; ">
+<table cellpadding="8" cellspacing="0" border="0">
+<tr>
+<td class="bbquote">
+<div style="padding-bottom:8px;font-size:10px">
+Originally Posted by <strong>superthrust</strong>
+</div>
+<div style="font-style:italic">Is there any plans to make Skillet compatible while running Tradeskill Master? When I have TSM enabled, it says &quot;Conflict with addon Tradeskill Master&quot;, and whenever I disable TSM, it opens normally.</div>
+</td>
+</tr>
+</table>
+</div>Skillet-Classic and Trade Skill Master (TSM) will work together under limited conditions. TSM has two UI modes, native and compatibility. One works and the other doesn't so switch modes and Skillet-Classic will function.</div>
+
+
+
+
+
+</td>
+</tr>
+<tr>
+<td class="alt2-author">
+<span title="bsmorgan is offline"><i class="fa fa-square" style="color:#444"></i></span>
+<a href="report.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;action=reportcmnt&amp;commentid=490386"><img class="inlineimg" src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/buttons/report.gif" alt="Report comment to moderator" border="0" /></a>
+&nbsp;
+</td>
+<td class="alt1-author" align="right" style="padding: 10px;">
+<hr size="1" color="#404040" />
+
+<a href="addcomment.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;action=addcomment&amp;fileid=25287&amp;quote=490386"><img src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/buttons/reply_small.gif" alt="Reply With Quote" border="0" /></a>
+
+</td>
+</tr>
+</table>
+
+<div class="vbmenu_popup" id="postmenu_490386_menu" style="display:none">
+<table cellpadding="4" cellspacing="1" border="0">
+<tr>
+<td class="thead">bsmorgan</td>
+</tr>
+<tr><td class="vbmenu_option"><a href="/forums/member.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;userid=11524" target="_blank">View Public Profile</a></td></tr>
+<tr><td class="vbmenu_option"><a href="/forums/private.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;do=newpm&amp;userid=11524">Send a private message to bsmorgan</a></td></tr>
+<tr><td class="vbmenu_option"><a href="search.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;usrcmnts=11524">Find More Posts by bsmorgan</a></td></tr>
+<tr><td class="vbmenu_option"><a href="/forums/profile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;do=addlist&amp;userlist=buddy&amp;u=11524">Add bsmorgan to Your Buddy List</a></td></tr>
+</table>
+</div>
+
+
+<table class="tborder" cellpadding="8" cellspacing="0" border="0" width="100%" align="center">
+<tr>
+<td class="thead" style="font-weight:normal">
+
+<a name="cmnt489954"><img class="inlineimg" src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/statusicon/post_new.gif" alt="Unread" border="0" /></a>
+06-07-21, 12:45 PM
+
+</td>
+<td class="thead" style="font-weight:normal" align="right">
+&nbsp;
+</td>
+</tr>
+<tr valign="top">
+<td class="alt2-postbit" width="175">
+<div class="postbit-carrot">
+<div id="postmenu_489954">
+<a style="font-size:14pt" href="/forums/member.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;u=47532">superthrust</a>
+<script type="text/javascript"> vbmenu_register("postmenu_489954", true); </script>
+</div>
+<div class="smallfont">A Kobold Labourer
+<div class="smallfont">
+<br />
+<div>Forum posts: 0</div>
+<div>File comments: 6</div>
+<div>Uploads: 0</div>
+<div> </div>
+</div>
+</div>
+</td>
+<td class="alt1" style="padding: 10px">
+
+<div class="postmessage">Hi! Love the addon for TBCC!<br />
+<br />
+Is there any plans to make Skillet compatible while running Tradeskill Master? When I have TSM enabled, it says &quot;Conflict with addon Tradeskill Master&quot;, and whenever I disable TSM, it opens normally.</div>
+
+
+
+
+
+</td>
+</tr>
+<tr>
+<td class="alt2-postbit">
+<span title="superthrust is offline"><i class="fa fa-square" style="color:#444"></i></span>
+<a href="report.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;action=reportcmnt&amp;commentid=489954"><img class="inlineimg" src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/buttons/report.gif" alt="Report comment to moderator" border="0" /></a>
+&nbsp;
+</td>
+<td class="alt1" align="right" style="padding: 10px;">
+<hr size="1" color="#404040" />
+
+<a href="addcomment.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;action=addcomment&amp;fileid=25287&amp;quote=489954"><img src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/buttons/reply_small.gif" alt="Reply With Quote" border="0" /></a>
+
+</td>
+</tr>
+</table>
+
+<div class="vbmenu_popup" id="postmenu_489954_menu" style="display:none">
+<table cellpadding="4" cellspacing="1" border="0">
+<tr>
+<td class="thead">superthrust</td>
+</tr>
+<tr><td class="vbmenu_option"><a href="/forums/member.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;userid=47532" target="_blank">View Public Profile</a></td></tr>
+<tr><td class="vbmenu_option"><a href="/forums/private.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;do=newpm&amp;userid=47532">Send a private message to superthrust</a></td></tr>
+<tr><td class="vbmenu_option"><a href="search.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;usrcmnts=47532">Find More Posts by superthrust</a></td></tr>
+<tr><td class="vbmenu_option"><a href="/forums/profile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;do=addlist&amp;userlist=buddy&amp;u=47532">Add superthrust to Your Buddy List</a></td></tr>
+</table>
+</div>
+
+
+<table class="tborder" cellpadding="8" cellspacing="0" border="0" width="100%" align="center">
+<tr>
+<td class="thead" style="font-weight:normal">
+
+<a name="cmnt489671"><img class="inlineimg" src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/statusicon/post_new.gif" alt="Unread" border="0" /></a>
+05-18-21, 03:15 PM
+
+</td>
+<td class="thead" style="font-weight:normal" align="right">
+&nbsp;
+</td>
+</tr>
+<tr valign="top">
+<td class="alt2-author" width="175">
+<div class="postbit-carrot">
+<div id="postmenu_489671">
+<a style="font-size:14pt" href="/forums/member.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;u=11524">bsmorgan</a>
+<script type="text/javascript"> vbmenu_register("postmenu_489671", true); </script>
+</div>
+<div class="smallfont">A Cobalt Mageweaver
+<div class="smallfont">
+<div><a href="https://www.wowinterface.com/portal11524.html"><img src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/misc/badges/author-list-link.gif" width="110" height="20" border="0" alt="AddOn Author - Click to view AddOns"></a></div>
+<br />
+<div>Forum posts: 215</div>
+<div>File comments: 156</div>
+<div>Uploads: 3</div>
+<div> </div>
+</div>
+</div>
+</td>
+<td class="alt1-author" style="padding: 10px">
+
+<div class="postmessage">Skillet-Classic is now automatically updated by its packager so I won't be manually adding comments about new releases. This project now has one download for both Classic and Burning Crusade Classic.<br />
+<br />
+Please open an <a href="https://github.com/b-morgan/Skillet-Classic/issues" target="_blank" rel="nofollow">issue</a> (ticket) if you find any problems or inaccuracies (and be specific, examples and/or screenshots are very helpful).</div>
+
+
+
+
+<div class="smallfont">
+<em>
+Last edited by bsmorgan : 05-31-21 at <span class="time">08:42 AM</span>.
+</em>
+</div>
+
+</td>
+</tr>
+<tr>
+<td class="alt2-author">
+<span title="bsmorgan is offline"><i class="fa fa-square" style="color:#444"></i></span>
+<a href="report.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;action=reportcmnt&amp;commentid=489671"><img class="inlineimg" src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/buttons/report.gif" alt="Report comment to moderator" border="0" /></a>
+&nbsp;
+</td>
+<td class="alt1-author" align="right" style="padding: 10px;">
+<hr size="1" color="#404040" />
+
+<a href="addcomment.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;action=addcomment&amp;fileid=25287&amp;quote=489671"><img src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/buttons/reply_small.gif" alt="Reply With Quote" border="0" /></a>
+
+</td>
+</tr>
+</table>
+
+<div class="vbmenu_popup" id="postmenu_489671_menu" style="display:none">
+<table cellpadding="4" cellspacing="1" border="0">
+<tr>
+<td class="thead">bsmorgan</td>
+</tr>
+<tr><td class="vbmenu_option"><a href="/forums/member.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;userid=11524" target="_blank">View Public Profile</a></td></tr>
+<tr><td class="vbmenu_option"><a href="/forums/private.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;do=newpm&amp;userid=11524">Send a private message to bsmorgan</a></td></tr>
+<tr><td class="vbmenu_option"><a href="search.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;usrcmnts=11524">Find More Posts by bsmorgan</a></td></tr>
+<tr><td class="vbmenu_option"><a href="/forums/profile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;do=addlist&amp;userlist=buddy&amp;u=11524">Add bsmorgan to Your Buddy List</a></td></tr>
+</table>
+</div>
+
+
+<table class="tborder" cellpadding="8" cellspacing="0" border="0" width="100%" align="center">
+<tr>
+<td class="thead" style="font-weight:normal">
+
+<a name="cmnt488382"><img class="inlineimg" src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/statusicon/post_new.gif" alt="Unread" border="0" /></a>
+11-30-20, 08:05 AM
+
+</td>
+<td class="thead" style="font-weight:normal" align="right">
+&nbsp;
+</td>
+</tr>
+<tr valign="top">
+<td class="alt2-author" width="175">
+<div class="postbit-carrot">
+<div id="postmenu_488382">
+<a style="font-size:14pt" href="/forums/member.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;u=11524">bsmorgan</a>
+<script type="text/javascript"> vbmenu_register("postmenu_488382", true); </script>
+</div>
+<div class="smallfont">A Cobalt Mageweaver
+<div class="smallfont">
+<div><a href="https://www.wowinterface.com/portal11524.html"><img src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/misc/badges/author-list-link.gif" width="110" height="20" border="0" alt="AddOn Author - Click to view AddOns"></a></div>
+<br />
+<div>Forum posts: 215</div>
+<div>File comments: 156</div>
+<div>Uploads: 3</div>
+<div> </div>
+</div>
+</div>
+</td>
+<td class="alt1-author" style="padding: 10px">
+
+<div class="postmessage">Skillet-Classic 1.19 has been uploaded.<br />
+<br />
+As usual, please open an issue if you find any bugs and include as much detail as possible so I can fix them.</div>
+
+
+
+
+<div class="smallfont">
+<em>
+Last edited by bsmorgan : 11-30-20 at <span class="time">09:19 AM</span>.
+</em>
+</div>
+
+</td>
+</tr>
+<tr>
+<td class="alt2-author">
+<span title="bsmorgan is offline"><i class="fa fa-square" style="color:#444"></i></span>
+<a href="report.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;action=reportcmnt&amp;commentid=488382"><img class="inlineimg" src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/buttons/report.gif" alt="Report comment to moderator" border="0" /></a>
+&nbsp;
+</td>
+<td class="alt1-author" align="right" style="padding: 10px;">
+<hr size="1" color="#404040" />
+
+<a href="addcomment.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;action=addcomment&amp;fileid=25287&amp;quote=488382"><img src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/buttons/reply_small.gif" alt="Reply With Quote" border="0" /></a>
+
+</td>
+</tr>
+</table>
+
+<div class="vbmenu_popup" id="postmenu_488382_menu" style="display:none">
+<table cellpadding="4" cellspacing="1" border="0">
+<tr>
+<td class="thead">bsmorgan</td>
+</tr>
+<tr><td class="vbmenu_option"><a href="/forums/member.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;userid=11524" target="_blank">View Public Profile</a></td></tr>
+<tr><td class="vbmenu_option"><a href="/forums/private.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;do=newpm&amp;userid=11524">Send a private message to bsmorgan</a></td></tr>
+<tr><td class="vbmenu_option"><a href="search.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;usrcmnts=11524">Find More Posts by bsmorgan</a></td></tr>
+<tr><td class="vbmenu_option"><a href="/forums/profile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;do=addlist&amp;userlist=buddy&amp;u=11524">Add bsmorgan to Your Buddy List</a></td></tr>
+</table>
+</div>
+
+
+<table class="tborder" cellpadding="8" cellspacing="0" border="0" width="100%" align="center">
+<tr>
+<td class="thead" style="font-weight:normal">
+
+<a name="cmnt487286"><img class="inlineimg" src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/statusicon/post_new.gif" alt="Unread" border="0" /></a>
+10-21-20, 06:54 AM
+
+</td>
+<td class="thead" style="font-weight:normal" align="right">
+&nbsp;
+</td>
+</tr>
+<tr valign="top">
+<td class="alt2-author" width="175">
+<div class="postbit-carrot">
+<div id="postmenu_487286">
+<a style="font-size:14pt" href="/forums/member.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;u=11524">bsmorgan</a>
+<script type="text/javascript"> vbmenu_register("postmenu_487286", true); </script>
+</div>
+<div class="smallfont">A Cobalt Mageweaver
+<div class="smallfont">
+<div><a href="https://www.wowinterface.com/portal11524.html"><img src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/misc/badges/author-list-link.gif" width="110" height="20" border="0" alt="AddOn Author - Click to view AddOns"></a></div>
+<br />
+<div>Forum posts: 215</div>
+<div>File comments: 156</div>
+<div>Uploads: 3</div>
+<div> </div>
+</div>
+</div>
+</td>
+<td class="alt1-author" style="padding: 10px">
+
+<div class="postmessage">Skillet-Classic 1.17 has been uploaded.<br />
+<br />
+As usual, please open an <a href="https://www.wowace.com/projects/skillet-classic/issues" target="_blank" rel="nofollow">issue</a> if you find any bugs and include as much detail as possible so I can fix them.</div>
+
+
+
+
+
+</td>
+</tr>
+<tr>
+<td class="alt2-author">
+<span title="bsmorgan is offline"><i class="fa fa-square" style="color:#444"></i></span>
+<a href="report.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;action=reportcmnt&amp;commentid=487286"><img class="inlineimg" src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/buttons/report.gif" alt="Report comment to moderator" border="0" /></a>
+&nbsp;
+</td>
+<td class="alt1-author" align="right" style="padding: 10px;">
+<hr size="1" color="#404040" />
+
+<a href="addcomment.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;action=addcomment&amp;fileid=25287&amp;quote=487286"><img src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/buttons/reply_small.gif" alt="Reply With Quote" border="0" /></a>
+
+</td>
+</tr>
+</table>
+
+<div class="vbmenu_popup" id="postmenu_487286_menu" style="display:none">
+<table cellpadding="4" cellspacing="1" border="0">
+<tr>
+<td class="thead">bsmorgan</td>
+</tr>
+<tr><td class="vbmenu_option"><a href="/forums/member.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;userid=11524" target="_blank">View Public Profile</a></td></tr>
+<tr><td class="vbmenu_option"><a href="/forums/private.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;do=newpm&amp;userid=11524">Send a private message to bsmorgan</a></td></tr>
+
+<tr><td class="vbmenu_option"><a href="search.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;usrcmnts=11524">Find More Posts by bsmorgan</a></td></tr>
+<tr><td class="vbmenu_option"><a href="/forums/profile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;do=addlist&amp;userlist=buddy&amp;u=11524">Add bsmorgan to Your Buddy List</a></td></tr>
+</table>
+</div>
+
+
+<table class="tborder" cellpadding="8" cellspacing="0" border="0" width="100%" align="center">
+<tr>
+<td class="thead" style="font-weight:normal">
+
+<a name="cmnt484873"><img class="inlineimg" src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/statusicon/post_new.gif" alt="Unread" border="0" /></a>
+03-10-20, 04:49 PM
+
+</td>
+<td class="thead" style="font-weight:normal" align="right">
+&nbsp;
+</td>
+</tr>
+<tr valign="top">
+<td class="alt2-author" width="175">
+<div class="postbit-carrot">
+<div id="postmenu_484873">
+<a style="font-size:14pt" href="/forums/member.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;u=11524">bsmorgan</a>
+<script type="text/javascript"> vbmenu_register("postmenu_484873", true); </script>
+</div>
+<div class="smallfont">A Cobalt Mageweaver
+<div class="smallfont">
+<div><a href="https://www.wowinterface.com/portal11524.html"><img src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/misc/badges/author-list-link.gif" width="110" height="20" border="0" alt="AddOn Author - Click to view AddOns"></a></div>
+<br />
+<div>Forum posts: 215</div>
+<div>File comments: 156</div>
+<div>Uploads: 3</div>
+<div> </div>
+</div>
+</div>
+</td>
+<td class="alt1-author" style="padding: 10px">
+
+<div class="postmessage">Skillet-Classic 1.13 has been uploaded.<br />
+<br />
+As usual, please open an issue if you find any bugs and include as much detail as possible so I can fix them.</div>
+
+
+
+
+<div class="smallfont">
+<em>
+Last edited by bsmorgan : 03-11-20 at <span class="time">02:12 PM</span>.
+</em>
+</div>
+
+</td>
+</tr>
+<tr>
+<td class="alt2-author">
+<span title="bsmorgan is offline"><i class="fa fa-square" style="color:#444"></i></span>
+<a href="report.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;action=reportcmnt&amp;commentid=484873"><img class="inlineimg" src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/buttons/report.gif" alt="Report comment to moderator" border="0" /></a>
+&nbsp;
+</td>
+<td class="alt1-author" align="right" style="padding: 10px;">
+<hr size="1" color="#404040" />
+
+<a href="addcomment.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;action=addcomment&amp;fileid=25287&amp;quote=484873"><img src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/buttons/reply_small.gif" alt="Reply With Quote" border="0" /></a>
+
+</td>
+</tr>
+</table>
+
+<div class="vbmenu_popup" id="postmenu_484873_menu" style="display:none">
+<table cellpadding="4" cellspacing="1" border="0">
+<tr>
+<td class="thead">bsmorgan</td>
+</tr>
+<tr><td class="vbmenu_option"><a href="/forums/member.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;userid=11524" target="_blank">View Public Profile</a></td></tr>
+<tr><td class="vbmenu_option"><a href="/forums/private.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;do=newpm&amp;userid=11524">Send a private message to bsmorgan</a></td></tr>
+<tr><td class="vbmenu_option"><a href="search.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;usrcmnts=11524">Find More Posts by bsmorgan</a></td></tr>
+<tr><td class="vbmenu_option"><a href="/forums/profile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;do=addlist&amp;userlist=buddy&amp;u=11524">Add bsmorgan to Your Buddy List</a></td></tr>
+</table>
+</div>
+
+
+<table class="tborder" cellpadding="8" cellspacing="0" border="0" width="100%" align="center">
+<tr>
+<td class="thead" style="font-weight:normal">
+
+<a name="cmnt484234"><img class="inlineimg" src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/statusicon/post_new.gif" alt="Unread" border="0" /></a>
+12-13-19, 08:07 AM
+
+</td>
+<td class="thead" style="font-weight:normal" align="right">
+&nbsp;
+</td>
+</tr>
+<tr valign="top">
+<td class="alt2-author" width="175">
+<div class="postbit-carrot">
+<div id="postmenu_484234">
+<a style="font-size:14pt" href="/forums/member.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;u=11524">bsmorgan</a>
+<script type="text/javascript"> vbmenu_register("postmenu_484234", true); </script>
+</div>
+<div class="smallfont">A Cobalt Mageweaver
+<div class="smallfont">
+<div><a href="https://www.wowinterface.com/portal11524.html"><img src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/misc/badges/author-list-link.gif" width="110" height="20" border="0" alt="AddOn Author - Click to view AddOns"></a></div>
+<br />
+<div>Forum posts: 215</div>
+<div>File comments: 156</div>
+<div>Uploads: 3</div>
+<div> </div>
+</div>
+</div>
+</td>
+<td class="alt1-author" style="padding: 10px">
+
+<div class="postmessage">Skillet-Classic 1.08 has been uploaded.<br />
+<br />
+As usual, please open an <a href="https://www.wowace.com/projects/skillet-classic/issues" target="_blank" rel="nofollow">issue</a> if you find any bugs and include as much detail as possible so I can fix them.</div>
+
+
+
+
+
+</td>
+</tr>
+<tr>
+<td class="alt2-author">
+<span title="bsmorgan is offline"><i class="fa fa-square" style="color:#444"></i></span>
+<a href="report.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;action=reportcmnt&amp;commentid=484234"><img class="inlineimg" src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/buttons/report.gif" alt="Report comment to moderator" border="0" /></a>
+&nbsp;
+</td>
+<td class="alt1-author" align="right" style="padding: 10px;">
+<hr size="1" color="#404040" />
+
+<a href="addcomment.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;action=addcomment&amp;fileid=25287&amp;quote=484234"><img src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/buttons/reply_small.gif" alt="Reply With Quote" border="0" /></a>
+
+</td>
+</tr>
+</table>
+
+<div class="vbmenu_popup" id="postmenu_484234_menu" style="display:none">
+<table cellpadding="4" cellspacing="1" border="0">
+<tr>
+<td class="thead">bsmorgan</td>
+</tr>
+<tr><td class="vbmenu_option"><a href="/forums/member.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;userid=11524" target="_blank">View Public Profile</a></td></tr>
+<tr><td class="vbmenu_option"><a href="/forums/private.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;do=newpm&amp;userid=11524">Send a private message to bsmorgan</a></td></tr>
+<tr><td class="vbmenu_option"><a href="search.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;usrcmnts=11524">Find More Posts by bsmorgan</a></td></tr>
+<tr><td class="vbmenu_option"><a href="/forums/profile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;do=addlist&amp;userlist=buddy&amp;u=11524">Add bsmorgan to Your Buddy List</a></td></tr>
+</table>
+</div>
+
+
+<table class="tborder" cellpadding="8" cellspacing="0" border="0" width="100%" align="center">
+<tr>
+<td class="thead" style="font-weight:normal">
+
+<a name="cmnt484233"><img class="inlineimg" src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/statusicon/post_new.gif" alt="Unread" border="0" /></a>
+12-13-19, 08:06 AM
+
+</td>
+<td class="thead" style="font-weight:normal" align="right">
+&nbsp;
+</td>
+</tr>
+<tr valign="top">
+<td class="alt2-author" width="175">
+<div class="postbit-carrot">
+<div id="postmenu_484233">
+<a style="font-size:14pt" href="/forums/member.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;u=11524">bsmorgan</a>
+<script type="text/javascript"> vbmenu_register("postmenu_484233", true); </script>
+</div>
+<div class="smallfont">A Cobalt Mageweaver
+<div class="smallfont">
+<div><a href="https://www.wowinterface.com/portal11524.html"><img src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/misc/badges/author-list-link.gif" width="110" height="20" border="0" alt="AddOn Author - Click to view AddOns"></a></div>
+<br />
+<div>Forum posts: 215</div>
+<div>File comments: 156</div>
+<div>Uploads: 3</div>
+<div> </div>
+</div>
+</div>
+</td>
+<td class="alt1-author" style="padding: 10px">
+
+<div class="smallfont">
+<strong>Re: Viewing other skills</strong>
+</div>
+<hr size="1" color="#404040" />
+
+
+<div class="postmessage"><div style="margin:10px; ">
+<table cellpadding="8" cellspacing="0" border="0">
+<tr>
+<td class="bbquote">
+<div style="padding-bottom:8px;font-size:10px">
+Originally Posted by <strong>WickedJester</strong>
+</div>
+<div style="font-style:italic">is there a way to look up recipes for skill you do not have? for example I would go to enchanting panel to add mats to my shopping list to buy later for enchanting multiple items/gear sets, but I am already herb/alch. Do i <i>have</i> to make an alt and shop from there?</div>
+</td>
+</tr>
+</table>
+</div>Unfortunately, there isn't a way for Skillet-Classic to display recipes or skills you don't have. Skillet-Classic relies on the Blizzard API functions to discover what you do know.</div>
+
+
+
+
+
+</td>
+</tr>
+<tr>
+<td class="alt2-author">
+<span title="bsmorgan is offline"><i class="fa fa-square" style="color:#444"></i></span>
+<a href="report.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;action=reportcmnt&amp;commentid=484233"><img class="inlineimg" src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/buttons/report.gif" alt="Report comment to moderator" border="0" /></a>
+&nbsp;
+</td>
+<td class="alt1-author" align="right" style="padding: 10px;">
+<hr size="1" color="#404040" />
+
+<a href="addcomment.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;action=addcomment&amp;fileid=25287&amp;quote=484233"><img src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/buttons/reply_small.gif" alt="Reply With Quote" border="0" /></a>
+
+</td>
+</tr>
+</table>
+
+<div class="vbmenu_popup" id="postmenu_484233_menu" style="display:none">
+<table cellpadding="4" cellspacing="1" border="0">
+<tr>
+<td class="thead">bsmorgan</td>
+</tr>
+<tr><td class="vbmenu_option"><a href="/forums/member.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;userid=11524" target="_blank">View Public Profile</a></td></tr>
+<tr><td class="vbmenu_option"><a href="/forums/private.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;do=newpm&amp;userid=11524">Send a private message to bsmorgan</a></td></tr>
+<tr><td class="vbmenu_option"><a href="search.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;usrcmnts=11524">Find More Posts by bsmorgan</a></td></tr>
+<tr><td class="vbmenu_option"><a href="/forums/profile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;do=addlist&amp;userlist=buddy&amp;u=11524">Add bsmorgan to Your Buddy List</a></td></tr>
+</table>
+</div>
+
+
+<table class="tborder" cellpadding="8" cellspacing="0" border="0" width="100%" align="center">
+<tr>
+<td class="thead" style="font-weight:normal">
+
+<a name="cmnt484149"><img class="inlineimg" src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/statusicon/post_new.gif" alt="Unread" border="0" /></a>
+12-06-19, 07:16 AM
+
+</td>
+<td class="thead" style="font-weight:normal" align="right">
+&nbsp;
+</td>
+</tr>
+<tr valign="top">
+<td class="alt2-postbit" width="175">
+<div class="postbit-carrot">
+<div id="postmenu_484149">
+<a style="font-size:14pt" href="/forums/member.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;u=346262">WickedJester</a>
+<script type="text/javascript"> vbmenu_register("postmenu_484149", true); </script>
+</div>
+<div class="smallfont">A Kobold Labourer
+<div class="smallfont">
+<br />
+<div>Forum posts: 0</div>
+<div>File comments: 1</div>
+<div>Uploads: 0</div>
+<div> </div>
+</div>
+</div>
+</td>
+<td class="alt1" style="padding: 10px">
+
+<div class="smallfont">
+<strong>Viewing other skills</strong>
+</div>
+<hr size="1" color="#404040" />
+
+
+<div class="postmessage">is there a way to look up recipes for skill you do not have? for example I would go to enchanting panel to add mats to my shopping list to buy later for enchanting multiple items/gear sets, but I am already herb/alch. Do i <i>have</i> to make an alt and shop from there?</div>
+
+
+
+
+
+</td>
+</tr>
+<tr>
+<td class="alt2-postbit">
+<span title="WickedJester is offline"><i class="fa fa-square" style="color:#444"></i></span>
+<a href="report.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;action=reportcmnt&amp;commentid=484149"><img class="inlineimg" src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/buttons/report.gif" alt="Report comment to moderator" border="0" /></a>
+&nbsp;
+</td>
+<td class="alt1" align="right" style="padding: 10px;">
+<hr size="1" color="#404040" />
+
+<a href="addcomment.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;action=addcomment&amp;fileid=25287&amp;quote=484149"><img src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/buttons/reply_small.gif" alt="Reply With Quote" border="0" /></a>
+
+</td>
+</tr>
+</table>
+
+<div class="vbmenu_popup" id="postmenu_484149_menu" style="display:none">
+<table cellpadding="4" cellspacing="1" border="0">
+<tr>
+<td class="thead">WickedJester</td>
+</tr>
+<tr><td class="vbmenu_option"><a href="/forums/member.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;userid=346262" target="_blank">View Public Profile</a></td></tr>
+<tr><td class="vbmenu_option"><a href="/forums/private.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;do=newpm&amp;userid=346262">Send a private message to WickedJester</a></td></tr>
+<tr><td class="vbmenu_option"><a href="search.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;usrcmnts=346262">Find More Posts by WickedJester</a></td></tr>
+<tr><td class="vbmenu_option"><a href="/forums/profile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;do=addlist&amp;userlist=buddy&amp;u=346262">Add WickedJester to Your Buddy List</a></td></tr>
+</table>
+</div>
+
+
+<table class="tborder" cellpadding="8" cellspacing="0" border="0" width="100%" align="center">
+<tr>
+<td class="thead" style="font-weight:normal">
+
+<a name="cmnt483872"><img class="inlineimg" src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/statusicon/post_new.gif" alt="Unread" border="0" /></a>
+11-12-19, 10:37 AM
+
+</td>
+<td class="thead" style="font-weight:normal" align="right">
+&nbsp;
+</td>
+</tr>
+<tr valign="top">
+<td class="alt2-author" width="175">
+<div class="postbit-carrot">
+<div id="postmenu_483872">
+<a style="font-size:14pt" href="/forums/member.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;u=11524">bsmorgan</a>
+<script type="text/javascript"> vbmenu_register("postmenu_483872", true); </script>
+</div>
+<div class="smallfont">A Cobalt Mageweaver
+<div class="smallfont">
+<div><a href="https://www.wowinterface.com/portal11524.html"><img src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/misc/badges/author-list-link.gif" width="110" height="20" border="0" alt="AddOn Author - Click to view AddOns"></a></div>
+<br />
+<div>Forum posts: 215</div>
+<div>File comments: 156</div>
+<div>Uploads: 3</div>
+<div> </div>
+</div>
+</div>
+</td>
+<td class="alt1-author" style="padding: 10px">
+
+<div class="postmessage">Skillet-Classic 1.06 has been uploaded.<br />
+<br />
+As usual, please open an <a href="https://www.wowace.com/projects/skillet-classic/issues" target="_blank" rel="nofollow">issue</a> if you find any bugs and include as much detail as possible so I can fix them.</div>
+
+
+
+
+
+</td>
+</tr>
+<tr>
+<td class="alt2-author">
+<span title="bsmorgan is offline"><i class="fa fa-square" style="color:#444"></i></span>
+<a href="report.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;action=reportcmnt&amp;commentid=483872"><img class="inlineimg" src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/buttons/report.gif" alt="Report comment to moderator" border="0" /></a>
+&nbsp;
+</td>
+<td class="alt1-author" align="right" style="padding: 10px;">
+<hr size="1" color="#404040" />
+
+<a href="addcomment.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;action=addcomment&amp;fileid=25287&amp;quote=483872"><img src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/buttons/reply_small.gif" alt="Reply With Quote" border="0" /></a>
+
+</td>
+</tr>
+</table>
+
+<div class="vbmenu_popup" id="postmenu_483872_menu" style="display:none">
+<table cellpadding="4" cellspacing="1" border="0">
+<tr>
+<td class="thead">bsmorgan</td>
+</tr>
+<tr><td class="vbmenu_option"><a href="/forums/member.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;userid=11524" target="_blank">View Public Profile</a></td></tr>
+<tr><td class="vbmenu_option"><a href="/forums/private.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;do=newpm&amp;userid=11524">Send a private message to bsmorgan</a></td></tr>
+<tr><td class="vbmenu_option"><a href="search.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;usrcmnts=11524">Find More Posts by bsmorgan</a></td></tr>
+<tr><td class="vbmenu_option"><a href="/forums/profile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;do=addlist&amp;userlist=buddy&amp;u=11524">Add bsmorgan to Your Buddy List</a></td></tr>
+</table>
+</div>
+
+
+<table class="tborder" cellpadding="8" cellspacing="0" border="0" width="100%" align="center">
+<tr>
+<td class="thead" style="font-weight:normal">
+
+<a name="cmnt483806"><img class="inlineimg" src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/statusicon/post_new.gif" alt="Unread" border="0" /></a>
+11-06-19, 01:57 PM
+
+</td>
+<td class="thead" style="font-weight:normal" align="right">
+&nbsp;
+</td>
+</tr>
+<tr valign="top">
+<td class="alt2-author" width="175">
+<div class="postbit-carrot">
+<div id="postmenu_483806">
+<a style="font-size:14pt" href="/forums/member.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;u=11524">bsmorgan</a>
+<script type="text/javascript"> vbmenu_register("postmenu_483806", true); </script>
+</div>
+<div class="smallfont">A Cobalt Mageweaver
+<div class="smallfont">
+<div><a href="https://www.wowinterface.com/portal11524.html"><img src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/misc/badges/author-list-link.gif" width="110" height="20" border="0" alt="AddOn Author - Click to view AddOns"></a></div>
+<br />
+<div>Forum posts: 215</div>
+<div>File comments: 156</div>
+<div>Uploads: 3</div>
+<div> </div>
+</div>
+</div>
+</td>
+<td class="alt1-author" style="padding: 10px">
+
+<div class="postmessage">Skillet-Classic 1.04 has been uploaded.<br />
+<br />
+As usual, please open an <a href="https://www.wowace.com/projects/skillet-classic/issues" target="_blank" rel="nofollow">issue</a> if you find any bugs and include as much detail as possible so I can fix them.</div>
+
+
+
+
+
+</td>
+</tr>
+<tr>
+<td class="alt2-author">
+<span title="bsmorgan is offline"><i class="fa fa-square" style="color:#444"></i></span>
+<a href="report.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;action=reportcmnt&amp;commentid=483806"><img class="inlineimg" src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/buttons/report.gif" alt="Report comment to moderator" border="0" /></a>
+&nbsp;
+</td>
+<td class="alt1-author" align="right" style="padding: 10px;">
+<hr size="1" color="#404040" />
+
+<a href="addcomment.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;action=addcomment&amp;fileid=25287&amp;quote=483806"><img src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/buttons/reply_small.gif" alt="Reply With Quote" border="0" /></a>
+
+</td>
+</tr>
+</table>
+
+<div class="vbmenu_popup" id="postmenu_483806_menu" style="display:none">
+<table cellpadding="4" cellspacing="1" border="0">
+<tr>
+<td class="thead">bsmorgan</td>
+</tr>
+<tr><td class="vbmenu_option"><a href="/forums/member.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;userid=11524" target="_blank">View Public Profile</a></td></tr>
+<tr><td class="vbmenu_option"><a href="/forums/private.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;do=newpm&amp;userid=11524">Send a private message to bsmorgan</a></td></tr>
+<tr><td class="vbmenu_option"><a href="search.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;usrcmnts=11524">Find More Posts by bsmorgan</a></td></tr>
+<tr><td class="vbmenu_option"><a href="/forums/profile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;do=addlist&amp;userlist=buddy&amp;u=11524">Add bsmorgan to Your Buddy List</a></td></tr>
+</table>
+</div>
+
+
+<table class="tborder" cellpadding="8" cellspacing="0" border="0" width="100%" align="center">
+<tr>
+<td class="thead" style="font-weight:normal">
+
+<a name="cmnt483731"><img class="inlineimg" src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/statusicon/post_new.gif" alt="Unread" border="0" /></a>
+11-02-19, 04:22 PM
+
+</td>
+<td class="thead" style="font-weight:normal" align="right">
+&nbsp;
+</td>
+</tr>
+<tr valign="top">
+<td class="alt2-author" width="175">
+<div class="postbit-carrot">
+<div id="postmenu_483731">
+<a style="font-size:14pt" href="/forums/member.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;u=11524">bsmorgan</a>
+<script type="text/javascript"> vbmenu_register("postmenu_483731", true); </script>
+</div>
+<div class="smallfont">A Cobalt Mageweaver
+<div class="smallfont">
+<div><a href="https://www.wowinterface.com/portal11524.html"><img src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/misc/badges/author-list-link.gif" width="110" height="20" border="0" alt="AddOn Author - Click to view AddOns"></a></div>
+<br />
+<div>Forum posts: 215</div>
+<div>File comments: 156</div>
+<div>Uploads: 3</div>
+<div> </div>
+</div>
+</div>
+</td>
+<td class="alt1-author" style="padding: 10px">
+
+<div class="postmessage">Skillet-Classic 1.03 has been uploaded.<br />
+<br />
+As usual, please open an <a href="https://www.wowace.com/projects/skillet-classic/issues" target="_blank" rel="nofollow">issue</a> if you find any bugs and include as much detail as possible so I can fix them.</div>
+
+
+
+
+
+</td>
+</tr>
+<tr>
+<td class="alt2-author">
+<span title="bsmorgan is offline"><i class="fa fa-square" style="color:#444"></i></span>
+<a href="report.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;action=reportcmnt&amp;commentid=483731"><img class="inlineimg" src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/buttons/report.gif" alt="Report comment to moderator" border="0" /></a>
+&nbsp;
+</td>
+<td class="alt1-author" align="right" style="padding: 10px;">
+<hr size="1" color="#404040" />
+
+<a href="addcomment.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;action=addcomment&amp;fileid=25287&amp;quote=483731"><img src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/buttons/reply_small.gif" alt="Reply With Quote" border="0" /></a>
+
+</td>
+</tr>
+</table>
+
+<div class="vbmenu_popup" id="postmenu_483731_menu" style="display:none">
+<table cellpadding="4" cellspacing="1" border="0">
+<tr>
+<td class="thead">bsmorgan</td>
+</tr>
+<tr><td class="vbmenu_option"><a href="/forums/member.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;userid=11524" target="_blank">View Public Profile</a></td></tr>
+<tr><td class="vbmenu_option"><a href="/forums/private.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;do=newpm&amp;userid=11524">Send a private message to bsmorgan</a></td></tr>
+<tr><td class="vbmenu_option"><a href="search.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;usrcmnts=11524">Find More Posts by bsmorgan</a></td></tr>
+<tr><td class="vbmenu_option"><a href="/forums/profile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;do=addlist&amp;userlist=buddy&amp;u=11524">Add bsmorgan to Your Buddy List</a></td></tr>
+</table>
+</div>
+
+
+<table class="tborder" cellpadding="8" cellspacing="0" border="0" width="100%" align="center">
+<tr>
+<td class="thead" style="font-weight:normal">
+
+<a name="cmnt483696"><img class="inlineimg" src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/statusicon/post_new.gif" alt="Unread" border="0" /></a>
+10-31-19, 06:31 PM
+
+</td>
+<td class="thead" style="font-weight:normal" align="right">
+&nbsp;
+</td>
+</tr>
+<tr valign="top">
+<td class="alt2-author" width="175">
+<div class="postbit-carrot">
+<div id="postmenu_483696">
+<a style="font-size:14pt" href="/forums/member.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;u=11524">bsmorgan</a>
+<script type="text/javascript"> vbmenu_register("postmenu_483696", true); </script>
+</div>
+<div class="smallfont">A Cobalt Mageweaver
+<div class="smallfont">
+<div><a href="https://www.wowinterface.com/portal11524.html"><img src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/misc/badges/author-list-link.gif" width="110" height="20" border="0" alt="AddOn Author - Click to view AddOns"></a></div>
+<br />
+<div>Forum posts: 215</div>
+<div>File comments: 156</div>
+<div>Uploads: 3</div>
+<div> </div>
+</div>
+</div>
+</td>
+<td class="alt1-author" style="padding: 10px">
+
+<div class="postmessage">Skillet-Classic 1.02 has been uploaded.<br />
+<br />
+As usual, please open an <a href="https://www.wowace.com/projects/skillet-classic/issues" target="_blank" rel="nofollow">issue</a> if you find any bugs and include as much detail as possible so I can fix them.</div>
+
+
+
+
+
+</td>
+</tr>
+<tr>
+<td class="alt2-author">
+<span title="bsmorgan is offline"><i class="fa fa-square" style="color:#444"></i></span>
+<a href="report.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;action=reportcmnt&amp;commentid=483696"><img class="inlineimg" src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/buttons/report.gif" alt="Report comment to moderator" border="0" /></a>
+&nbsp;
+</td>
+<td class="alt1-author" align="right" style="padding: 10px;">
+<hr size="1" color="#404040" />
+
+<a href="addcomment.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;action=addcomment&amp;fileid=25287&amp;quote=483696"><img src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/buttons/reply_small.gif" alt="Reply With Quote" border="0" /></a>
+
+</td>
+</tr>
+</table>
+
+<div class="vbmenu_popup" id="postmenu_483696_menu" style="display:none">
+<table cellpadding="4" cellspacing="1" border="0">
+<tr>
+<td class="thead">bsmorgan</td>
+</tr>
+<tr><td class="vbmenu_option"><a href="/forums/member.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;userid=11524" target="_blank">View Public Profile</a></td></tr>
+<tr><td class="vbmenu_option"><a href="/forums/private.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;do=newpm&amp;userid=11524">Send a private message to bsmorgan</a></td></tr>
+<tr><td class="vbmenu_option"><a href="search.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;usrcmnts=11524">Find More Posts by bsmorgan</a></td></tr>
+<tr><td class="vbmenu_option"><a href="/forums/profile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;do=addlist&amp;userlist=buddy&amp;u=11524">Add bsmorgan to Your Buddy List</a></td></tr>
+</table>
+</div>
+
+
+<table class="tborder" cellpadding="8" cellspacing="0" border="0" width="100%" align="center">
+<tr>
+<td class="thead" style="font-weight:normal">
+
+<a name="cmnt483672"><img class="inlineimg" src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/statusicon/post_new.gif" alt="Unread" border="0" /></a>
+10-29-19, 10:31 AM
+
+</td>
+<td class="thead" style="font-weight:normal" align="right">
+&nbsp;
+</td>
+</tr>
+<tr valign="top">
+<td class="alt2-author" width="175">
+<div class="postbit-carrot">
+<div id="postmenu_483672">
+<a style="font-size:14pt" href="/forums/member.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;u=11524">bsmorgan</a>
+<script type="text/javascript"> vbmenu_register("postmenu_483672", true); </script>
+</div>
+<div class="smallfont">A Cobalt Mageweaver
+<div class="smallfont">
+
+<div><a href="https://www.wowinterface.com/portal11524.html"><img src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/misc/badges/author-list-link.gif" width="110" height="20" border="0" alt="AddOn Author - Click to view AddOns"></a></div>
+<br />
+<div>Forum posts: 215</div>
+<div>File comments: 156</div>
+<div>Uploads: 3</div>
+<div> </div>
+</div>
+</div>
+</td>
+<td class="alt1-author" style="padding: 10px">
+
+<div class="postmessage">Skillet-Classic 1.00 has been uploaded.<br />
+<br />
+As usual, please open an <a href="https://www.wowace.com/projects/skillet-classic/issues" target="_blank" rel="nofollow">issue</a> if you find any bugs and include as much detail as possible so I can fix them.</div>
+
+
+
+
+
+</td>
+</tr>
+<tr>
+<td class="alt2-author">
+<span title="bsmorgan is offline"><i class="fa fa-square" style="color:#444"></i></span>
+<a href="report.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;action=reportcmnt&amp;commentid=483672"><img class="inlineimg" src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/buttons/report.gif" alt="Report comment to moderator" border="0" /></a>
+&nbsp;
+</td>
+<td class="alt1-author" align="right" style="padding: 10px;">
+<hr size="1" color="#404040" />
+
+<a href="addcomment.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;action=addcomment&amp;fileid=25287&amp;quote=483672"><img src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/buttons/reply_small.gif" alt="Reply With Quote" border="0" /></a>
+
+</td>
+</tr>
+</table>
+
+<div class="vbmenu_popup" id="postmenu_483672_menu" style="display:none">
+<table cellpadding="4" cellspacing="1" border="0">
+<tr>
+<td class="thead">bsmorgan</td>
+</tr>
+<tr><td class="vbmenu_option"><a href="/forums/member.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;userid=11524" target="_blank">View Public Profile</a></td></tr>
+<tr><td class="vbmenu_option"><a href="/forums/private.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;do=newpm&amp;userid=11524">Send a private message to bsmorgan</a></td></tr>
+<tr><td class="vbmenu_option"><a href="search.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;usrcmnts=11524">Find More Posts by bsmorgan</a></td></tr>
+<tr><td class="vbmenu_option"><a href="/forums/profile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;do=addlist&amp;userlist=buddy&amp;u=11524">Add bsmorgan to Your Buddy List</a></td></tr>
+</table>
+</div>
+
+
+<table class="tborder" cellpadding="8" cellspacing="0" border="0" width="100%" align="center">
+<tr>
+<td class="thead" style="font-weight:normal">
+
+<a name="cmnt483594"><img class="inlineimg" src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/statusicon/post_new.gif" alt="Unread" border="0" /></a>
+10-24-19, 12:53 PM
+
+</td>
+<td class="thead" style="font-weight:normal" align="right">
+&nbsp;
+</td>
+</tr>
+<tr valign="top">
+<td class="alt2-author" width="175">
+<div class="postbit-carrot">
+<div id="postmenu_483594">
+<a style="font-size:14pt" href="/forums/member.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;u=11524">bsmorgan</a>
+<script type="text/javascript"> vbmenu_register("postmenu_483594", true); </script>
+</div>
+<div class="smallfont">A Cobalt Mageweaver
+<div class="smallfont">
+<div><a href="https://www.wowinterface.com/portal11524.html"><img src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/misc/badges/author-list-link.gif" width="110" height="20" border="0" alt="AddOn Author - Click to view AddOns"></a></div>
+<br />
+<div>Forum posts: 215</div>
+<div>File comments: 156</div>
+<div>Uploads: 3</div>
+<div> </div>
+</div>
+</div>
+</td>
+<td class="alt1-author" style="padding: 10px">
+
+<div class="postmessage">Skillet-Classic 1.00-beta8 has been uploaded. This is a very stable version.<br />
+<br />
+As usual, please open an issue if you find any bugs and include as much detail as possible so I can fix them.</div>
+
+
+
+
+
+</td>
+</tr>
+<tr>
+<td class="alt2-author">
+<span title="bsmorgan is offline"><i class="fa fa-square" style="color:#444"></i></span>
+<a href="report.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;action=reportcmnt&amp;commentid=483594"><img class="inlineimg" src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/buttons/report.gif" alt="Report comment to moderator" border="0" /></a>
+&nbsp;
+</td>
+<td class="alt1-author" align="right" style="padding: 10px;">
+<hr size="1" color="#404040" />
+
+<a href="addcomment.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;action=addcomment&amp;fileid=25287&amp;quote=483594"><img src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/buttons/reply_small.gif" alt="Reply With Quote" border="0" /></a>
+
+</td>
+</tr>
+</table>
+
+<div class="vbmenu_popup" id="postmenu_483594_menu" style="display:none">
+<table cellpadding="4" cellspacing="1" border="0">
+<tr>
+<td class="thead">bsmorgan</td>
+</tr>
+<tr><td class="vbmenu_option"><a href="/forums/member.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;userid=11524" target="_blank">View Public Profile</a></td></tr>
+<tr><td class="vbmenu_option"><a href="/forums/private.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;do=newpm&amp;userid=11524">Send a private message to bsmorgan</a></td></tr>
+<tr><td class="vbmenu_option"><a href="search.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;usrcmnts=11524">Find More Posts by bsmorgan</a></td></tr>
+<tr><td class="vbmenu_option"><a href="/forums/profile.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;do=addlist&amp;userlist=buddy&amp;u=11524">Add bsmorgan to Your Buddy List</a></td></tr>
+</table>
+</div>
+
+
+<table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-bottom:3px">
+<tr valign="bottom">
+<td class="smallfont"><a href="addcomment.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;action=addcomment&amp;fileid=25287"><img src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/buttons/reply.gif" border="0" alt="Post A Reply"></a></td>
+<td align="right"><div class="pagenav" align="right">
+<table class="tborder" cellpadding="3" cellspacing="1" border="0">
+<tr>
+<td class="vbmenu_control" style="font-weight:normal">Page 1 of 3</td>
+<td class="alt2"><span class="smallfont" title="Showing results 1 to 15 of 42"><strong>1</strong></span></td>
+<td class="alt1"><a class="smallfont" href="fileinfo.php?id=25287&amp;so=DESC&amp;page=2#comments" title="Show results 16 to 30 of 42">2</a></td><td class="alt1"><a class="smallfont" href="fileinfo.php?id=25287&amp;so=DESC&amp;page=3#comments" title="Show results 31 to 42 of 42">3</a></td>
+<td class="alt1"><a class="smallfont" href="fileinfo.php?id=25287&amp;so=DESC&amp;page=2#comments" title="Next Page - Results 16 to 30 of 42">&gt;</a></td>
+</tr>
+</table>
+</div></td>
+</tr>
+</table>
+<div align="center"></div>
+<br />
+
+<div class="vbmenu_popup" id="cmnt_opt_menu" style="display:none">
+<table cellpadding="4" cellspacing="1" border="0">
+<tr><td class="thead">Sorting</td></tr>
+<tr><td class="vbmenu_option"><a href="fileinfo.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;so=newest&amp;page=1#comments">Sort comments by Newest</a></td></tr>
+<tr><td class="vbmenu_option"><a href="fileinfo.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;id=25287&amp;so=oldest&amp;page=1#comments">Sort comments by Oldest</a></td></tr>
+</table>
+</div>
+
+</div>
+</div>
+</div>
+<div>
+<br />
+<div class="smallfont">
+<img src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/buttons/report.gif" alt="Report this file" border="0" align="absmiddle" /> <a href="/downloads/report.php?s=b5918f5bc99d817f5c9cf423e12f342a&amp;action=reportfile&amp;fileid=25287">Report this File</a>
+</div>
+<br />
+<div>
+<div style="float: right;"></div><div class="smallfont" style="text-align:left; white-space:nowrap">
+<form name="catjump" action="index.php" method="post">
+<input type="hidden" name="s" value="b5918f5bc99d817f5c9cf423e12f342a">
+<input type="hidden" name="securitytoken" value="48a2eb27e1e3e436400f11b5a34307f19d46b008" />
+<strong>Category Jump</strong>:<br />
+<select name="cid" onchange="this.form.submit();">
+<optgroup label="File Categories">
+<option value="158"> Addons for WoW Classic</option>
+<option value="161">- The Burning Crusade Classic</option>
+<option value="160" selected>- Classic - General</option>
+<option value="23"> Stand-Alone Addons</option>
+<option value="19">- Action Bar Mods</option>
+<option value="94">- Auction House & Vendors</option>
+<option value="138">- Carbonite</option>
+<option value="20">- Bags, Bank, Inventory</option>
+<option value="22">- Buff, Debuff, Spell</option>
+<option value="112">- Casting Bars, Cooldowns</option>
+<option value="18">- Character Advancement</option>
+<option value="55">- Chat Mods</option>
+<option value="39">- Class & Role Specific</option>
+<option value="120">-- Death Knight</option>
+<option value="157">-- Demon Hunter</option>
+<option value="56">-- Druid</option>
+<option value="57">-- Hunter</option>
+<option value="58">-- Mage</option>
+<option value="152">-- Monk</option>
+<option value="59">-- Paladin</option>
+<option value="60">-- Priest</option>
+<option value="61">-- Rogue</option>
+<option value="62">-- Shaman</option>
+<option value="63">-- Warlock</option>
+<option value="64">-- Warrior</option>
+<option value="149">-- DPS</option>
+<option value="150">-- Healers</option>
+<option value="151">-- Tank</option>
+<option value="126">- oUF</option>
+<option value="129">-- oUF: Core</option>
+<option value="127">-- oUF: Layouts</option>
+<option value="128">-- oUF: Plugins</option>
+<option value="25">- Combat Mods</option>
+<option value="26">- Data Mods</option>
+<option value="155">- Garrisons</option>
+<option value="17">- Graphic UI Mods</option>
+<option value="95">- Group, Guild & Friends</option>
+<option value="109">- Info, Plug-in Bars</option>
+<option value="108">-- Data Broker</option>
+<option value="86">-- FuBar</option>
+<option value="99">-- Titan Panel</option>
+<option value="111">-- Other</option>
+<option value="24">- Map, Coords, Compasses</option>
+<option value="97">- Mail</option>
+<option value="100">- Mini Games, ROFL</option>
+<option value="146">- Mounts & Pets</option>
+<option value="96">- PvP, Arena, BattleGrounds</option>
+<option value="45">- Raid Mods</option>
+<option value="114">- RolePlay, Music Mods</option>
+<option value="113">- Suites</option>
+<option value="40">- TradeSkill Mods</option>
+<option value="98">- ToolTip</option>
+<option value="147">- UI Media</option>
+<option value="21">- Unit Mods</option>
+<option value="27">- Miscellaneous</option>
+<option value="154">- Utility Mods</option>
+<option value="28"> Compilations</option>
+<option value="104">- Graphical Compilations</option>
+<option value="106">- Minimalistic Compilations</option>
+<option value="107">- Class Compilations</option>
+<option value="103">- Guild Compilations</option>
+<option value="142">- DPS Compilations</option>
+<option value="141">- Healer Compilations</option>
+<option value="143">- Tank Compilations</option>
+<option value="102">- Generic Compilations</option>
+<option value="125">- nUI</option>
+<option value="130">-- nUI: Core</option>
+<option value="137">-- nUI+ Full Version</option>
+<option value="131">-- nUI: Art</option>
+<option value="136">-- nUI: Enhancements</option>
+<option value="132">-- nUI: Layouts</option>
+<option value="133">-- nUI: HUD Designs</option>
+<option value="134">-- nUI: Unit Frame Panels</option>
+<option value="135">-- nUI: Info Panel Plugins</option>
+<option value="144"> Utilities</option>
+<option value="53">- Libraries</option>
+<option value="35">- Developer Utilities</option>
+<option value="88">- WoW Tools & Utilities</option>
+<option value="145"> Optional</option>
+<option value="34">- Beta-version AddOns</option>
+<option value="33">- Plug-Ins & Patches</option>
+<option value="44">- Discontinued and Outdated Mods</option>
+</optgroup>
+</select><input type="submit" class="button" value="Go" />
+</form>
+</div>
+</div>
+<br />
+<script type="text/javascript">ga('send', 'event', 'AddOns', 'View', 'WOW-25287');</script>
+</div>
+<script>
+  var _comscore = _comscore || [];
+  _comscore.push({ c1: "2", c2: "6036197" });
+  (function() {
+    var s = document.createElement("script"), el = document.getElementsByTagName("script")[0]; s.async = true;
+    s.src = (document.location.protocol == "https:" ? "https://sb" : "http://b") + ".scorecardresearch.com/beacon.js";
+    el.parentNode.insertBefore(s, el);
+  })();
+</script>
+<noscript>
+  <img src="https://sb.scorecardresearch.com/p?c1=2&c2=6036197&cv=2.0&cj=1" />
+</noscript>
+</div>
+
+</div>
+<div id="footer" class="clearfix">
+<div class="horz">
+<div id='Horizontal_BTF'></div><div id='Mobile_320x50_BTF'></div>
+</div>
+<div style="padding:30px 0 30px 20px">
+<div id="sitelinks">
+<div class="itemtitle">WoWInterface</div>
+<ul>
+<li><a href="https://www.wowinterface.com">Home</a></li>
+<li><a href="https://mmoui.com/?s=b5918f5bc99d817f5c9cf423e12f342a&amp;contact" rel="nofollow">Contact WoWInterface</a></li>
+<li><a href="http://mmoui.com/?tos">Terms of Service</a></li>
+<li><a href="http://mmoui.com/?privacy">Privacy Statement</a></li>
+<li><a href="#top" onclick="self.scrollTo(0, 0); return false;">Top</a></li>
+</ul>
+</div>
+<div id="addonsites">
+<div class="itemtitle">AddOn Sites</div>
+<ul>
+<li><a href="http://www.cwmods.com">Cube World Mods</a></li><li><a href="http://www.esoui.com">ESOUI</a></li><li><a href="http://www.eqinterface.com">EQInterface</a></li>
+<li><a href="http://www.eq2interface.com">EQ2Interface</a></li>
+<li><a href="http://www.lotrointerface.com">LotROInterface</a></li>
+<li><a href="http://www.riftui.com">Riftui</a></li>
+<li><a href="http://www.secretui.com">SecretUI</a></li>
+<li><a href="http://www.swtorui.com">Swtorui</a></li>
+<li><a href="https://www.wowinterface.com">WoWInterface</a></li>
+</ul>
+</div>
+<div id="copyright">
+<img src="//cdn-wow.mmoui.com/images/style_mmoi_wowi2/layout/mmoui-copyright.png" width="143" height="37" alt="MMOUI" /><br />
+&copy; 2004 - 2021 MMOUI<br />
+</div>
+<div class="clearfix"></div>
+</div>
+</div>
+</div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+<script src="//cdn-wow.mmoui.com/clientscript/jquery.dcd.doubletaptogo.js?v2"></script>
+<script src="//cdn-wow.mmoui.com/clientscript/common-end.js?v3" type="text/javascript"></script>
+<script type="text/javascript">
+<!--
+	// Main vBulletin Javascript Initialization
+	vBulletin_init();
+//-->
+</script>
+<div id='Pixel_1x1' style='height:1px; width:1px;'></div>
+<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "218309a7b3514c189822501190ba7f48"}'></script>
+<script type="text/javascript">(function(){window['__CF$cv$params']={r:'6f0efa925c1762e5',m:'kOVzlnYw97ntiWa9faWcxZVnGDLw5fanmA.I8CIkih0-1648120420-0-AU7OUkL4AXwtBkZ/VDKmIVvhCuaHzQ8IYmNa55L50MhLc3zQtabWokBjpl4OOP+D1p2jVvwipVTcF9TIc1eAd/hIk23rEP9CokXXKlLnwhtBBSegkeQRYRNR91RLUMQnxrayr9ThZ5Ec0z3/pnq4vAM5VU3Nh6r0JjXr3MNgTWb8',s:[0x6a95d9d1d5,0x6ec210f811],}})();</script></body>
+</html>
