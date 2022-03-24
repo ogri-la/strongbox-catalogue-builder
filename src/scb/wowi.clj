@@ -154,8 +154,6 @@
                  :label url-label})]
     (mapv mkurl page-range)))
 
-
-
 (defn-spec parse-addon-detail-page any?
   [html-snippet any?]
   (let [coerce-releases
@@ -186,8 +184,38 @@
          _ categories]
         (select html-snippet #{[:.TabTab second :td]
                                [:.tomboxinner :td]})
-        
-        ]
+
+        ;; "archived files"
+        arc (select html-snippet [:div#other_t [:div (html/nth-of-type 3)] :tr])
+        arc (rest (html/at arc
+                     ;; the filename column has two identical links. remove the first one, it looks like a JS anchor
+                     [[html/first-of-type :a]] nil
+                     ;; removes (most) whitespace
+                     [html/whitespace] nil))
+
+        kv (fn [k]
+             (fn [x]
+               {k (html/text x)}))
+
+        arc (html/at arc
+                     ;; extract the filename and it's link from the filename column
+                     [:tr [html/first-of-type :td]]
+                     (fn [td]
+                       (let [a (-> td :content  first :content second)]
+                         {:name (-> a :content first)
+                          :download-url (str host (-> a :attrs :href))}))
+
+                     ;; each transformation consumes a `:td`, so it's `first-of-type` each time
+                     [:tr [html/first-of-type :td]] (kv :version)
+                     [:tr [html/first-of-type :td]] (kv :size) ;; todo: convert to bytes perhaps?
+                     [:tr [html/first-of-type :td]] (kv :author)
+                     ;; comp'ing `kv` here seems to work as `html/text` returns text if given text :) 
+                     [:tr [html/first-of-type :td]] (comp (kv :date) format-wowinterface-dt html/text)
+                     )
+
+        ;; we now have something like: [{:tag :tr, :content [{:name "..."}, {:size "..."}, ...]}, ...]
+        ;; convert it into a single list of maps [{...}, {...}, ...]
+        archived-files (mapv #(into {} (:content %)) arc)]
     
     {:dt-updated (some-> dt-updated :content first format-wowinterface-dt)
      :dt-created (some-> dt-created :content first format-wowinterface-dt)
@@ -199,6 +227,7 @@
      :latest-release (->> (select html-snippet [:.infobox :div#download :a])
                            (map :attrs)
                            (map coerce-releases))
+     :archived-files archived-files
 
      }))
 
