@@ -117,7 +117,6 @@
 (defn-spec download nil?
   [url (s/or :url-string ::sp/url, :url-map ::sp/url-map)]
   (let [[url label] (if (map? url) (utils/select-vals url [:url :label]) [url nil])]
-    (debug "got url" url "with label" label)
     (when-let [response (-download url)]
       (put-item (get-state :downloaded-content-queue) (cond-> {:url url :response response}
                                                         label (assoc :label label)))))
@@ -252,8 +251,10 @@
   "Returns a simple `spit` file appender for Clojure."
   [fname]
   (let [lock (Object.)]
-    (fn self [{:keys [output_ ?meta] :as data}]
+    (fn self [{:keys [vargs output_ ?meta] :as data}]
       (let [output (force output_) ; Must deref outside lock, Ref. #330
+            stacktrace-output (when-let [exc (first vargs)]
+                                (timbre/stacktrace  exc))
             payload-output (if-let [p (some-> ?meta :payload)]
                              (str "payload:\n" (utils/pprint p))
                              (str "payload: nil"))]
@@ -262,6 +263,9 @@
             (with-open [^java.io.BufferedWriter w (clojure.java.io/writer fname :append true)]
               (.write w ^String output)
               (.newLine w)
+              (when stacktrace-output
+                (.write w ^String stacktrace-output)
+                (.newLine w))
               (.write w ^String payload-output)
               (.newLine w))
 
@@ -273,7 +277,7 @@
   []
   (timbre/merge-config! timbre/default-config) ;; reset
   (let [default-logging-config
-        {:min-level :debug
+        {:min-level :info
 
          :timestamp-opts {;;:pattern "yyyy-MM-dd HH:mm:ss.SSS"
                           :pattern "HH:mm:ss.SSS"
@@ -283,7 +287,7 @@
          :appenders {:spit {:enabled? true
                             :async? false
                             :output-fn :inherit
-                            :min-level :warn
+                            :min-level :error
                             :fn (custom-spit-appender state-log-file-path)}
                      :println {:enabled? true
                                :async? false
