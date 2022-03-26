@@ -16,6 +16,8 @@
   (:import
    [org.apache.commons.io IOUtils]))
 
+(def expiry-offset-hours 999) ;; doesn't matter too much at this stage.
+
 (defn-spec url-ext (s/or :ok string? :missing nil?)
   "returns the extension from a given `url` or `nil` if one can't be extracted."
   [url ::sp/url]
@@ -75,8 +77,6 @@
       (.close os)))
   response)
 
-(def expiry-offset-hours 48) ;; doesn't matter too much at this stage.
-
 (defn file-older-than
   [path offset-hours]
   (let [now-ms (inst-ms (java.time.Instant/now))
@@ -111,6 +111,7 @@
 
         ;; clj-http options that can be passed through to the request, if they exist
         config (merge config (select-keys opts [:as :http-client :query-params]))]
+    (Thread/sleep 250) ;; at most, one thread will only ever be able to do 4requests/second
     (info "downloading" url) ;; "with opts" config)
     (http/get url config)))
 
