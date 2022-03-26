@@ -55,6 +55,11 @@
     ;; downloaded item
     (contains? downloaded-item :response) (-> downloaded-item :response :body html/html-snippet)))
 
+(defn swallow
+  [x match]
+  (when-not (= x match)
+    x))
+
 (defn-spec -format-wowinterface-dt string?
   "formats a shitty US-style m/d/y date with a shitty 12 hour time component and no timezone
   into a glorious RFC3399 formatted UTC string."
@@ -83,6 +88,10 @@
   ;; fileinfo.php?s=c33edd26881a6a6509fd43e9a871809c&amp;id=23145 => 23145
   (-> a :attrs :href (clojure.string/split #"&.+=") last utils/to-int))
 
+(defn extract-source-id-2
+  [s]
+  (Integer/parseInt (last (re-find (re-matcher #"info(\d+)$" s)))))
+
 (defn extract-addon-url
   [a]
   (str host "/downloads/info" (extract-source-id a)))
@@ -105,7 +114,7 @@
                         ;; preserve links to category group pages so we can identify them later
                         href
                         ;; => https://www.wowinterface.com/downloads/index.php?cid=160&sb=dec_date&so=desc&pt=f&page=1
-                        (str host, "/downloads", cat-id, sort-by, another-sort-by, pt, page))))
+                        (str host, "/downloads/", cat-id, sort-by, another-sort-by, pt, page))))
         extractor (fn [cat]
                     {:label (-> cat :content first)
                      :url (-> cat :attrs :href final-url)})]
@@ -153,9 +162,10 @@
                  :label url-label})]
     (mapv mkurl page-range)))
 
-(defn-spec parse-addon-detail-page any?
-  [html-snippet any?]
-  (let [coerce-releases
+(defn-spec parse-addon-detail-page :result/map
+  [downloaded-item :result/downloaded-item]
+  (let [html-snippet (to-html downloaded-item)
+        coerce-releases
         (fn [row]
           {;; this could be guessed by splitting on the hyphen and then removing common elements between releases.
            ;; would only work on multiple downloads.
@@ -214,19 +224,24 @@
 
         ;; we now have something like: [{:tag :tr, :content [{:name "..."}, {:size "..."}, ...]}, ...]
         ;; convert it into a single list of maps [{...}, {...}, ...]
-        archived-files (mapv #(into {} (:content %)) arc)]
+        archived-files (mapv #(into {} (:content %)) arc)
 
-    {:dt-updated (some-> dt-updated :content first format-wowinterface-dt)
-     :dt-created (some-> dt-created :content first format-wowinterface-dt)
-     :download-count (some-> num-downloads :content first (clojure.string/replace #"," "") Integer/parseInt)
-     :favourite-count (some-> num-favourites :content first (clojure.string/replace #"," "") Integer/parseInt)
-     :md5 (some-> md5 :content first :attrs :value)
-     :category-list (set (select categories [:a html/text]))
-     :latest-release-versions version-strings
-     :latest-release (->> (select html-snippet [:.infobox :div#download :a])
-                          (map :attrs)
-                          (map coerce-releases))
-     :archived-files archived-files}))
+        struct
+        {:source :wowinterface
+         :source-id (extract-source-id-2 (:url downloaded-item))
+         :dt-updated (some-> dt-updated :content first format-wowinterface-dt)
+         :dt-created (some-> dt-created :content first (swallow "unknown") format-wowinterface-dt)
+         :download-count (some-> num-downloads :content first (clojure.string/replace #"," "") Integer/parseInt)
+         :favourite-count (some-> num-favourites :content first (clojure.string/replace #"," "") Integer/parseInt)
+         :md5 (some-> md5 :content first :attrs :value)
+         :category-list (set (select categories [:a html/text]))
+         :latest-release-versions version-strings
+         :latest-release (->> (select html-snippet [:.infobox :div#download :a])
+                              (map :attrs)
+                              (map coerce-releases))
+         :archived-files archived-files}
+         ]
+    {:parsed [struct]}))
 
 (defn-spec parse-category-listing :result/map
   "returns a mixed list of urls and addon data."
@@ -264,4 +279,5 @@
   ;; so we need to parse the content and look at the structure.
   (cond
     (category-group-page? (:url downloaded-item)) (parse-category-group-page (to-html downloaded-item))
-    (category-listing-page? (:url downloaded-item)) (parse-category-listing downloaded-item)))
+    (category-listing-page? (:url downloaded-item)) (parse-category-listing downloaded-item)
+    :else (parse-addon-detail-page downloaded-item)))
