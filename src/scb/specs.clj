@@ -50,7 +50,7 @@
                                     :addon/download-count
                                     :addon/category-list ::set-of-strings]))
 
-(s/def :result/download (s/coll-of ::url-map))
+(s/def :result/download (s/coll-of (s/or :map ::url-map, :string ::url)))
 (s/def :result/parsed (s/coll-of :addon/part))
 
 (s/def :result/map (s/keys :opt-un [:result/download :result/parsed]))
