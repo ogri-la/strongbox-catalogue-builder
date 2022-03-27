@@ -14,6 +14,7 @@
     [utils :as utils]
     [specs :as sp]])
   (:import
+   [java.io File FileInputStream FileOutputStream]
    [org.apache.commons.io IOUtils]))
 
 (def expiry-offset-hours 999) ;; doesn't matter too much at this stage.
@@ -56,9 +57,9 @@
   [cache-file ::sp/extant-file]
   (debug "Cache hit:" cache-file)
   (let [;; fml: https://stackoverflow.com/questions/26790881/clojure-file-to-byte-array
-        f (java.io.File. ^String cache-file)
+        ^File f (File. ^String cache-file)
         ary (byte-array (.length f))
-        is (java.io.FileInputStream. f)
+        ^FileInputStream is (FileInputStream. f)
         _ (.read is ary)
         data (-> ary nippy/thaw)]
     (.close is)
@@ -68,11 +69,11 @@
   [response :http/response, cache-file ::sp/file]
   (debug "Cache miss:" cache-file)
   (when (http/success? response)
-    (let [f (java.io.File. ^String cache-file)
-          os (java.io.FileOutputStream. f)
-          data (-> response
-                   (dissoc :http-client)
-                   nippy/freeze)]
+    (let [^File f (java.io.File. ^String cache-file)
+          ^FileOutputStream os (FileOutputStream. f)
+          ^bytes data (-> response
+                          (dissoc :http-client)
+                          nippy/freeze)]
       (.write os data)
       (.close os)))
   response)

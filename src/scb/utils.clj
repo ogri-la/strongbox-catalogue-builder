@@ -70,3 +70,7 @@
 (defn url-params
   [url]
   (some-> url clj-http.client/parse-url :query-string request-to-keywords))
+
+(defn ^Integer str-to-int
+  [^String x]
+  (Integer/parseInt x))

@@ -1,6 +1,7 @@
 (ns scb.user
   (:require
    [net.cgrand.enlive-html :as html :refer [select]]
+   [clojure.pprint]
    [clojure.test]
    [me.raynes.fs :as fs]
    [gui.diff :refer [with-gui-diff]]
@@ -85,7 +86,10 @@
       (wowi/parse-category-listing downloaded-item))
 
   (clojure.pprint/pprint
-   (->> "test/fixtures/wowinterface--addon-detail--multiple-downloads--no-tabber.html" fs/absolute fs/normalized str wowi/to-html wowi/parse-addon-detail-page)))
+   ;;(->> "test/fixtures/wowinterface--addon-detail--multiple-downloads--no-tabber.html" fs/absolute fs/normalized str wowi/to-html wowi/parse-addon-detail-page)))
+   (wowi/parse-addon-detail-page
+    {:url "https://www.wowinterface.com/downloads/info24155"
+     :response {:body (->> "test/fixtures/wowinterface--addon-detail--unknown-compatibility.html" fs/absolute fs/normalized str slurp)}})))
 
 ;; ---
 

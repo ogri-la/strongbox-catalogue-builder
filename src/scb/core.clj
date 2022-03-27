@@ -3,6 +3,8 @@
    [scb
     [specs :as sp]
     [utils :as utils]]
+   [clojure.java.io]
+   [clojure.data.json :as json]
    [clojure.spec.alpha :as s]
    [orchestra.core :refer [defn-spec]]
    [scb.http :as http]
@@ -56,7 +58,7 @@
 
 (defn put-item
   [q i]
-  (.add q i))
+  (.add ^LinkedBlockingQueue q i))
 
 (defn put-all
   [q l]
@@ -68,7 +70,7 @@
   returns a pair of [item, return-fn]
   call `return-fn` to return the given item to the origin queue."
   [q]
-  (let [item (.take q)]
+  (let [item (.take ^LinkedBlockingQueue q)]
     [item #(do (debug "restoring item")
                (put-item q item))]))
 
@@ -81,7 +83,7 @@
 (defn drain-queue
   [q]
   (let [c (Vector.)]
-    (.drainTo q c)
+    (.drainTo ^LinkedBlockingQueue q c)
     (vec c)))
 
 ;; --- utils
@@ -164,13 +166,24 @@
 
 ;; --- storing
 
-(defn store-content-worker
-  "takes parsed content and sticks into a database"
+(defn json-slurp
+  [path]
+  (when (fs/exists? path)
+    (-> path slurp json/read-str)))
+
+(defn json-spit
+  [path data]
+  (->> data json/write-str (spit path)))
+
+(defn write-content-worker
+  "takes parsed content and writes to the fs"
   []
   (while true
-    (let [[item _] (take-item (get-state :parsed-content-queue))]
+    (let [[item _] (take-item (get-state :parsed-content-queue))
+          ;; /path/to/state/wowinterface--12345.json
+          output-path (fs/file *state-path* (format "%s--%s.json" (name (:source item)) (:source-id item)))]
       (try
-        (swap! state update-in [:catalogue (:source item) (:source-id item)] merge item)
+        (json-spit output-path (merge (json-slurp output-path) item))
         (catch Exception exc
           (error* "unhandled exception storing content" :exc exc :payload item))))))
 
@@ -251,7 +264,7 @@
   "Returns a simple `spit` file appender for Clojure."
   [fname]
   (let [lock (Object.)]
-    (fn self [{:keys [vargs output_ ?meta] :as data}]
+    (fn self [{:keys [vargs output_ ?meta]}]
       (let [output (force output_) ; Must deref outside lock, Ref. #330
             stacktrace-output (when-let [exc (first vargs)]
                                 (timbre/stacktrace  exc))
@@ -318,7 +331,7 @@
   (thaw-state state-file-path)
   (run-worker download-worker)
   (run-worker parser-worker)
-  (run-worker store-content-worker)
+  (run-worker write-content-worker)
   nil)
 
 (defn stop

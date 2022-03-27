@@ -12,7 +12,7 @@
                  [org.flatland/ordered "1.5.9"] ;; gui-diff bumped transitive dependency
                  [clj-commons/fs "1.6.310"]
                  [clj-http-fake "1.0.3"] ;; fake http responses for testing
-                 
+                 [org.clojure/data.json "2.4.0"]
                  [com.taoensso/timbre "5.1.2"]
 
                  [com.taoensso/nippy "3.1.1"] ;; great serialisation/deserialisation

@@ -43,7 +43,7 @@
   "returns `true` if the given `url` is a list of addons."
   [url ::sp/url]
   ;; check for presence of a 'page' url parameter. addons and category group pages won't be paginated. 
-  (boolean (some-> url utils/url-params :page Integer/valueOf)))
+  (boolean (some-> url utils/url-params :page utils/str-to-int)))
 
 (defn to-html
   [downloaded-item]
@@ -90,7 +90,7 @@
 
 (defn extract-source-id-2
   [s]
-  (Integer/parseInt (last (re-find (re-matcher #"info(\d+)$" s)))))
+  (utils/str-to-int (last (re-find (re-matcher #"info(\d+)$" s)))))
 
 (defn extract-addon-url
   [a]
@@ -185,6 +185,14 @@
             (clojure.string/split #", "))
         version-strings (mapv #(clojure.string/split % #": ") version-strings)
 
+        infobox
+        (select html-snippet #{[:.TabTab second :td] ;; handles tabber when images are present
+                               [:.tomboxinner :td]}) ;; no tabber
+
+        ;; sometimes the list of compatibile game versions is missing.
+        no-compatibility? (-> infobox first html/text (= "Updated:"))
+        infobox (if no-compatibility? (into [nil nil] infobox) infobox)
+
         [compat-key compat-val
          _ dt-updated
          _ dt-created
@@ -192,8 +200,7 @@
          _ num-favourites
          _ md5
          _ categories]
-        (select html-snippet #{[:.TabTab second :td] ;; handles tabber when images are present
-                               [:.tomboxinner :td]}) ;; no tabber
+        infobox
 
         ;; "archived files"
         arc (select html-snippet [:div#other_t [:div (html/nth-of-type 3)] :tr])
@@ -231,16 +238,15 @@
          :source-id (extract-source-id-2 (:url downloaded-item))
          :dt-updated (some-> dt-updated :content first format-wowinterface-dt)
          :dt-created (some-> dt-created :content first (swallow "unknown") format-wowinterface-dt)
-         :download-count (some-> num-downloads :content first (clojure.string/replace #"," "") Integer/parseInt)
-         :favourite-count (some-> num-favourites :content first (clojure.string/replace #"," "") Integer/parseInt)
+         :download-count (some-> num-downloads :content first (clojure.string/replace #"," "") utils/str-to-int)
+         :favourite-count (some-> num-favourites :content first (clojure.string/replace #"," "") utils/str-to-int)
          :md5 (some-> md5 :content first :attrs :value)
          :category-list (set (select categories [:a html/text]))
          :latest-release-versions version-strings
          :latest-release (->> (select html-snippet [:.infobox :div#download :a])
                               (map :attrs)
                               (map coerce-releases))
-         :archived-files archived-files}
-         ]
+         :archived-files archived-files}]
     {:parsed [struct]}))
 
 (defn-spec parse-category-listing :result/map
