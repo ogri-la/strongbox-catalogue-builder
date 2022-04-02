@@ -112,7 +112,8 @@
 
         ;; clj-http options that can be passed through to the request, if they exist
         config (merge config (select-keys opts [:as :http-client :query-params]))]
-    (Thread/sleep 250) ;; at most, one thread will only ever be able to do 4requests/second
+    ;;(Thread/sleep 250) ;; at most, one thread will only ever be able to do 4requests/second
+    (Thread/sleep 1000)
     (info "downloading" url) ;; "with opts" config)
     (http/get url config)))
 

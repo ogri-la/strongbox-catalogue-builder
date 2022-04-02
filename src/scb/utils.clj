@@ -1,8 +1,10 @@
 (ns scb.utils
   (:require
+   [flatland.ordered.map :as omap]
    [taoensso.timbre :as timbre :refer [debug info warn error spy]]
    [me.raynes.fs :as fs]
    [clojure.spec.alpha :as s]
+   [clojure.data.json]
    [orchestra.spec.test :as st]
    [clj-http.client]
    [orchestra.core :refer [defn-spec]]
@@ -74,3 +76,29 @@
 (defn ^Integer str-to-int
   [^String x]
   (Integer/parseInt x))
+
+(defn prefix-keys
+  [m p]
+  (let [rename-map
+        (into {}
+              (map (fn [k]
+                     [k (->> k name (str p "/") keyword)]) (keys m)))]
+    (clojure.set/rename-keys m rename-map)))
+
+(defn keyword-name
+  "like `(name :foo/bar)` but preserves namespaces.
+  the reverse `(keyword \"foo/bar\")` will preserve the namespace."
+  [kw]
+  (str (.-sym kw)))
+
+(defn from-json
+  [x]
+  (some-> x (clojure.data.json/read-str :key-fn keyword)))
+
+(defn-spec to-json string?
+  [x any?]
+  (with-out-str (clojure.data.json/pprint x :escape-slash false, :key-fn keyword-name)))
+
+(defn-spec order-map map?
+  [m map?]
+  (into (omap/ordered-map) (sort m)))

@@ -16,6 +16,10 @@
 
 (def host "https://www.wowinterface.com")
 
+(def api-host "https://api.mmoui.com/v4/game/WOW")
+
+(def api-file-list "https://api.mmoui.com/v4/game/WOW/filelist.json")
+
 (def category-group-page-list
   ["/downloads/index.php" "/addons.php" ;; landing page
    "/downloads/cat39.html" ;; Class & Role Specific
@@ -28,6 +32,10 @@
    "/downloads/cat144.html" ;; Utilities
    "/downloads/cat145.html" ;; Optional
    ])
+
+(defn-spec file-list? boolean?
+  [url ::sp/url]
+  (= url api-file-list))
 
 (defn-spec category-group-page? boolean?
   "returns `true` if the given `url` is a list of category groups"
@@ -95,6 +103,10 @@
 (defn extract-addon-url
   [a]
   (str host "/downloads/info" (extract-source-id a)))
+
+(defn-spec api-addon-url ::sp/url
+  [source-id :addon/source-id]
+  (str api-host "/filedetails/" source-id ".json"))
 
 ;; ---
 
@@ -250,7 +262,7 @@
     {:parsed [struct]}))
 
 (defn-spec parse-category-listing :result/map
-  "returns a mixed list of urls and addon data."
+  "returns a mixed list of urls and addon data from a page of a category's addon list."
   [downloaded-item :result/downloaded-item]
   (let [url (:url downloaded-item)
         html-snippet (to-html downloaded-item)
@@ -275,6 +287,39 @@
      :parsed addon-list}))
 
 ;;
+
+(defn-spec parse-api-file-list :result/map
+  [downloaded-item :result/downloaded-item]
+  (let [process-addon (fn [addon]
+                        (let [addon (utils/prefix-keys addon "wowi")]
+                          (merge addon
+                                 ;; todo: prefix these with 'sb'
+                                 {:source-id (:wowi/id addon)
+                                  :source :wowinterface
+                                  :api-url (api-addon-url (:wowi/id addon))
+                                  })))
+
+        addon-list (->> downloaded-item
+                        :response
+                        :body
+                        utils/from-json
+                        (mapv process-addon))
+        
+        ]
+    {:download (mapv :api-url addon-list)
+     :parsed addon-list}))
+
+(defn-spec parse-api-addon-detail nil?
+  [downloaded-item :result/downloaded-item]
+  nil)
+
+;;
+
+(defmethod core/parse-content "api.mmoui.com"
+  [downloaded-item]
+  (cond
+    (file-list? (:url downloaded-item)) (parse-api-file-list downloaded-item)
+    :else (parse-api-addon-detail downloaded-item)))
 
 (defmethod core/parse-content "www.wowinterface.com"
   [downloaded-item]

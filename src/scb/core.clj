@@ -27,6 +27,12 @@
     (timbre/error ^:meta {:payload payload} exc msg)
     (timbre/error exc msg)))
 
+(defn state-dir
+  []
+  ;;(utils/temp-dir)
+  (str (fs/file fs/*cwd* "state")) ;; "/path/to/strongbox-catalogue-builder/state"
+  )
+
 ;; --- state wrangling
 
 (def -state-template
@@ -39,7 +45,7 @@
 (def queue-list [:download-queue :downloaded-content-queue :parsed-content-queue])
 (def state nil)
 
-(def ^:dynamic *state-path* (-> (utils/temp-dir) (fs/file "scb") str)) ;; /path/to/state
+(def ^:dynamic *state-path* (state-dir)) ;; /path/to/state
 (def state-file-path (->> "state.edn" (fs/file *state-path*) str)) ;; /path/to/state/state.edn
 (def state-http-cache-path (->> "http" (fs/file *state-path*) str)) ;; /path/to/state/http
 (def state-log-file-path (->> "log" (fs/file *state-path*) str)) ;; /path/to/state/log
@@ -149,7 +155,7 @@
     (-> downloaded-item :url java.net.URL. .getHost)))
 
 (defn parser-worker
-  "pulls items from the `downloaded-content-queue`, parses it and adds the items in the `:result/map` to the proper queues."
+  "takes items from `downloaded-content-queue`, parses it and adds the items in the `:result/map` to the proper queues."
   []
   (while true
     (let [[item _] (take-item (get-state :downloaded-content-queue))]
@@ -169,11 +175,13 @@
 (defn json-slurp
   [path]
   (when (fs/exists? path)
-    (-> path slurp json/read-str)))
+    (locking path
+      (-> path slurp utils/from-json))))
 
 (defn json-spit
-  [path data]
-  (->> data json/write-str (spit path)))
+  [data path]
+  (locking path
+    (->> data utils/to-json (spit path))))
 
 (defn write-content-worker
   "takes parsed content and writes to the fs"
@@ -181,9 +189,13 @@
   (while true
     (let [[item _] (take-item (get-state :parsed-content-queue))
           ;; /path/to/state/wowinterface--12345.json
-          output-path (fs/file *state-path* (format "%s--%s.json" (name (:source item)) (:source-id item)))]
+          output-path (fs/file *state-path* (format "%s--%s.json" (name (:source item)) (:source-id item)))
+          existing-item (json-slurp output-path)]
       (try
-        (json-spit output-path (merge (json-slurp output-path) item))
+        (-> existing-item
+            (merge item)
+            utils/order-map
+            (json-spit output-path))
         (catch Exception exc
           (error* "unhandled exception storing content" :exc exc :payload item))))))
 
@@ -227,6 +239,11 @@
                 (info "worker is done."))))]
     (add-cleanup #(future-cancel f))
     nil))
+
+(defn run-many-workers
+  [worker-fn num-instances]
+  (dotimes [_ num-instances]
+    (run-worker worker-fn)))
 
 ;; --- init
 
@@ -330,8 +347,8 @@
   (init-state-dirs)
   (thaw-state state-file-path)
   (run-worker download-worker)
-  (run-worker parser-worker)
-  (run-worker write-content-worker)
+  (run-many-workers parser-worker 5)
+  (run-many-workers write-content-worker 5)
   nil)
 
 (defn stop

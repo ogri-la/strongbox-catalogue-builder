@@ -20,7 +20,7 @@
   (let [;; /tmp/scb-test.1642030630883-1255099235
         temp-dir-path (-> "scb-test." fs/temp-dir str utils/expand-path)]
     (try
-      (with-redefs [utils/temp-dir (constantly temp-dir-path)]
+      (with-redefs [core/state-dir (constantly temp-dir-path)]
         (fs/with-cwd temp-dir-path
           (debug "created temp working directory" fs/*cwd*)
           (f)))
