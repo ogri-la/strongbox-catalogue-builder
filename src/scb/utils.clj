@@ -9,6 +9,8 @@
    [clj-http.client]
    [orchestra.core :refer [defn-spec]]
    [clojure.pprint]
+   [clojure.set]
+   [clojure.string]
    [scb
     [specs :as sp]]))
 
@@ -89,7 +91,7 @@
   "like `(name :foo/bar)` but preserves namespaces.
   the reverse `(keyword \"foo/bar\")` will preserve the namespace."
   [kw]
-  (str (.-sym kw)))
+  (str (.-sym ^clojure.lang.Keyword kw)))
 
 (defn from-json
   [x]

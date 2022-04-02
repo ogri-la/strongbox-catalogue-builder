@@ -2,12 +2,16 @@
   (:require
    [net.cgrand.enlive-html :as html :refer [select]]
    [clojure.pprint]
-   [clojure.test]
+   [clojure.test :as clj-test]
    [me.raynes.fs :as fs]
    [gui.diff :refer [with-gui-diff]]
    [scb
+    [utils :as utils]
+    [http :as http]
     [wowi :as wowi]
-    [core :as core]]))
+    [core :as core]])
+  (:import
+   [java.util.concurrent LinkedBlockingQueue]))
 
 (comment "user interface to catalogue builder")
 
@@ -42,10 +46,10 @@
             (if fn-kw
               ;; `test-vars` will run the test but not give feedback if test passes OR test not found
               ;; slightly better than nothing
-              (clojure.test/test-vars [(resolve (symbol (str "scb." (name ns-kw) "-test") (name fn-kw)))])
-              (clojure.test/run-all-tests (re-pattern (str "scb." (name ns-kw) "-test")))))
+              (clj-test/test-vars [(resolve (symbol (str "scb." (name ns-kw) "-test") (name fn-kw)))])
+              (clj-test/run-all-tests (re-pattern (str "scb." (name ns-kw) "-test")))))
           (println "unknown test file:" ns-kw))
-        (clojure.test/run-all-tests #"scb\..*-test")))
+        (clj-test/run-all-tests #"scb\..*-test")))
     (finally
       ;; use case: we run the tests from the repl and afterwards we call `restart` to start the app.
       ;; `stop` inside `restart` will be outside of `with-redefs` and still have logging `:min-level` set to `:debug`
@@ -62,7 +66,7 @@
                   ;;http/*default-attempts* 1
                            ]
                (with-gui-diff
-                 (clojure.test/run-all-tests #"scb\..*-test")))
+                 (clj-test/run-all-tests #"scb\..*-test")))
              (finally
                nil)))
 
@@ -85,11 +89,20 @@
                                       :body html-snippet}}]
       (wowi/parse-category-listing downloaded-item))
 
-  (clojure.pprint/pprint
+  ;;(clojure.pprint/pprint
    ;;(->> "test/fixtures/wowinterface--addon-detail--multiple-downloads--no-tabber.html" fs/absolute fs/normalized str wowi/to-html wowi/parse-addon-detail-page)))
-   (wowi/parse-addon-detail-page
-    {:url "https://www.wowinterface.com/downloads/info24155"
-     :response {:body (->> "test/fixtures/wowinterface--addon-detail--unknown-compatibility.html" fs/absolute fs/normalized str slurp)}})))
+   ;;(wowi/parse-addon-detail-page
+   ;; {:url "https://www.wowinterface.com/downloads/info24155"
+   ;;  :response {:body (->> "test/fixtures/wowinterface--addon-detail--unknown-compatibility.html" fs/absolute fs/normalized str slurp)}})))
+   ;;(->> (wowi/parse-api-file-list {:url wowi/api-file-list
+   ;;                               :response (http/download wowi/api-file-list {})})
+   ;;    :parsed
+   ;;    (take 100))))
+  (let [resp (wowi/parse-api-addon-detail {:url "https://api.mmoui.com/v4/game/WOW/filedetails/5332.json"
+                                           :response (http/download "https://api.mmoui.com/v4/game/WOW/filedetails/5332.json" {})})]
+    (clojure.pprint/pprint resp)
+    (println "-----")
+    resp))
 
 ;; ---
 
@@ -102,7 +115,7 @@
   (if-not (core/started?)
     (println "start app first: `(core/start)`")
     (run! (fn [qkw]
-            (println (format "%s items in %s" (.size (core/get-state qkw)) qkw)))
+            (println (format "%s items in %s" (.size ^LinkedBlockingQueue (core/get-state qkw)) qkw)))
           core/queue-list)))
 
 (defn download-url
