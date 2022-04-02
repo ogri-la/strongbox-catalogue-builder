@@ -1,7 +1,7 @@
 (ns scb.wowi
   (:require
    [slugger.core :refer [->slug] :rename {->slug slugify}]
-   [clojure.spec.alpha :as s]
+   ;;[clojure.spec.alpha :as s]
    [orchestra.core :refer [defn-spec]]
    [me.raynes.fs :as fs]
    [clojure.string :refer [trim lower-case upper-case]]
@@ -205,7 +205,7 @@
         no-compatibility? (-> infobox first html/text (= "Updated:"))
         infobox (if no-compatibility? (into [nil nil] infobox) infobox)
 
-        [compat-key compat-val
+        [_ _ ;; compat-key compat-val
          _ dt-updated
          _ dt-created
          _ num-downloads
@@ -216,11 +216,12 @@
 
         ;; "archived files"
         arc (select html-snippet [:div#other_t [:div (html/nth-of-type 3)] :tr])
-        arc (rest (html/at arc
-                     ;; the filename column has two identical links. remove the first one, it looks like a JS anchor
-                     [[html/first-of-type :a]] nil
-                     ;; removes (most) whitespace
-                     [html/whitespace] nil))
+        arc (rest
+             (html/at arc
+                      ;; the filename column has two identical links. remove the first one, it looks like a JS anchor
+                      [[html/first-of-type :a]] nil
+                      ;; removes (most) whitespace
+                      [html/whitespace] nil))
 
         kv (fn [k]
              (fn [x]
@@ -296,22 +297,30 @@
                                  ;; todo: prefix these with 'sb'
                                  {:source-id (:wowi/id addon)
                                   :source :wowinterface
-                                  :api-url (api-addon-url (:wowi/id addon))
-                                  })))
+                                  :api-url (api-addon-url (:wowi/id addon))})))
 
         addon-list (->> downloaded-item
                         :response
                         :body
                         utils/from-json
-                        (mapv process-addon))
-        
-        ]
+                        (mapv process-addon))]
+
     {:download (mapv :api-url addon-list)
      :parsed addon-list}))
 
-(defn-spec parse-api-addon-detail nil?
+(defn-spec parse-api-addon-detail :result/map
   [downloaded-item :result/downloaded-item]
-  nil)
+  (let [addon-list (-> downloaded-item :response :body utils/from-json)
+
+        _ (when (> (count addon-list) 1)
+            (warn "wowi, discovered api addon detail with more than one item:" (:url downloaded-item)))
+
+        addon (first addon-list)
+        addon (utils/prefix-keys addon "wowi")
+        updates {:source :wowinterface
+                 :source-id (:wowi/id addon)
+                 :description (some-> addon :wowi/description clojure.string/split-lines first)}]
+    {:parsed [(merge addon updates)]}))
 
 ;;
 
