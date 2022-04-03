@@ -75,6 +75,17 @@
   [url]
   (some-> url clj-http.client/parse-url :query-string request-to-keywords))
 
+(defn strip-url-param
+  [url param]
+  (let [params (dissoc (url-params url) param)
+        query-string (->> params
+                          (mapv (fn [[k v]] (str (name k) "=" v)))
+                          (clojure.string/join "="))]
+    (-> url
+        clj-http.client/parse-url
+        (assoc :query-string query-string)
+        clj-http.client/unparse-url)))
+
 (defn ^Integer str-to-int
   [^String x]
   (Integer/parseInt x))

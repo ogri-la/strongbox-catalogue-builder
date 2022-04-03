@@ -134,22 +134,19 @@
     {:download (mapv extractor cat-list)}))
 
 (defn extract-addon-summary
+  "extracts a snippet of addon information from a listing of addons"
   [snippet]
   (try
-    (let [extract-updated-date #(format-wowinterface-dt
-                                 (-> % (subs 8) trim)) ;; "Updated 09-07-18 01:27 PM " => "09-07-18 01:27 PM"
+    (let [extract-updated-date #(-> % (subs 8) trim) ;; "Updated 09-07-18 01:27 PM " => "09-07-18 01:27 PM"
           anchor (-> snippet (select [[:a (html/attr-contains :href "fileinfo")]]) first)
           label (-> anchor :content first trim)]
-      {:url (extract-addon-url anchor)
-       :name (-> label slugify)
-       :label label
-       :source :wowinterface
+      {:source :wowinterface
        :source-id (extract-source-id anchor)
-       ;;:description nil ;; not available in summary
-       ;;:category-list [] ;; not available in summary, added by caller
-       ;;:created-date nil ;; not available in summary
-       :updated-date (-> snippet (select [:div.updated html/content]) first extract-updated-date)
-       :download-count (-> snippet (select [:div.downloads html/content]) first (clojure.string/replace #"\D*" "") utils/to-int)})
+       :name (-> label slugify)
+       :wowi/url (extract-addon-url anchor)
+       :wowi/title label
+       :wowi/web-updated-date (-> snippet (select [:div.updated html/content]) first extract-updated-date)
+       :wowi/downloads (-> snippet (select [:div.downloads html/content]) first (clojure.string/replace #"\D*" "") utils/to-int)})
     (catch RuntimeException re
       (error* re (format "failed to scrape snippet, excluding from results: %s" (.getMessage re)) :payload snippet))))
 
@@ -183,7 +180,8 @@
            ;; would only work on multiple downloads.
            ;; wouldn't work on single releases
            ;;:version nil 
-           :download-url (str host (:href row))
+           :download-url (let [url (str host (:href row))] ;; https://www.wowinterface.com/downloads/landing.php?s=64f6d79344812e1f152c1fcc54871e2a&fileid=5332
+                           (utils/strip-url-param url :s))     ;; https://www.wowinterface.com/downloads/landing.php?fileid=5332
            :game-track (case (:title row)
                          "WoW Retail" :retail
                          "WoW Classic" :classic
@@ -233,7 +231,8 @@
                      (fn [td]
                        (let [a (-> td :content  first :content second)]
                          {:name (-> a :content first)
-                          :download-url (str host (-> a :attrs :href))}))
+                          :download-url (let [url (str host (-> a :attrs :href))]
+                                          (utils/strip-url-param url :s))}))
 
                      ;; each transformation consumes a `:td`, so it's `first-of-type` each time
                      [:tr [html/first-of-type :td]] (kv :version)
@@ -251,15 +250,17 @@
          :source-id (extract-source-id-2 (:url downloaded-item))
          :dt-updated (some-> dt-updated :content first format-wowinterface-dt)
          :dt-created (some-> dt-created :content first (swallow "unknown") format-wowinterface-dt)
-         :download-count (some-> num-downloads :content first (clojure.string/replace #"," "") utils/str-to-int)
-         :favourite-count (some-> num-favourites :content first (clojure.string/replace #"," "") utils/str-to-int)
-         :md5 (some-> md5 :content first :attrs :value)
-         :category-list (set (select categories [:a html/text]))
-         :latest-release-versions version-strings
-         :latest-release (->> (select html-snippet [:.infobox :div#download :a])
-                              (map :attrs)
-                              (map coerce-releases))
-         :archived-files archived-files}]
+         :wowi/web-updated-date (some-> dt-updated :content first)
+         :wowi/web-created-data (some-> dt-created :content first (swallow "unknown"))
+         :wowi/downloads (some-> num-downloads :content first (clojure.string/replace #"," "") utils/str-to-int)
+         :wowi/favourites (some-> num-favourites :content first (clojure.string/replace #"," "") utils/str-to-int)
+         :wowi/checksum (some-> md5 :content first :attrs :value)
+         :wowi/category-list (set (select categories [:a html/text]))
+         :wowi/latest-release-versions version-strings
+         :wowi/latest-release (->> (select html-snippet [:.infobox :div#download :a])
+                                   (map :attrs)
+                                   (map coerce-releases))
+         :wowi/archived-files archived-files}]
     {:parsed [struct]}))
 
 (defn-spec parse-category-listing :result/map
@@ -280,10 +281,10 @@
                     (let [category (:label downloaded-item)
                           addon-summary (extract-addon-summary addon-html-snippet)]
                       (if category
-                        (assoc addon-summary :category-list #{category})
+                        (assoc addon-summary :wowi/category-list #{category})
                         addon-summary)))
         addon-list (mapv extractor addon-list-html)
-        addon-url-list (mapv :url addon-list)]
+        addon-url-list (mapv :wowi/url addon-list)]
     {:download (into listing-page-list addon-url-list)
      :parsed addon-list}))
 
@@ -319,7 +320,10 @@
         addon (utils/prefix-keys addon "wowi")
         updates {:source :wowinterface
                  :source-id (:wowi/id addon)
-                 :description (some-> addon :wowi/description clojure.string/split-lines first)}]
+                 :description (some-> addon :wowi/description clojure.string/split-lines first)
+                 :latest-release-list #{{:version (:wowi/version addon)
+                                         ;; nfi what 'd' is, it's not neccesary though.
+                                         :download-url (utils/strip-url-param (:wowi/downloadUri addon) :d)}}}]
     {:parsed [(merge addon updates)]}))
 
 ;;
