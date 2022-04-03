@@ -18,6 +18,7 @@
    [org.apache.commons.io IOUtils]))
 
 (def expiry-offset-hours 999) ;; doesn't matter too much at this stage.
+(def delay-between-requests 1000) ;; ms, 1sec
 
 (defn-spec url-ext (s/or :ok string? :missing nil?)
   "returns the extension from a given `url` or `nil` if one can't be extracted."
@@ -67,16 +68,15 @@
 
 (defn-spec spit-cache-file :http/response
   [response :http/response, cache-file ::sp/file]
-  (debug "Cache miss:" cache-file)
-  (when (http/success? response)
-    (let [^File f (java.io.File. ^String cache-file)
-          ^FileOutputStream os (FileOutputStream. f)
-          ^bytes data (-> response
-                          (dissoc :http-client)
-                          nippy/freeze)]
-      (.write os data)
-      (.close os)))
-  response)
+  (locking cache-file
+    (when (http/success? response)
+      (let [^File f (java.io.File. ^String cache-file)
+            ^FileOutputStream os (FileOutputStream. f)
+            ^bytes data (-> response
+                            (dissoc :http-client)
+                            nippy/freeze)]
+        (.write os data)
+        (.close os)))))
 
 (defn file-older-than
   [path offset-hours]
@@ -112,8 +112,6 @@
 
         ;; clj-http options that can be passed through to the request, if they exist
         config (merge config (select-keys opts [:as :http-client :query-params]))]
-    ;;(Thread/sleep 250) ;; at most, one thread will only ever be able to do 4requests/second
-    (Thread/sleep 1000)
     (info "downloading" url) ;; "with opts" config)
     (http/get url config)))
 
@@ -121,7 +119,7 @@
   "downloads the given `url` and returns the http response.
   use `download-file` to download a large/non-textual file.
   accepts a map with the keys: `cache-root`, default is the system temp dir. pass `nil` or use `-download` directly to skip caching."
-  [url & [{:keys [cache-root], :or {cache-root :temp-dir}  :as opts}]]
+  [url & [{:keys [cache-root, delay], :or {cache-root :temp-dir, delay delay-between-requests}  :as opts}]]
   (let [;; lets us rebind utils/temp-dir during tests
         cache-root (if (= cache-root :temp-dir)
                      (utils/temp-dir)
@@ -132,7 +130,16 @@
       (let [cache-file (cache-key url opts cache-root)]
         (if (cache-hit? cache-file)
           (slurp-cache-file cache-file)
-          (spit-cache-file (-download url opts) cache-file))))))
+          (let [_ (debug (format "cache miss \"%s\": %s" url cache-file))
+                resp (-download url opts)]
+            (future
+              (spit-cache-file resp cache-file))
+
+            ;; todo: this delay needs to become host-specific
+            (warn "sleeping for" delay)
+            (Thread/sleep delay)
+
+            resp))))))
 
 (defn download-file
   [url]

@@ -36,7 +36,7 @@
 (defmacro with-running-app+opts
   [opts & form]
   `(try
-     (core/start) ;;(merge {:ui :cli} ~opts))
+     (core/start)
      ~@form
      (finally
        (println "calling stop")

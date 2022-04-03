@@ -62,9 +62,10 @@
                         ;; ...
                         ))
 
-(s/def :http/response (s/keys :req-un [:http/headers
-                                       :http/body
+(s/def :http/response (s/keys :req-un [:http/body
                                        ;; ...
+                                       ]
+                              :opt-un [:http/headers ;; typically not present during testing
                                        ]))
 
 (s/def :result/downloaded-item (s/keys :req-un [::url :http/response]

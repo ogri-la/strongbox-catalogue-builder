@@ -1,5 +1,6 @@
 (ns scb.user
   (:require
+   [taoensso.timbre :as timbre :refer [debug info warn error spy]]
    [net.cgrand.enlive-html :as html :refer [select]]
    [clojure.pprint]
    [clojure.test :as clj-test]
@@ -26,6 +27,7 @@
   (try
     ;; note! remember to update `cloverage.clj` with any new bindings
     (with-redefs [core/testing? true
+                  http/delay-between-requests 0
                   ;;http/*default-pause* 1 ;; ms
                   ;;http/*default-attempts* 1
                   ;; don't pause while testing. nothing should depend on that pause happening.
@@ -40,16 +42,19 @@
                   ]
       ;;(core/reset-logging!)
 
-      (if ns-kw
-        (if (some #{ns-kw} ns-list)
-          (with-gui-diff
-            (if fn-kw
-              ;; `test-vars` will run the test but not give feedback if test passes OR test not found
-              ;; slightly better than nothing
-              (clj-test/test-vars [(resolve (symbol (str "scb." (name ns-kw) "-test") (name fn-kw)))])
-              (clj-test/run-all-tests (re-pattern (str "scb." (name ns-kw) "-test")))))
-          (println "unknown test file:" ns-kw))
-        (clj-test/run-all-tests #"scb\..*-test")))
+      (timbre/with-merged-config {:min-level :debug
+                                  :appenders {:println {:min-level :debug}
+                                              :spit {:enabled? false}}}
+        (if ns-kw
+          (if-not (some #{ns-kw} ns-list)
+            (error "unknown test file:" ns-kw)
+            (with-gui-diff
+              (if fn-kw
+                ;; `test-vars` will run the test but not give feedback if test passes OR test not found
+                ;; slightly better than nothing
+                (clj-test/test-vars [(resolve (symbol (str "scb." (name ns-kw) "-test") (name fn-kw)))])
+                (clj-test/run-all-tests (re-pattern (str "scb." (name ns-kw) "-test"))))))
+          (clj-test/run-all-tests #"scb\..*-test"))))
     (finally
       ;; use case: we run the tests from the repl and afterwards we call `restart` to start the app.
       ;; `stop` inside `restart` will be outside of `with-redefs` and still have logging `:min-level` set to `:debug`
@@ -109,14 +114,7 @@
 (def stop core/stop)
 (def start core/start)
 (def restart core/restart)
-
-(defn status
-  []
-  (if-not (core/started?)
-    (println "start app first: `(core/start)`")
-    (run! (fn [qkw]
-            (println (format "%s items in %s" (.size ^LinkedBlockingQueue (core/get-state qkw)) qkw)))
-          core/queue-list)))
+(def status core/status)
 
 (defn download-url
   "adds a url to the queue to be downloaded."

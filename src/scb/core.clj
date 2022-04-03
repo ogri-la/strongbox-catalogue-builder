@@ -44,10 +44,17 @@
 (def queue-list [:download-queue :downloaded-content-queue :parsed-content-queue])
 (def state nil)
 
-(def ^:dynamic *state-path* (state-dir)) ;; /path/to/state
-(def state-file-path (->> "state.edn" (fs/file *state-path*) str)) ;; /path/to/state/state.edn
-(def state-http-cache-path (->> "http" (fs/file *state-path*) str)) ;; /path/to/state/http
-(def state-log-file-path (->> "log" (fs/file *state-path*) str)) ;; /path/to/state/log
+(defn paths
+  [& path]
+  (let [state-path (state-dir)
+        path-map {:state-path state-path ;; /path/to/state
+                  :state-file-path (->> "state.edn" (fs/file state-path) str) ;; /path/to/state/state.edn
+                  :state-http-cache-path (->> "http" (fs/file state-path) str) ;; /path/to/state/http
+                  :state-log-file-path (->> "log" (fs/file state-path) str) ;; /path/to/state/log
+                  }]
+    (if path
+      (get-in path-map path)
+      path-map)))
 
 (defn started?
   []
@@ -79,6 +86,14 @@
     [item #(do (debug "restoring item")
                (put-item q item))]))
 
+(defn -empty-queue?
+  [q]
+  (.isEmpty ^LinkedBlockingQueue q))
+
+(defn empty-queue?
+  [q-kw]
+  (-empty-queue? (get-state q-kw)))
+
 (defn new-queue
   [& [c]]
   (if c
@@ -107,7 +122,7 @@
   [url & [request-opts]]
   (let [user-agent "strongbox-catalogue-builder 0.0.1 (https://github.com/ogri-la/strongbox-catalogue-builder)"
         default-request-opts {:headers {"User-Agent" user-agent}
-                              :cache-root state-http-cache-path}
+                              :cache-root (paths :state-http-cache-path)}
         request-opts (merge default-request-opts request-opts)]
     (try
       (http/download url request-opts)
@@ -188,11 +203,11 @@
   (while true
     (let [[item _] (take-item (get-state :parsed-content-queue))
           ;; /path/to/state/wowinterface--12345.json
-          output-path (fs/file *state-path* (format "%s--%s.json" (name (:source item)) (:source-id item)))
+          output-path (fs/file (paths :state-path) (format "%s--%s.json" (name (:source item)) (:source-id item)))
           existing-item (json-slurp output-path)]
       (try
         (-> existing-item
-            (merge item)
+            (merge item) ;; TODO! deepmerge, sets should be merged, maps merged, lists replaced
             utils/order-map
             (json-spit output-path))
         (catch Exception exc
@@ -235,14 +250,25 @@
               (catch Exception e
                 (error e (format "uncaught exception in worker '%s': %s" worker-fn e)))
               (finally
-                (info "worker is done."))))]
+                (debug "worker is done:" worker-fn))))]
     (add-cleanup #(future-cancel f))
     nil))
 
 (defn run-many-workers
   [worker-fn num-instances]
-  (dotimes [_ num-instances]
-    (run-worker worker-fn)))
+  (if testing?
+    (do (warn (format "running 1 worker during test, not %s: %s" num-instances worker-fn))
+        (run-worker worker-fn))
+    (dotimes [_ num-instances]
+      (run-worker worker-fn))))
+
+(defn status
+  []
+  (if-not (started?)
+    (warn "start app first: `(core/start)`")
+    (run! (fn [q-kw]
+            (println (format "%s items in %s" (.size ^LinkedBlockingQueue (get-state q-kw)) q-kw)))
+          queue-list)))
 
 ;; --- init
 
@@ -257,13 +283,13 @@
 (defn custom-println-appender
   "removes the hostname from the output format string"
   [data]
-  (let [{:keys [;;?err
-                timestamp_ msg_ level]} data
+  (let [{:keys [?err timestamp_ msg_ level]} data
         level-colour (colour-log-map level)
         pattern "%s [%s] %s"
         msg (force msg_)]
-    ;;(when ?err
-    ;;  (println (timbre/stacktrace ?err)))
+
+    (when (and ?err testing?)
+      (println (timbre/stacktrace ?err)))
 
     (when-not (empty? msg)
       ;; looks like: "11:17:57.009 [info] checking for updates"
@@ -317,7 +343,7 @@
                             :async? false
                             :output-fn :inherit
                             :min-level :error
-                            :fn (custom-spit-appender state-log-file-path)}
+                            :fn (custom-spit-appender (paths :state-log-file-path))}
                      :println {:enabled? true
                                :async? false
                                :output-fn :inherit
@@ -327,7 +353,8 @@
 
 (defn init-state-dirs
   []
-  (run! fs/mkdirs [*state-path* state-http-cache-path]))
+  (run! fs/mkdirs [(paths :state-path)
+                   (paths :state-http-cache-path)]))
 
 (defn -start
   []
@@ -344,19 +371,23 @@
   (alter-var-root #'state (constantly (-start)))
   (init-logging)
   (init-state-dirs)
-  (thaw-state state-file-path)
+  (thaw-state (paths :state-file-path))
   (run-worker download-worker)
   (run-many-workers parser-worker 5)
   (run-many-workers write-content-worker 5)
   nil)
 
+(defn cleanup
+  []
+  (doseq [cleanup-fn (get-state :cleanup)]
+    (debug "cleaned up" cleanup-fn (cleanup-fn))))
+
 (defn stop
   []
   (info "stopping")
   (when-not (nil? state)
-    (doseq [cleanup-fn (get-state :cleanup)]
-      (debug "cleaned up" cleanup-fn (cleanup-fn)))
-    (freeze-state state-file-path))
+    (cleanup)
+    (freeze-state (paths :state-file-path)))
   nil)
 
 (defn restart
