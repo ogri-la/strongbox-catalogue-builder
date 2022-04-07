@@ -184,6 +184,16 @@
         (catch Exception exc
           (error* "unhandled exception parsing content" :exc exc :payload item))))))
 
+;; --- coercing to catalogue
+
+;; I guess this could be the consumer of `parsed-content-queue` items, building up a catalogue in real-time ...
+;; ... we had problems keeping it all in memory previously. We'd prune as we go along but ...
+;; I feel slurping from the disk as neccessary is more robust right now.
+(defmulti to-catalogue-addon
+  "coerces addon data from a file.
+  all addon data in files is guaranteed to have at least a `source` and `source-id`."
+  :source)
+
 ;; --- storing
 
 (defn json-slurp
@@ -315,7 +325,8 @@
                              (str "payload: nil"))]
         (locking lock
           (try
-            (with-open [^java.io.BufferedWriter w (clojure.java.io/writer fname :append true)]
+            (with-open [fname (or fname "/tmp/temp.log")
+                        ^java.io.BufferedWriter w (clojure.java.io/writer fname :append true)]
               (.write w ^String output)
               (.newLine w)
               (when stacktrace-output

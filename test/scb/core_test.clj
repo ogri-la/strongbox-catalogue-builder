@@ -45,12 +45,13 @@
 (deftest download-queue--bad-item
   (testing "receiving a bad item from the download queue doesn't cause a crash"
     (helper/with-running-app
-      (core/put-item (core/get-state :download-queue) "foo!")
-      (Thread/sleep 150)
-      (is (core/empty-queue? :download-queue))
-      (is (core/empty-queue? :downloaded-content-queue))
-      (is (core/empty-queue? :parsed-content-queue))
+      (helper/with-instrumentation-off
+        (core/put-item (core/get-state :download-queue) "foo!")
+        (Thread/sleep 150)
+        (is (core/empty-queue? :download-queue))
+        (is (core/empty-queue? :downloaded-content-queue))
+        (is (core/empty-queue? :parsed-content-queue))
 
-      ;;(is (= {:error "failed to download url 'foo!': no protocol: foo!"}
-      ;;       (dissoc (.peek (core/get-state :error-queue)) :exc))))))
-      )))
+        ;;(is (= {:error "failed to download url 'foo!': no protocol: foo!"}
+        ;;       (dissoc (.peek (core/get-state :error-queue)) :exc))))))
+        ))))

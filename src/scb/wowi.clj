@@ -8,6 +8,7 @@
    [taoensso.timbre :as timbre :refer [debug info warn error spy]]
    [net.cgrand.enlive-html :as html :refer [select]]
    [scb
+    [tags :as tags]
     [core :as core :refer [error*]]
     [utils :as utils]
     [specs :as sp]]
@@ -98,7 +99,7 @@
 
 (defn extract-source-id-2
   [s]
-  (utils/str-to-int (last (re-find (re-matcher #"info(\d+)$" s)))))
+  (utils/str-to-int (last (re-find (re-matcher #"info(\d+)" s)))))
 
 (defn extract-addon-url
   [a]
@@ -203,14 +204,23 @@
         no-compatibility? (-> infobox first html/text (= "Updated:"))
         infobox (if no-compatibility? (into [nil nil] infobox) infobox)
 
-        [_ _ ;; compat-key compat-val
+        [_ compatibility
          _ dt-updated
-         _ dt-created
+         _ dt-created ;; may be 'unknown'
          _ num-downloads
          _ num-favourites
          _ md5
-         _ categories]
+         _ categories] ;; categories may be missing
         infobox
+
+        compatibility (html/select compatibility [:div html/text])
+
+        game-version-from-compat-string
+        (fn [compat-string]
+          (last (re-find (re-matcher #"\(([\d\.]+)\)" compat-string))))
+        
+        game-track-set (set (mapv (comp utils/game-version-to-game-track
+                                        game-version-from-compat-string) compatibility))
 
         ;; "archived files"
         arc (select html-snippet [:div#other_t [:div (html/nth-of-type 3)] :tr])
@@ -245,21 +255,33 @@
         ;; convert it into a single list of maps [{...}, {...}, ...]
         archived-files (mapv #(into {} (:content %)) arc)
 
+        label (select html-snippet [[:meta (html/pred #(-> % :attrs :property (= "og:title")))]])
+        label (-> label first :attrs :content)
+        
+        category-list (set (select categories [:a html/text]))
+        tag-list (tags/category-list-to-tag-list :wowinterface category-list)
+
         struct
         {:source :wowinterface
          :source-id (extract-source-id-2 (:url downloaded-item))
-         :dt-updated (some-> dt-updated :content first format-wowinterface-dt)
-         :dt-created (some-> dt-created :content first (swallow "unknown") format-wowinterface-dt)
+         :url (:url downloaded-item)
+         :label label
+         :name (slugify label)
+         :game-track-list game-track-set
+         :updated-date (some-> dt-updated :content first format-wowinterface-dt)
+         :created-date (some-> dt-created :content first (swallow "unknown") format-wowinterface-dt)
+         :tag-list tag-list
+         :wowi/compatibility compatibility
          :wowi/web-updated-date (some-> dt-updated :content first)
-         :wowi/web-created-data (some-> dt-created :content first (swallow "unknown"))
+         :wowi/web-created-date (some-> dt-created :content first (swallow "unknown"))
          :wowi/downloads (some-> num-downloads :content first (clojure.string/replace #"," "") utils/str-to-int)
          :wowi/favourites (some-> num-favourites :content first (clojure.string/replace #"," "") utils/str-to-int)
          :wowi/checksum (some-> md5 :content first :attrs :value)
-         :wowi/category-list (set (select categories [:a html/text]))
+         :wowi/category-list category-list
          :wowi/latest-release-versions version-strings
          :wowi/latest-release (->> (select html-snippet [:.infobox :div#download :a])
                                    (map :attrs)
-                                   (map coerce-releases))
+                                   (mapv coerce-releases))
          :wowi/archived-files archived-files}]
     {:parsed [struct]}))
 
@@ -345,3 +367,18 @@
     (category-group-page? (:url downloaded-item)) (parse-category-group-page (to-html downloaded-item))
     (category-listing-page? (:url downloaded-item)) (parse-category-listing downloaded-item)
     :else (parse-addon-detail-page downloaded-item)))
+
+;; --- catalogue wrangling
+
+(defmethod core/to-catalogue-addon :wowinterface
+  [addon-data]
+  (let [addon (select-keys addon-data [:source
+                                       :source-id
+                                       :download-count
+                                       :game-track-list
+                                       :label
+                                       :name
+                                       :tag-list
+                                       :updated-date
+                                       :url])]
+    addon))

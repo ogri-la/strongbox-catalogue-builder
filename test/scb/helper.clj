@@ -33,6 +33,14 @@
   (with-global-fake-routes-in-isolation {}
     (f)))
 
+(defmacro with-instrumentation-off
+  [& form]
+  `(try
+     (utils/instrument false)
+     ~@form
+     (finally
+       (utils/instrument true))))
+
 (defmacro with-running-app+opts
   [opts & form]
   `(try

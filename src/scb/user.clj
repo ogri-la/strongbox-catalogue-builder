@@ -10,13 +10,14 @@
     [utils :as utils]
     [http :as http]
     [wowi :as wowi]
-    [core :as core]])
+    [core :as core]
+    [catalogue :as catalogue]])
   (:import
    [java.util.concurrent LinkedBlockingQueue]))
 
 (comment "user interface to catalogue builder")
 
-(def ns-list [:main :core])
+(def ns-list [:main :core :wowi])
 
 (defn test
   [& [ns-kw fn-kw]]
@@ -41,6 +42,8 @@
                   ;;catalogue/host-disabled? (constantly false)
                   ]
       ;;(core/reset-logging!)
+
+      (core/init-logging)
 
       (timbre/with-merged-config {:min-level :debug
                                   :appenders {:println {:min-level :debug}
@@ -121,3 +124,8 @@
   [url]
   (core/put-item (core/get-state :download-queue) url)
   nil)
+
+(defn write-catalogue
+  "generates a catalogue and writes it to disk"
+  []
+  (catalogue/marshall-catalogue))

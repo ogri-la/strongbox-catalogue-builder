@@ -115,3 +115,21 @@
 (defn-spec order-map map?
   [m map?]
   (into (omap/ordered-map) (sort m)))
+
+(defn-spec safe-subs (s/nilable string?)
+  "similar to `subs` but can handle `nil` input and a `max` value larger than (or less than) length of given string `x`."
+  [^String x (s/nilable string?), ^Integer maxval int?]
+  (when x
+    (subs x 0 (min (count x) (if (neg? maxval) 0 maxval)))))
+
+(defn-spec game-version-to-game-track ::sp/game-track
+  "'1.13.2' => ':classic', '8.2.0' => 'retail'"
+  [game-version string?]
+  (let [prefix (safe-subs game-version 2)]
+    (case prefix
+      ;; 1.x.x == classic (vanilla)
+      "1." :classic
+      ;; 2.x.x == classic (burning crusade)
+      "2." :classic-tbc
+      ;; 3.x.x == classic (wrath of the lich king) (probably)
+      :retail)))
