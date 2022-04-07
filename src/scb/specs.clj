@@ -33,6 +33,8 @@
                                 (catch RuntimeException e
                                   false))))
 
+(s/def ::empty-coll (s/and coll? empty?))
+
 ;;
 
 (s/def ::game-track #{:retail :classic :classic-tbc})
