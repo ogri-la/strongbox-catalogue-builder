@@ -3,6 +3,16 @@
    [clojure.spec.alpha :as s]
    [me.raynes.fs :as fs]))
 
+(def placeholder "even qualified specs still require `specs.clj` to be included for linting and uberjar")
+
+(defn valid-or-nil
+  "returns `nil` instead of `false` when given data `x` is invalid"
+  [spec x]
+  (when (s/valid? spec x)
+    x))
+
+(s/def ::anything (complement nil?)) ;; like `any?` but nil is considered false
+
 (s/def ::url (s/and string?
                     #(try (instance? java.net.URL (java.net.URL. %))
                           (catch java.net.MalformedURLException e
@@ -102,7 +112,7 @@
 
 ;; --- results
 
-(s/def :result/download (s/coll-of (s/or :map ::url-map, :string ::url)))
+(s/def :result/download (s/coll-of (s/or :map ::url-map, :string ::url, :nil nil?)))
 (s/def :result/parsed (s/coll-of :addon/part))
 
 (s/def :result/map (s/keys :opt-un [:result/download :result/parsed]))

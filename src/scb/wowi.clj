@@ -101,9 +101,10 @@
   [s]
   (utils/str-to-int (last (re-find (re-matcher #"info(\d+)" s)))))
 
-(defn extract-addon-url
-  [a]
-  (str host "/downloads/info" (extract-source-id a)))
+(defn-spec web-addon-url ::sp/url
+  [source-id :addon/source-id]
+  ;; 4729 => https://www.wowinterface.com/downloads/info4729
+  (str host "/downloads/info" source-id))
 
 (defn-spec api-addon-url ::sp/url
   [source-id :addon/source-id]
@@ -144,7 +145,7 @@
       {:source :wowinterface
        :source-id (extract-source-id anchor)
        :name (-> label slugify)
-       :wowi/url (extract-addon-url anchor)
+       :wowi/url (web-addon-url (extract-source-id anchor))
        :wowi/title label
        :wowi/web-updated-date (-> snippet (select [:div.updated html/content]) first extract-updated-date)
        :wowi/downloads (-> snippet (select [:div.downloads html/content]) first (clojure.string/replace #"\D*" "") utils/to-int)})
@@ -218,7 +219,7 @@
         game-version-from-compat-string
         (fn [compat-string]
           (last (re-find (re-matcher #"\(([\d\.]+)\)" compat-string))))
-        
+
         game-track-set (set (mapv (comp utils/game-version-to-game-track
                                         game-version-from-compat-string) compatibility))
 
@@ -257,20 +258,20 @@
 
         label (select html-snippet [[:meta (html/pred #(-> % :attrs :property (= "og:title")))]])
         label (-> label first :attrs :content)
-        
+
         category-list (set (select categories [:a html/text]))
         tag-list (tags/category-list-to-tag-list :wowinterface category-list)
 
         struct
         {:source :wowinterface
          :source-id (extract-source-id-2 (:url downloaded-item))
-         :url (:url downloaded-item)
          :label label
          :name (slugify label)
          :game-track-list game-track-set
          :updated-date (some-> dt-updated :content first format-wowinterface-dt)
          :created-date (some-> dt-created :content first (swallow "unknown") format-wowinterface-dt)
          :tag-list tag-list
+         :wowi/url (:url downloaded-item)
          :wowi/compatibility compatibility
          :wowi/web-updated-date (some-> dt-updated :content first)
          :wowi/web-created-date (some-> dt-created :content first (swallow "unknown"))
@@ -282,7 +283,8 @@
          :wowi/latest-release (->> (select html-snippet [:.infobox :div#download :a])
                                    (map :attrs)
                                    (mapv coerce-releases))
-         :wowi/archived-files archived-files}]
+         :wowi/archived-files archived-files}
+        struct (utils/drop-nils struct (keys struct))]
     {:parsed [struct]}))
 
 (defn-spec parse-category-listing :result/map
@@ -320,7 +322,8 @@
                                  ;; todo: prefix these with 'sb'
                                  {:source-id (:wowi/id addon)
                                   :source :wowinterface
-                                  :api-url (api-addon-url (:wowi/id addon))})))
+                                  :api-url (api-addon-url (:wowi/id addon))
+                                  :web-url (web-addon-url (:wowi/id addon))})))
 
         addon-list (->> downloaded-item
                         :response
@@ -328,7 +331,9 @@
                         utils/from-json
                         (mapv process-addon))]
 
-    {:download (mapv :api-url addon-list)
+    {:download (->> addon-list
+                    (map (juxt :api-url :web-url))
+                    flatten)
      :parsed addon-list}))
 
 (defn-spec parse-api-addon-detail :result/map
@@ -370,15 +375,25 @@
 
 ;; --- catalogue wrangling
 
+(defn-spec -to-catalogue-addon :addon/summary
+  [addon-data :addon/part]
+  ;;(clojure.pprint/pprint addon-data)
+  (let [addon-data
+        (select-keys addon-data [:source
+                                 :source-id
+                                 :game-track-list
+                                 :label
+                                 :name
+                                 :tag-list
+                                 :updated-date
+                                 :wowi/url
+                                 :wowi/downloads])
+
+        addon-data (utils/remove-key-ns addon-data)
+        addon-data (clojure.set/rename-keys addon-data {:downloads :download-count})]
+
+    addon-data))
+
 (defmethod core/to-catalogue-addon :wowinterface
   [addon-data]
-  (let [addon (select-keys addon-data [:source
-                                       :source-id
-                                       :download-count
-                                       :game-track-list
-                                       :label
-                                       :name
-                                       :tag-list
-                                       :updated-date
-                                       :url])]
-    addon))
+  (-to-catalogue-addon addon-data))

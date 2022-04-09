@@ -90,13 +90,18 @@
   [^String x]
   (Integer/parseInt x))
 
+(defn-spec transform-keys map?
+  "applies given `f` to the keys in `m`"
+  [m map?, f fn?]
+  (into {} (map (fn [[k v]] [(f k) v]) m)))
+
+(defn remove-key-ns
+  [m]
+  (transform-keys m (fn [key] (-> key name keyword))))
+
 (defn prefix-keys
-  [m p]
-  (let [rename-map
-        (into {}
-              (map (fn [k]
-                     [k (->> k name (str p "/") keyword)]) (keys m)))]
-    (clojure.set/rename-keys m rename-map)))
+  [m prefix]
+  (transform-keys m (fn [key] (->> key name (str prefix "/") keyword))))
 
 (defn keyword-name
   "like `(name :foo/bar)` but preserves namespaces.
@@ -105,12 +110,25 @@
   (str (.-sym ^clojure.lang.Keyword kw)))
 
 (defn from-json
-  [x]
-  (some-> x (clojure.data.json/read-str :key-fn keyword)))
+  [x & [opts]]
+  (let [key-fn (get opts :key-fn keyword)
+        val-fn (get opts :value-fn (fn [key val] val))]
+    (some-> x (clojure.data.json/read-str :key-fn key-fn :value-fn val-fn))))
+
+(defn json-slurp
+  [path & [opts]]
+  (when (fs/exists? path)
+    (locking path
+      (-> path slurp (from-json opts)))))
 
 (defn-spec to-json string?
   [x any?]
   (with-out-str (clojure.data.json/pprint x :escape-slash false, :key-fn keyword-name)))
+
+(defn json-spit
+  [data path]
+  (locking path
+    (->> data to-json (spit path))))
 
 (defn-spec order-map map?
   [m map?]
@@ -133,3 +151,23 @@
       "2." :classic-tbc
       ;; 3.x.x == classic (wrath of the lich king) (probably)
       :retail)))
+
+(defn-spec dump-json-file ::sp/extant-file
+  [path ::sp/file, data ::sp/anything]
+  (spit path (to-json data))
+  path)
+
+(defn datestamp-now-ymd
+  []
+  (.format (java.text.SimpleDateFormat. "yyyy-MM-dd") (java.util.Date.)))
+
+(defn-spec drop-nils (s/or :ok map?, :empty nil?)
+  "given a map `m` and a set of `fields`, if field is `nil`, `dissoc` it"
+  [m map?, fields sequential?]
+  (if (empty? fields)
+    m
+    (drop-nils
+     (if (nil? (get m (first fields)))
+       (dissoc m (first fields))
+       m)
+     (rest fields))))

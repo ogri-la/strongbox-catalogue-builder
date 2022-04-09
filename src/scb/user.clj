@@ -106,8 +106,8 @@
    ;;                               :response (http/download wowi/api-file-list {})})
    ;;    :parsed
    ;;    (take 100))))
-  (let [resp (wowi/parse-api-addon-detail {:url "https://api.mmoui.com/v4/game/WOW/filedetails/5332.json"
-                                           :response (http/download "https://api.mmoui.com/v4/game/WOW/filedetails/5332.json" {})})]
+  (let [resp (wowi/parse-api-addon-detail {:url "https://api.mmoui.com/v4/game/WOW/filedetails/5119.json"
+                                           :response (http/download "https://api.mmoui.com/v4/game/WOW/filedetails/5119.json" {})})]
     (clojure.pprint/pprint resp)
     (println "-----")
     resp))
@@ -128,4 +128,36 @@
 (defn write-catalogue
   "generates a catalogue and writes it to disk"
   []
-  (catalogue/marshall-catalogue))
+  (catalogue/write-catalogue (catalogue/marshall-catalogue) "/tmp/catalogue.json"))
+
+(defn to-catalogue-addon
+  [source-id]
+  (let [path (core/state-path :wowinterface source-id)
+        addon-data (core/read-addon-data path)]
+    (wowi/-to-catalogue-addon addon-data)))
+
+(defn refresh-data
+  []
+  ;; rm all .json files in state/
+  ;; ...
+  ;; scrape all of the html
+  (download-url "https://www.wowinterface.com/addons.php")
+  ;; scrape all of the api
+  (download-url wowi/api-file-list))
+
+(defn http-state-urls
+  []
+  (let [dec (java.util.Base64/getUrlDecoder)
+        decode (fn [path]
+                 (let [filename (fs/base-name path)
+                       [^String filename _] (fs/split-ext (first (fs/split-ext filename)))]
+                   ;;(warn "decoding" filename)
+                   (String. (.decode dec filename))))
+
+        path-list (->> (core/paths :state-http-cache-path)
+                       fs/list-dir
+                       (map str)
+                       (mapv decode))]
+
+    (clojure.pprint/pprint path-list)))
+

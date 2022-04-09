@@ -25,13 +25,12 @@
           {:parsed
            [{:source :wowinterface,
              :source-id 8149,
-             :url "https://www.wowinterface.com/downloads/info8149-IceHUD.html",
              :label "IceHUD"
              :name "icehud"
              :updated-date "2022-03-28T09:32:00Z",
-             :created-date nil,
              :tag-list [:buffs :classic :combat :debuffs :the-burning-crusade-classic :ui :unit-frames],
              :game-track-list #{:retail}
+             :wowi/url "https://www.wowinterface.com/downloads/info8149-IceHUD.html",
              :wowi/category-list #{"Classic - General" "Combat Mods" "Casting Bars, Cooldowns"
                                    "Buff, Debuff, Spell" "The Burning Crusade Classic" "Unit Mods"}
              :wowi/favourites 1154,
@@ -39,7 +38,6 @@
              :wowi/latest-release-versions [["Version" "1.13.13"]],
              :wowi/latest-release [{:download-url "https://www.wowinterface.com/downloads/landing.php?fileid=8149",
                                     :game-track :retail}],
-             :wowi/web-created-date nil,
              :wowi/web-updated-date "03-28-22 09:32 AM",
              :wowi/downloads 419918,
              :wowi/compatibility ["Visions of N'Zoth (8.3.0)"
@@ -92,7 +90,7 @@
                     :label "IceHUD"
                     :game-track-list #{:retail}
                     :updated-date "2022-03-28T09:32:00Z",
-                    :tag-list [:buffs :classic :combat :debuffs :the-burning-crusade-classic :ui :unit-frames]}
-          
-          ]
+                    :download-count 419918
+                    :tag-list [:buffs :classic :combat :debuffs :the-burning-crusade-classic :ui :unit-frames]}]
+
       (is (= expected (core/to-catalogue-addon addon-data))))))

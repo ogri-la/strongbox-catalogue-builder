@@ -70,7 +70,8 @@
 
 (defn put-item
   [q i]
-  (.add ^LinkedBlockingQueue q i))
+  (when i
+    (.add ^LinkedBlockingQueue q i)))
 
 (defn put-all
   [q l]
@@ -192,34 +193,50 @@
 (defmulti to-catalogue-addon
   "coerces addon data from a file.
   all addon data in files is guaranteed to have at least a `source` and `source-id`."
-  :source)
+  (comp keyword :source))
+
+;; --- retrieving
+
+(defn -addon-data-value-fn
+  "used to transform addon *values* as the json is read."
+  [key val]
+  (case key
+    :game-track-list (mapv keyword val)
+    :game-track (keyword val) ;; part of release lists
+    :tag-list (mapv keyword val)
+    :source (keyword val)
+    :wowi/category-list (set val)
+
+    val))
+
+(defn-spec read-addon-data (s/or :ok :addon/part, :error nil?)
+  "reads the catalogue of addon data at the given `catalogue-path`.
+  supports reading legacy catalogues by dispatching on the `[:spec :version]` number."
+  [path ::sp/file]
+  (let [key-fn keyword
+        value-fn -addon-data-value-fn ;; defined 'outside' so it can reference itself
+        opts {:key-fn key-fn :value-fn value-fn}]
+    (utils/json-slurp path opts)))
 
 ;; --- storing
 
-(defn json-slurp
-  [path]
-  (when (fs/exists? path)
-    (locking path
-      (-> path slurp utils/from-json))))
-
-(defn json-spit
-  [data path]
-  (locking path
-    (->> data utils/to-json (spit path))))
+(defn state-path
+  "returns a path like `/path/to/state/wowinterface--12345.json`"
+  [source source-id]
+  (str (fs/file (paths :state-path) (format "%s--%s.json" (name source) source-id))))
 
 (defn write-content-worker
   "takes parsed content and writes to the fs"
   []
   (while true
     (let [[item _] (take-item (get-state :parsed-content-queue))
-          ;; /path/to/state/wowinterface--12345.json
-          output-path (fs/file (paths :state-path) (format "%s--%s.json" (name (:source item)) (:source-id item)))
-          existing-item (json-slurp output-path)]
+          output-path (state-path (:source item) (:source-id item))
+          existing-item (read-addon-data output-path)]
       (try
         (-> existing-item
             (merge item) ;; TODO! deepmerge, sets should be merged, maps merged, lists replaced
             utils/order-map
-            (json-spit output-path))
+            (utils/json-spit output-path))
         (catch Exception exc
           (error* "unhandled exception storing content" :exc exc :payload item))))))
 
@@ -319,14 +336,14 @@
     (fn self [{:keys [vargs output_ ?meta]}]
       (let [output (force output_) ; Must deref outside lock, Ref. #330
             stacktrace-output (when-let [exc (first vargs)]
-                                (timbre/stacktrace  exc))
+                                (when (instance? Exception exc)
+                                  (timbre/stacktrace exc)))
             payload-output (if-let [p (some-> ?meta :payload)]
                              (str "payload:\n" (utils/pprint p))
                              (str "payload: nil"))]
         (locking lock
           (try
-            (with-open [fname (or fname "/tmp/temp.log")
-                        ^java.io.BufferedWriter w (clojure.java.io/writer fname :append true)]
+            (with-open [^java.io.BufferedWriter w (clojure.java.io/writer fname :append true)]
               (.write w ^String output)
               (.newLine w)
               (when stacktrace-output

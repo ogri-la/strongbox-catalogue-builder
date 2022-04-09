@@ -6,7 +6,7 @@
    ;;[taoensso.timbre :refer [debug info warn error spy]]
    [scb.specs :as sp]))
 
-;;sp/placeholder
+sp/placeholder
 
 (def wowi-replacements
   "wowinterface-specific categories that are replaced"
