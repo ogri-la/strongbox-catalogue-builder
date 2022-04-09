@@ -1,5 +1,6 @@
 (ns scb.utils
   (:require
+   [slugify.core :as sluglib]
    [flatland.ordered.map :as omap]
    [taoensso.timbre :as timbre :refer [debug info warn error spy]]
    [me.raynes.fs :as fs]
@@ -171,3 +172,7 @@
        (dissoc m (first fields))
        m)
      (rest fields))))
+
+(defn-spec slugify string?
+  [string string?]
+  (sluglib/slugify string))

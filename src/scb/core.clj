@@ -39,7 +39,10 @@
    :downloaded-content-queue nil
    :parsed-content-queue nil
    :cleanup []
-   :catalogue {}})
+   :catalogue {}
+
+   :recent-urls #{}
+   })
 
 (def queue-list [:download-queue :downloaded-content-queue :parsed-content-queue])
 (def state nil)
@@ -164,6 +167,17 @@
 
 ;; --- parsing
 
+(defn recent-url
+  [url-map]
+  (let [url (cond
+              (string? url-map) url-map
+              (map? url-map) (:url url-map))
+        ]
+    (if (contains? (get-state :recent-urls) url)
+      nil
+      (do (swap! state update :recent-urls conj url)
+          url-map))))
+
 (defmulti parse-content
   "figure out what we downloaded and dispatch to the best parsing function"
   (fn [downloaded-item]
@@ -176,7 +190,7 @@
     (let [[item _] (take-item (get-state :downloaded-content-queue))]
       (try
         (let [{:keys [download parsed error]} (parse-content item)]
-          (put-all (get-state :download-queue) download)
+          (put-all (get-state :download-queue) (mapv recent-url download))
           (put-all (get-state :parsed-content-queue) parsed)
           (put-all (get-state :error-queue) error))
 

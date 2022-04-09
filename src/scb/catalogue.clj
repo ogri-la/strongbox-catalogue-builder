@@ -46,12 +46,13 @@
                        (catch Exception e
                          (error (format "failed to convert data at path %s to a catalogue addon: %s" path e))
                          (throw e))))
-        addon-list (mapv parse-file file-list)]
+        addon-list (remove nil? (mapv parse-file file-list))]
     (format-catalogue-data-for-output addon-list (utils/datestamp-now-ymd))))
 
 (defn validate
   "validates the given data as a `:catalogue/catalogue`, returning nil if data is invalid"
   [catalogue]
+  (info "validating catalogue ...")
   (sp/valid-or-nil :catalogue/catalogue catalogue))
 
 (defn-spec write-catalogue (s/or :ok ::sp/extant-file, :error nil?)

@@ -136,10 +136,19 @@
         addon-data (core/read-addon-data path)]
     (wowi/-to-catalogue-addon addon-data)))
 
+(defn clear-recent-urls
+  []
+  (swap! core/state assoc :recent-urls #{})
+  nil)
+
 (defn refresh-data
   []
   ;; rm all .json files in state/
   ;; ...
+
+  ;; remove memory of any recently scraped urls
+  (clear-recent-urls)
+
   ;; scrape all of the html
   (download-url "https://www.wowinterface.com/addons.php")
   ;; scrape all of the api

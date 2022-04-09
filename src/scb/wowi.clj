@@ -1,7 +1,6 @@
 (ns scb.wowi
   (:require
-   [slugger.core :refer [->slug] :rename {->slug slugify}]
-   ;;[clojure.spec.alpha :as s]
+   [clojure.spec.alpha :as s]
    [orchestra.core :refer [defn-spec]]
    [me.raynes.fs :as fs]
    [clojure.string :refer [trim lower-case upper-case]]
@@ -144,7 +143,7 @@
           label (-> anchor :content first trim)]
       {:source :wowinterface
        :source-id (extract-source-id anchor)
-       :name (-> label slugify)
+       :name (-> label utils/slugify)
        :wowi/url (web-addon-url (extract-source-id anchor))
        :wowi/title label
        :wowi/web-updated-date (-> snippet (select [:div.updated html/content]) first extract-updated-date)
@@ -266,7 +265,7 @@
         {:source :wowinterface
          :source-id (extract-source-id-2 (:url downloaded-item))
          :label label
-         :name (slugify label)
+         :name (utils/slugify label)
          :game-track-list game-track-set
          :updated-date (some-> dt-updated :content first format-wowinterface-dt)
          :created-date (some-> dt-created :content first (swallow "unknown") format-wowinterface-dt)
@@ -375,9 +374,8 @@
 
 ;; --- catalogue wrangling
 
-(defn-spec -to-catalogue-addon :addon/summary
+(defn-spec -to-catalogue-addon (s/or :ok :addon/summary, :invalid nil?)
   [addon-data :addon/part]
-  ;;(clojure.pprint/pprint addon-data)
   (let [addon-data
         (select-keys addon-data [:source
                                  :source-id
@@ -392,7 +390,9 @@
         addon-data (utils/remove-key-ns addon-data)
         addon-data (clojure.set/rename-keys addon-data {:downloads :download-count})]
 
-    addon-data))
+    (if-not (s/valid? :addon/summary addon-data)
+      (warn (format "%s (%s) failed to coerce addon data to a valid :addon/summary" (:source-id addon-data) (:source addon-data)))
+      addon-data)))
 
 (defmethod core/to-catalogue-addon :wowinterface
   [addon-data]
