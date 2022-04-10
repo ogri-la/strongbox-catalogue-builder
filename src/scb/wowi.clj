@@ -258,18 +258,24 @@
         label (select html-snippet [[:meta (html/pred #(-> % :attrs :property (= "og:title")))]])
         label (-> label first :attrs :content)
 
-        category-list (set (select categories [:a html/text]))
-        tag-list (tags/category-list-to-tag-list :wowinterface category-list)
+        category-set (set (select categories [:a html/text]))
+        tag-set (tags/category-set-to-tag-set :wowinterface category-set)
+
+        source-id (extract-source-id-2 (:url downloaded-item))
+        
+        _ (when (= source-id 17796)
+            (warn "addon detail")
+            (warn "with cats" category-set))
 
         struct
         {:source :wowinterface
-         :source-id (extract-source-id-2 (:url downloaded-item))
+         :source-id source-id
          :label label
          :name (utils/slugify label)
-         :game-track-list game-track-set
+         :game-track-set game-track-set
          :updated-date (some-> dt-updated :content first format-wowinterface-dt)
          :created-date (some-> dt-created :content first (swallow "unknown") format-wowinterface-dt)
-         :tag-list tag-list
+         :tag-set tag-set
          :wowi/url (:url downloaded-item)
          :wowi/compatibility compatibility
          :wowi/web-updated-date (some-> dt-updated :content first)
@@ -277,7 +283,7 @@
          :wowi/downloads (some-> num-downloads :content first (clojure.string/replace #"," "") utils/str-to-int)
          :wowi/favourites (some-> num-favourites :content first (clojure.string/replace #"," "") utils/str-to-int)
          :wowi/checksum (some-> md5 :content first :attrs :value)
-         :wowi/category-list category-list
+         :wowi/category-set category-set
          :wowi/latest-release-versions version-strings
          :wowi/latest-release (->> (select html-snippet [:.infobox :div#download :a])
                                    (map :attrs)
@@ -303,8 +309,13 @@
         extractor (fn [addon-html-snippet]
                     (let [category (:label downloaded-item)
                           addon-summary (extract-addon-summary addon-html-snippet)]
+                      (when (and category
+                                 (= (:source-id addon-summary) 17796))
+                        (warn addon-summary)
+                        (warn "with cats" category))
                       (if category
-                        (assoc addon-summary :wowi/category-list #{category})
+                        (merge addon-summary {:wowi/category-set #{category}
+                                              :tag-set (tags/category-set-to-tag-set :wowinterface #{category})})
                         addon-summary)))
         addon-list (mapv extractor addon-list-html)
         addon-url-list (mapv :wowi/url addon-list)]
@@ -379,16 +390,20 @@
   (let [addon-data
         (select-keys addon-data [:source
                                  :source-id
-                                 :game-track-list
+                                 :game-track-set
                                  :label
                                  :name
-                                 :tag-list
+                                 :tag-set
                                  :updated-date
                                  :wowi/url
                                  :wowi/downloads])
 
         addon-data (utils/remove-key-ns addon-data)
-        addon-data (clojure.set/rename-keys addon-data {:downloads :download-count})]
+        addon-data (clojure.set/rename-keys addon-data {:downloads :download-count
+                                                        :game-track-set :game-track-list
+                                                        :tag-set :tag-list})
+        addon-data (update-in addon-data [:tag-list] (comp vec sort))
+        addon-data (update-in addon-data [:game-track-list] (comp vec sort))]
 
     (if-not (s/valid? :addon/summary addon-data)
       (warn (format "%s (%s) failed to coerce addon data to a valid :addon/summary" (:source-id addon-data) (:source addon-data)))

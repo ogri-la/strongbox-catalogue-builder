@@ -17,7 +17,7 @@
 
 (comment "user interface to catalogue builder")
 
-(def ns-list [:main :core :wowi])
+(def ns-list [:main :core :wowi :utils])
 
 (defn test
   [& [ns-kw fn-kw]]
@@ -119,9 +119,15 @@
 (def restart core/restart)
 (def status core/status)
 
+(defn clear-recent-urls
+  []
+  (swap! core/state assoc :recent-urls #{})
+  nil)
+
 (defn download-url
   "adds a url to the queue to be downloaded."
   [url]
+  (clear-recent-urls)
   (core/put-item (core/get-state :download-queue) url)
   nil)
 
@@ -136,10 +142,6 @@
         addon-data (core/read-addon-data path)]
     (wowi/-to-catalogue-addon addon-data)))
 
-(defn clear-recent-urls
-  []
-  (swap! core/state assoc :recent-urls #{})
-  nil)
 
 (defn refresh-data
   []

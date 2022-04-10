@@ -28,11 +28,11 @@
              :label "IceHUD"
              :name "icehud"
              :updated-date "2022-03-28T09:32:00Z",
-             :tag-list [:buffs :classic :combat :debuffs :the-burning-crusade-classic :ui :unit-frames],
-             :game-track-list #{:retail}
+             :tag-set #{:buffs :classic :combat :debuffs :the-burning-crusade-classic :ui :unit-frames}
+             :game-track-set #{:retail}
              :wowi/url "https://www.wowinterface.com/downloads/info8149-IceHUD.html",
-             :wowi/category-list #{"Classic - General" "Combat Mods" "Casting Bars, Cooldowns"
-                                   "Buff, Debuff, Spell" "The Burning Crusade Classic" "Unit Mods"}
+             :wowi/category-set #{"Classic - General" "Combat Mods" "Casting Bars, Cooldowns"
+                                  "Buff, Debuff, Spell" "The Burning Crusade Classic" "Unit Mods"}
              :wowi/favourites 1154,
              :wowi/checksum "13c91112524b783847d857a3f84832f0",
              :wowi/latest-release-versions [["Version" "1.13.13"]],
@@ -88,7 +88,7 @@
                     :url "https://www.wowinterface.com/downloads/info8149-IceHUD.html"
                     :name "icehud"
                     :label "IceHUD"
-                    :game-track-list #{:retail}
+                    :game-track-list [:retail]
                     :updated-date "2022-03-28T09:32:00Z",
                     :download-count 419918
                     :tag-list [:buffs :classic :combat :debuffs :the-burning-crusade-classic :ui :unit-frames]}]

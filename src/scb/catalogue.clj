@@ -29,8 +29,6 @@
   "reads addon data from the state directory, has the right ns parse it and generates a full catalogue."
   []
   (let [;; todo: filter by host here to reduce processing time
-        ;;file-list (fs/list-dir (core/paths :state-path))
-
         json-file? (fn [path]
                      (and (fs/file? path)
                           (clojure.string/ends-with? path ".json")))
@@ -46,7 +44,7 @@
                        (catch Exception e
                          (error (format "failed to convert data at path %s to a catalogue addon: %s" path e))
                          (throw e))))
-        addon-list (remove nil? (mapv parse-file file-list))]
+        addon-list (remove nil? (pmap parse-file file-list))]
     (format-catalogue-data-for-output addon-list (utils/datestamp-now-ymd))))
 
 (defn validate
@@ -58,7 +56,7 @@
 (defn-spec write-catalogue (s/or :ok ::sp/extant-file, :error nil?)
   "write catalogue to given `output-file` as JSON. returns path to output file"
   [catalogue-data :catalogue/catalogue, output-file ::sp/file]
-  (locking output-file
+  (locking (.intern ^String output-file)
     (if (some->> catalogue-data validate (utils/dump-json-file output-file))
       output-file
       (error "catalogue data is invalid, refusing to write:" output-file))))

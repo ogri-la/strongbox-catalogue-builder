@@ -119,7 +119,7 @@
 (defn json-slurp
   [path & [opts]]
   (when (fs/exists? path)
-    (locking path
+    (locking (.intern ^String path)
       (-> path slurp (from-json opts)))))
 
 (defn-spec to-json string?
@@ -128,7 +128,7 @@
 
 (defn json-spit
   [data path]
-  (locking path
+  (locking (.intern ^String path)
     (->> data to-json (spit path))))
 
 (defn-spec order-map map?
@@ -176,3 +176,17 @@
 (defn-spec slugify string?
   [string string?]
   (sluglib/slugify string))
+
+;; https://gist.github.com/danielpcox/c70a8aa2c36766200a95#gistcomment-2759496-permalink
+(defn deep-merge
+  "merges `b` into `a` when `a` is a map, otherwise returns `b`.
+  other collections are not considered."
+  [a b]
+  (cond
+    (map? a) (into a (for [[k v] b]
+                       [k (deep-merge (a k) v)]))
+
+    (set? a) (into a b)
+
+    :else b))
+

@@ -41,8 +41,7 @@
    :cleanup []
    :catalogue {}
 
-   :recent-urls #{}
-   })
+   :recent-urls #{}})
 
 (def queue-list [:download-queue :downloaded-content-queue :parsed-content-queue])
 (def state nil)
@@ -171,8 +170,7 @@
   [url-map]
   (let [url (cond
               (string? url-map) url-map
-              (map? url-map) (:url url-map))
-        ]
+              (map? url-map) (:url url-map))]
     (if (contains? (get-state :recent-urls) url)
       nil
       (do (swap! state update :recent-urls conj url)
@@ -215,11 +213,11 @@
   "used to transform addon *values* as the json is read."
   [key val]
   (case key
-    :game-track-list (mapv keyword val)
+    :game-track-set (set (mapv keyword val))
     :game-track (keyword val) ;; part of release lists
-    :tag-list (mapv keyword val)
+    :tag-set (set (mapv keyword val))
     :source (keyword val)
-    :wowi/category-list (set val)
+    :wowi/category-set (set val)
 
     val))
 
@@ -233,6 +231,10 @@
     (utils/json-slurp path opts)))
 
 ;; --- storing
+
+(defn merge-addon-data
+  [m1 m2]
+  (utils/deep-merge m1 m2))
 
 (defn state-path
   "returns a path like `/path/to/state/wowinterface--12345.json`"
@@ -248,7 +250,7 @@
           existing-item (read-addon-data output-path)]
       (try
         (-> existing-item
-            (merge item) ;; TODO! deepmerge, sets should be merged, maps merged, lists replaced
+            (merge-addon-data item)
             utils/order-map
             (utils/json-spit output-path))
         (catch Exception exc

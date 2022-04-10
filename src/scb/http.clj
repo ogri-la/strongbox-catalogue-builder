@@ -68,7 +68,7 @@
 
 (defn-spec spit-cache-file :http/response
   [response :http/response, cache-file ::sp/file]
-  (locking cache-file
+  (locking (.intern ^String cache-file)
     (when (http/success? response)
       (let [^File f (java.io.File. ^String cache-file)
             ^FileOutputStream os (FileOutputStream. f)

@@ -64,7 +64,7 @@
 (s/def :addon/source-id (s/or ::integer-id? int? ;; tukui has negative ids
                               ::string-id? string?))
 (s/def :addon/category string?)
-(s/def :addon/category-list (s/coll-of :addon/category :kind set?))
+(s/def :addon/category-set (s/coll-of :addon/category :kind set?))
 
 (s/def :addon/download-count int?)
 
@@ -76,11 +76,12 @@
                                     :addon/created-date
                                     :addon/updated-date
                                     :addon/download-count
-                                    :addon/category-list ::set-of-strings]))
+                                    :addon/category-set ::set-of-strings]))
 
 (s/def :addon/tag keyword?)
 (s/def :addon/tag-list (s/or :ok (s/coll-of :addon/tag)
                              :empty ::empty-coll))
+(s/def :addon/tag-set (s/coll-of :addon/tag :kind set?))
 
 ;; a catalogue entry, essentially
 (s/def :addon/summary

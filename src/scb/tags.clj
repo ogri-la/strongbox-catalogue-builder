@@ -150,9 +150,9 @@ sp/placeholder
       (let [bits (clojure.string/split category #"( & |, |: )+")]
         (->> bits (map category-to-tag) (into tag-list) (remove nil?) vec)))))
 
-(defn-spec category-list-to-tag-list :addon/tag-list
+(defn-spec category-set-to-tag-set :addon/tag-set
   "given a list of category strings, converts them into a distinct list of tags by calling `category-to-tag-list`."
-  [addon-host :addon/source, category-list :addon/category-list]
+  [addon-host :addon/source, category-set :addon/category-set]
   ;; sorting cuts down on noise in diffs.
   ;; `set` because curseforge has duplicate categories and supplemental tags may introduce duplicates
-  (->> category-list (map (partial category-to-tag-list addon-host)) flatten set sort vec))
+  (->> category-set (map (partial category-to-tag-list addon-host)) flatten set))
