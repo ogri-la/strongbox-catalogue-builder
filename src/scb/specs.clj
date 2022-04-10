@@ -31,6 +31,9 @@
 (s/def ::dir ::file)
 (s/def ::extant-dir (s/and ::dir fs/directory?))
 
+(s/def ::non-blank-string (s/and string?
+                                 (complement clojure.string/blank?)))
+
 ;;
 
 (s/def ::name string?)
@@ -51,6 +54,8 @@
 (s/def ::game-track-list (s/coll-of ::game-track :kind vector? :distinct true))
 
 ;;
+
+(s/def :addon/name ::non-blank-string)
 
 (s/def :addon/created-date ::inst)
 (s/def :addon/updated-date ::inst)
@@ -86,7 +91,7 @@
 ;; a catalogue entry, essentially
 (s/def :addon/summary
   (s/keys :req-un [::url
-                   ::name
+                   :addon/name
                    ::label
                    :addon/tag-list
                    :addon/updated-date

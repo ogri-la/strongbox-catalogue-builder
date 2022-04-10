@@ -255,27 +255,25 @@
         ;; convert it into a single list of maps [{...}, {...}, ...]
         archived-files (mapv #(into {} (:content %)) arc)
 
-        label (select html-snippet [[:meta (html/pred #(-> % :attrs :property (= "og:title")))]])
-        label (-> label first :attrs :content)
+        ;; the addon title pulled from the page metadata may differ from title pulled from the api.
+        ;; leading underscores are removed leaving whitespace for one example (22503)
+        title (select html-snippet [[:meta (html/pred #(-> % :attrs :property (= "og:title")))]])
+        title (-> title first :attrs :content trim)
 
         category-set (set (select categories [:a html/text]))
         tag-set (tags/category-set-to-tag-set :wowinterface category-set)
 
         source-id (extract-source-id-2 (:url downloaded-item))
         
-        _ (when (= source-id 17796)
-            (warn "addon detail")
-            (warn "with cats" category-set))
-
         struct
         {:source :wowinterface
          :source-id source-id
-         :label label
-         :name (utils/slugify label)
+         ;;:name (utils/slugify label) ;; can't trust the title from the webpage to be correct, rely on the api for these.
          :game-track-set game-track-set
          :updated-date (some-> dt-updated :content first format-wowinterface-dt)
          :created-date (some-> dt-created :content first (swallow "unknown") format-wowinterface-dt)
          :tag-set tag-set
+         :wowi/title title
          :wowi/url (:url downloaded-item)
          :wowi/compatibility compatibility
          :wowi/web-updated-date (some-> dt-updated :content first)
@@ -309,10 +307,6 @@
         extractor (fn [addon-html-snippet]
                     (let [category (:label downloaded-item)
                           addon-summary (extract-addon-summary addon-html-snippet)]
-                      (when (and category
-                                 (= (:source-id addon-summary) 17796))
-                        (warn addon-summary)
-                        (warn "with cats" category))
                       (if category
                         (merge addon-summary {:wowi/category-set #{category}
                                               :tag-set (tags/category-set-to-tag-set :wowinterface #{category})})
@@ -332,6 +326,7 @@
                                  ;; todo: prefix these with 'sb'
                                  {:source-id (:wowi/id addon)
                                   :source :wowinterface
+                                  :name (utils/slugify (:wowi/title addon))
                                   :api-url (api-addon-url (:wowi/id addon))
                                   :web-url (web-addon-url (:wowi/id addon))})))
 
@@ -357,6 +352,7 @@
         addon (utils/prefix-keys addon "wowi")
         updates {:source :wowinterface
                  :source-id (:wowi/id addon)
+                 :name (utils/slugify (:wowi/title addon))
                  :description (some-> addon :wowi/description clojure.string/split-lines first)
                  :latest-release-list #{{:version (:wowi/version addon)
                                          ;; nfi what 'd' is, it's not neccesary though.
@@ -391,17 +387,20 @@
         (select-keys addon-data [:source
                                  :source-id
                                  :game-track-set
-                                 :label
+                                 ;;:label ;; prefer the 'title' from the api
                                  :name
+                                 :description
                                  :tag-set
                                  :updated-date
+                                 :wowi/title
                                  :wowi/url
                                  :wowi/downloads])
 
         addon-data (utils/remove-key-ns addon-data)
         addon-data (clojure.set/rename-keys addon-data {:downloads :download-count
                                                         :game-track-set :game-track-list
-                                                        :tag-set :tag-list})
+                                                        :tag-set :tag-list
+                                                        :title :label})
         addon-data (update-in addon-data [:tag-list] (comp vec sort))
         addon-data (update-in addon-data [:game-track-list] (comp vec sort))]
 
