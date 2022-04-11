@@ -214,6 +214,7 @@
          _ categories] ;; categories may be missing
         infobox
 
+        updated-date (some-> dt-updated :content first format-wowinterface-dt)
         compatibility (html/select compatibility [:div html/text])
 
         game-version-from-compat-string
@@ -222,6 +223,9 @@
 
         game-track-set (set (mapv (comp utils/game-version-to-game-track
                                         game-version-from-compat-string) compatibility))
+        game-track-set (if (utils/before-classic? updated-date)
+                         (conj game-track-set :retail)
+                         game-track-set)
 
         ;; "archived files"
         arc (select html-snippet [:div#other_t [:div (html/nth-of-type 3)] :tr])
@@ -282,7 +286,7 @@
          :source-id source-id
          ;;:name (utils/slugify label) ;; can't trust the title from the webpage to be correct, rely on the api for these.
          :game-track-set game-track-set
-         :updated-date (some-> dt-updated :content first format-wowinterface-dt)
+         :updated-date updated-date
          :created-date (some-> dt-created :content first (swallow "unknown") format-wowinterface-dt)
          :tag-set tag-set
          :short-web-description (first description)

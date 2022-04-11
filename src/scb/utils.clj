@@ -12,6 +12,8 @@
    [clojure.pprint]
    [clojure.set]
    [clojure.string]
+   [java-time :as jt]
+   [java-time.format]
    [scb
     [specs :as sp]]))
 
@@ -194,3 +196,23 @@
   "returns `true` if given string `s` contains no alpha-numeric characters (including underscores)."
   [s string?]
   (not (nil? (re-find (re-matcher #"^[\W_]*$" s)))))
+
+(defn-spec todt ::sp/zoned-dt-obj
+  "takes an ISO8901 string and returns a java.time.ZonedDateTime object. 
+  these are needed to calculate durations"
+  [dt ::sp/inst]
+  (java-time/zoned-date-time (get java-time.format/predefined-formatters "iso-zoned-date-time") dt))
+
+(defn-spec dt-before? boolean?
+  "returns `true` if `date-1` happened before `date-2`"
+  [date-1 ::sp/inst, date-2 ::sp/inst]
+  (jt/before? (todt date-1) (todt date-2)))
+
+(def release-of-wow-classic
+  "the date wow classic went live. Addon development may have started before that.
+  https://worldofwarcraft.com/en-us/news/22990080/mark-your-calendars-wow-classic-launch-and-testing-schedule"
+  "2019-08-26T00:00:00Z")
+
+(defn-spec before-classic? boolean?
+  [dt ::sp/inst]
+  (dt-before? dt release-of-wow-classic))

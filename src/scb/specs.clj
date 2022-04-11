@@ -1,5 +1,6 @@
 (ns scb.specs
   (:require
+   [java-time]
    [clojure.spec.alpha :as s]
    [me.raynes.fs :as fs]))
 
@@ -45,6 +46,8 @@
                                 (clojure.instant/read-instant-date %)
                                 (catch RuntimeException e
                                   false))))
+
+(s/def ::zoned-dt-obj #(instance? java.time.ZonedDateTime %))
 
 (s/def ::empty-coll (s/and coll? empty?))
 
