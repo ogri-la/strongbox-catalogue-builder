@@ -28,7 +28,14 @@ sp/placeholder
    "Utility Mods" [:utility] ;; misc?
    "Action Bar Mods" [:action-bars :ui]
    "Tradeskill Mods" [:tradeskill]
-   "Classic - General" [:classic]})
+   "Classic - General" [:classic]
+
+   "Generic Compilations" [:compilation]
+   "Tank Compilations" [:tank :compilation]
+   "Healer Compilations" [:healers :compilation]
+   "Graphical Compilations" [:compilation]
+   "Class Compilations" [:class :compilation]
+   "DPS Compilations" [:dps :compilation]})
 
 (def wowi-supplements
   "wowinterface-specific categories that gain new tags"
