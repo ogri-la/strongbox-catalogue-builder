@@ -264,7 +264,15 @@
         tag-set (tags/category-set-to-tag-set :wowinterface category-set)
 
         source-id (extract-source-id-2 (:url downloaded-item))
-        
+
+        description  (-> html-snippet
+                         (select [:div.postmessage])
+                         first
+                         (html/at [:*] html/text)
+                         first
+                         clojure.string/split-lines)
+        description (vec (remove clojure.string/blank? description))
+
         struct
         {:source :wowinterface
          :source-id source-id
@@ -273,6 +281,7 @@
          :updated-date (some-> dt-updated :content first format-wowinterface-dt)
          :created-date (some-> dt-created :content first (swallow "unknown") format-wowinterface-dt)
          :tag-set tag-set
+         :wowi/web-description description
          :wowi/title title
          :wowi/url (:url downloaded-item)
          :wowi/compatibility compatibility
@@ -381,7 +390,7 @@
 
 ;; --- catalogue wrangling
 
-(defn-spec -to-catalogue-addon (s/or :ok :addon/summary, :invalid nil?)
+(defn-spec -to-catalogue-addon (s/or :ok map?, :invalid nil?) ;;(s/or :ok :addon/summary, :invalid nil?)
   [addon-data :addon/part]
   (let [addon-data
         (select-keys addon-data [:source
@@ -404,10 +413,11 @@
         addon-data (update-in addon-data [:tag-list] (comp vec sort))
         addon-data (update-in addon-data [:game-track-list] (comp vec sort))]
 
-    (if-not (s/valid? :addon/summary addon-data)
-      (warn (format "%s (%s) failed to coerce addon data to a valid :addon/summary" (:source-id addon-data) (:source addon-data)))
-      addon-data)))
+    addon-data))
 
 (defmethod core/to-catalogue-addon :wowinterface
   [addon-data]
-  (-to-catalogue-addon addon-data))
+  (let [addon-data (-to-catalogue-addon addon-data)]
+    (if-not (s/valid? :addon/summary addon-data)
+      (warn (format "%s (%s) failed to coerce addon data to a valid :addon/summary" (:source-id addon-data) (:source addon-data)))
+      addon-data)))

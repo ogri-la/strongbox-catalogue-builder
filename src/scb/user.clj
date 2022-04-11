@@ -99,13 +99,21 @@
 
   ;;(clojure.pprint/pprint
    ;;(->> "test/fixtures/wowinterface--addon-detail--multiple-downloads--no-tabber.html" fs/absolute fs/normalized str wowi/to-html wowi/parse-addon-detail-page)))
-   ;;(wowi/parse-addon-detail-page
-   ;; {:url "https://www.wowinterface.com/downloads/info24155"
-   ;;  :response {:body (->> "test/fixtures/wowinterface--addon-detail--unknown-compatibility.html" fs/absolute fs/normalized str slurp)}})))
-   ;;(->> (wowi/parse-api-file-list {:url wowi/api-file-list
-   ;;                               :response (http/download wowi/api-file-list {})})
+  )
+(defn wowi-html-addon-detail
+  []
+  (clojure.pprint/pprint
+   (wowi/parse-addon-detail-page
+    {:url "https://www.wowinterface.com/downloads/info24155"
+     :response {:body (->> "test/fixtures/wowinterface--addon-detail--multiple-downloads--tabber.html"
+                           fs/absolute fs/normalized str slurp)}})))
+;;(->> (wowi/parse-api-file-list {:url wowi/api-file-list
+;;                                  :response (http/download wowi/api-file-list {})})
    ;;    :parsed
    ;;    (take 100))))
+
+(defn wowi-api-addon-detail
+  []
   (let [resp (wowi/parse-api-addon-detail {:url "https://api.mmoui.com/v4/game/WOW/filedetails/5119.json"
                                            :response (http/download "https://api.mmoui.com/v4/game/WOW/filedetails/5119.json" {})})]
     (clojure.pprint/pprint resp)
@@ -141,7 +149,6 @@
   (let [path (core/state-path :wowinterface source-id)
         addon-data (core/read-addon-data path)]
     (wowi/-to-catalogue-addon addon-data)))
-
 
 (defn refresh-data
   []
