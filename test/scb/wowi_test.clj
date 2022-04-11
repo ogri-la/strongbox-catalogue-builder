@@ -75,6 +75,7 @@
                :size "1MB",
                :author "Parnic",
                :date "2021-11-11T13:02:00Z"}]
+             :short-web-description "Feel free to  if you enjoy using IceHUD and feel generous.",
              :wowi/web-description
              ["Feel free to  if you enjoy using IceHUD and feel generous."
               "Summary"
@@ -106,6 +107,7 @@
                     :url "https://www.wowinterface.com/downloads/info8149-IceHUD.html"
                     ;;:name "icehud" ;; html title can't be trusted so neither can the name derived from it
                     :label "IceHUD"
+                    :description "Feel free to  if you enjoy using IceHUD and feel generous.",
                     :game-track-list [:retail]
                     :created-date "2022-03-28T09:32:00Z",
                     :updated-date "2022-03-29T09:32:00Z",

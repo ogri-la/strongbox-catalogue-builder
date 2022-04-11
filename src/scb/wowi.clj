@@ -3,6 +3,7 @@
    [clojure.spec.alpha :as s]
    [orchestra.core :refer [defn-spec]]
    [me.raynes.fs :as fs]
+   [clojure.set :refer [rename-keys]]
    [clojure.string :refer [trim lower-case upper-case]]
    [taoensso.timbre :as timbre :refer [debug info warn error spy]]
    [net.cgrand.enlive-html :as html :refer [select]]
@@ -281,6 +282,7 @@
          :updated-date (some-> dt-updated :content first format-wowinterface-dt)
          :created-date (some-> dt-created :content first (swallow "unknown") format-wowinterface-dt)
          :tag-set tag-set
+         :short-web-description (first description)
          :wowi/web-description description
          :wowi/title title
          :wowi/url (:url downloaded-item)
@@ -362,7 +364,7 @@
         updates {:source :wowinterface
                  :source-id (:wowi/id addon)
                  :name (utils/slugify (:wowi/title addon))
-                 :description (some-> addon :wowi/description clojure.string/split-lines first)
+                 :short-description (some-> addon :wowi/description clojure.string/split-lines first)
                  :latest-release-list #{{:version (:wowi/version addon)
                                          ;; nfi what 'd' is, it's not neccesary though.
                                          :download-url (utils/strip-url-param (:wowi/downloadUri addon) :d)}}}]
@@ -398,7 +400,8 @@
                                  :game-track-set
                                  ;;:label ;; prefer the 'title' from the api
                                  :name
-                                 :description
+                                 :short-description
+                                 :short-web-description
                                  :tag-set
                                  :updated-date
                                  :created-date
@@ -406,14 +409,19 @@
                                  :wowi/url
                                  :wowi/downloads])
 
-        addon-data (utils/remove-key-ns addon-data)
-        addon-data (clojure.set/rename-keys addon-data {:downloads :download-count
-                                                        :game-track-set :game-track-list
-                                                        :tag-set :tag-list
-                                                        :title :label})
-        addon-data (update-in addon-data [:tag-list] (comp vec sort))
-        addon-data (update-in addon-data [:game-track-list] (comp vec sort))]
-
+        rename-map {:downloads :download-count
+                    :game-track-set :game-track-list
+                    :tag-set :tag-list
+                    :title :label
+                    :short-description :description}
+        
+        addon-data (cond-> addon-data
+                     true utils/remove-key-ns
+                     true (rename-keys rename-map)
+                     true (update :tag-list (comp vec sort))
+                     true (update :game-track-list (comp vec sort))
+                     (not (:description addon-data)) (rename-keys {:short-web-description :description})
+                     true (dissoc :short-web-description))]
     addon-data))
 
 (defmethod core/to-catalogue-addon :wowinterface
