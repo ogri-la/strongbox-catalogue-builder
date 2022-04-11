@@ -26,7 +26,8 @@
            [{:source :wowinterface,
              :source-id 8149,
              ;;:name "icehud" ;; html title cant be trusted, so neither can the name derived from it.
-             :updated-date "2022-03-28T09:32:00Z",
+             :created-date "2022-03-28T09:32:00Z",
+             :updated-date "2022-03-29T09:32:00Z",
              :tag-set #{:buffs :classic :combat :debuffs :the-burning-crusade-classic :ui :unit-frames}
              :game-track-set #{:retail}
              :wowi/title "IceHUD"
@@ -38,7 +39,8 @@
              :wowi/latest-release-versions [["Version" "1.13.13"]],
              :wowi/latest-release [{:download-url "https://www.wowinterface.com/downloads/landing.php?fileid=8149",
                                     :game-track :retail}],
-             :wowi/web-updated-date "03-28-22 09:32 AM",
+             :wowi/web-created-date "03-28-22 09:32 AM",
+             :wowi/web-updated-date "03-29-22 09:32 AM",
              :wowi/downloads 419918,
              :wowi/compatibility ["Visions of N'Zoth (8.3.0)"
                                   "BfA content patch (8.2.5)"]
@@ -105,7 +107,8 @@
                     ;;:name "icehud" ;; html title can't be trusted so neither can the name derived from it
                     :label "IceHUD"
                     :game-track-list [:retail]
-                    :updated-date "2022-03-28T09:32:00Z",
+                    :created-date "2022-03-28T09:32:00Z",
+                    :updated-date "2022-03-29T09:32:00Z",
                     :download-count 419918
                     :tag-list [:buffs :classic :combat :debuffs :the-burning-crusade-classic :ui :unit-frames]}]
 

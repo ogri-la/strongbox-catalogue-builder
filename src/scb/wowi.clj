@@ -401,6 +401,7 @@
                                  :description
                                  :tag-set
                                  :updated-date
+                                 :created-date
                                  :wowi/title
                                  :wowi/url
                                  :wowi/downloads])
