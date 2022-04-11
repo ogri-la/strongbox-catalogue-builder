@@ -272,7 +272,10 @@
                          (html/at [:*] html/text)
                          first
                          clojure.string/split-lines)
-        description (vec (remove clojure.string/blank? description))
+        description (->> description
+                         (remove utils/pure-non-alpha-numeric?)
+                         ;;(remove clojure.string/blank?) ;; covered by above test
+                         vec)
 
         struct
         {:source :wowinterface

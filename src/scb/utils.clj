@@ -190,3 +190,7 @@
 
     :else b))
 
+(defn-spec pure-non-alpha-numeric? boolean?
+  "returns `true` if given string `s` contains no alpha-numeric characters (including underscores)."
+  [s string?]
+  (not (nil? (re-find (re-matcher #"^[\W_]*$" s)))))
