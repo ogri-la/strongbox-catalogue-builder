@@ -30,6 +30,7 @@ sp/placeholder
    "Unit Mods" [:unit-frames]
    "Raid Mods" [:unit-frames :raid-frames]
    "Data Mods" [:data]
+   "Developer Utilities" [:dev]
    "Utility Mods" [:utility] ;; misc?
    "Action Bar Mods" [:action-bar :ui]
    "Tradeskill Mods" [:tradeskill]
