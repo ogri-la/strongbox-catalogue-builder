@@ -385,12 +385,12 @@
                  :short-description (some-> addon :wowi/description clojure.string/split-lines first)
                  :latest-release-set #{;; the api doesn't list the *other* latest downloads unfortunately.
                                        ;; rely on scraping the html to also return a latest-release-set to merge them all together.
-                                       {:wowi/name (:wowi/name addon)
+                                       {:wowi/name (:wowi/fileName addon)
                                         ;; nfi what 'd' is, it's not neccesary though.
                                         :wowi/download-url (utils/strip-url-param (:wowi/downloadUri addon) :d)
                                         :wowi/version (:wowi/version addon)
                                         :wowi/author (:wowi/author addon)
-                                        :wowi/date (-> addon :wowi/last-update utils/unix-time-to-dtstr)
+                                        :date (some-> addon :wowi/lastUpdate utils/unix-time-to-dtstr)
                                         ;; :wowi/size ... ;; not available anywhere except archived files.
                                         }}}]
     {:parsed [(merge addon updates)]}))
