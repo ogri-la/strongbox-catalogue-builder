@@ -48,8 +48,7 @@ sp/placeholder
 
    "Plug-Ins & Patches" [:plugins]
    "Beta-version AddOns" [:beta]
-   "Discontinued and Outdated Mods" [:discontinued]
-   })
+   "Discontinued and Outdated Mods" [:discontinued]})
 
 (def wowi-supplements
   "wowinterface-specific categories that gain new tags"

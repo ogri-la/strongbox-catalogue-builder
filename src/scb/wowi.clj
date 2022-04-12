@@ -182,8 +182,10 @@
            ;; would only work on multiple downloads.
            ;; wouldn't work on single releases
            ;;:version nil 
-           :download-url (let [url (str host (:href row))] ;; https://www.wowinterface.com/downloads/landing.php?s=64f6d79344812e1f152c1fcc54871e2a&fileid=5332
-                           (utils/strip-url-param url :s))     ;; https://www.wowinterface.com/downloads/landing.php?fileid=5332
+           :download-url (let [;; "https://www.wowinterface.com/downloads/landing.php?s=64f6d79344812e1f152c1fcc54871e2a&fileid=5332"
+                               url (str host (:href row))]
+                           ;; "https://www.wowinterface.com/downloads/landing.php?fileid=5332"
+                           (utils/strip-url-param url :s))
            :game-track (case (:title row)
                          "WoW Retail" :retail
                          "WoW Classic" :classic
@@ -240,23 +242,24 @@
              (fn [x]
                {k (html/text x)}))
 
+        ;; archived files
         arc (html/at arc
                      ;; extract the filename and it's link from the filename column
                      [:tr [html/first-of-type :td]]
                      (fn [td]
                        (let [a (-> td :content  first :content second)]
-                         {:name (-> a :content first)
-                          :download-url (let [url (str host (-> a :attrs :href))]
-                                          (utils/strip-url-param url :s))}))
+                         {:wowi/name (-> a :content first)
+                          :wowi/download-url (let [url (str host (-> a :attrs :href))]
+                                               (utils/strip-url-param url :s))}))
 
                      ;; each transformation consumes a `:td`, so it's `first-of-type` each time
-                     [:tr [html/first-of-type :td]] (kv :version)
-                     [:tr [html/first-of-type :td]] (kv :size) ;; todo: convert to bytes perhaps?
-                     [:tr [html/first-of-type :td]] (kv :author)
+                     [:tr [html/first-of-type :td]] (kv :wowi/version)
+                     [:tr [html/first-of-type :td]] (kv :wowi/size) ;; todo: convert to bytes?
+                     [:tr [html/first-of-type :td]] (kv :wowi/author)
                      ;; comp'ing `kv` here seems to work as `html/text` returns text if given text :) 
                      [:tr [html/first-of-type :td]] (comp (kv :date) format-wowinterface-dt html/text))
 
-        ;; we now have something like: [{:tag :tr, :content [{:name "..."}, {:size "..."}, ...]}, ...]
+        ;; we now have something like: [{:tag :tr, :content [{:wowi/name "..."}, {:wowi/size "..."}, ...]}, ...]
         ;; convert it into a single list of maps [{...}, {...}, ...]
         archived-files (mapv #(into {} (:content %)) arc)
 
@@ -298,8 +301,9 @@
          :wowi/title title
          :wowi/url (:url downloaded-item)
          :wowi/compatibility compatibility
-         :wowi/web-updated-date (some-> dt-updated :content first)
-         :wowi/web-created-date (some-> dt-created :content first (swallow "unknown"))
+         ;; we don't really need these
+         ;;:wowi/web-updated-date (some-> dt-updated :content first)
+         ;;:wowi/web-created-date (some-> dt-created :content first (swallow "unknown"))
          :wowi/downloads (some-> num-downloads :content first (clojure.string/replace #"," "") utils/str-to-int)
          :wowi/favourites (some-> num-favourites :content first (clojure.string/replace #"," "") utils/str-to-int)
          :wowi/checksum (some-> md5 :content first :attrs :value)
@@ -331,13 +335,11 @@
                           addon-summary (extract-addon-summary addon-html-snippet)
                           category-set (if category #{category} #{})
                           tag-set (tags/category-set-to-tag-set :wowinterface category-set)
-                          game-track-set (if (contains? tag-set :the-burning-crusade-classic) #{:classic-tbc} #{})
-                          ]
+                          game-track-set (if (contains? tag-set :the-burning-crusade-classic) #{:classic-tbc} #{})]
                       (merge addon-summary
                              {:wowi/category-set category-set
                               :tag-set tag-set
-                              :game-track-set game-track-set
-                              })))
+                              :game-track-set game-track-set})))
         addon-list (mapv extractor addon-list-html)
         addon-url-list (mapv :wowi/url addon-list)]
     {:download (into listing-page-list addon-url-list)
@@ -381,9 +383,16 @@
                  :source-id (:wowi/id addon)
                  :name (utils/slugify (:wowi/title addon))
                  :short-description (some-> addon :wowi/description clojure.string/split-lines first)
-                 :latest-release-list #{{:version (:wowi/version addon)
-                                         ;; nfi what 'd' is, it's not neccesary though.
-                                         :download-url (utils/strip-url-param (:wowi/downloadUri addon) :d)}}}]
+                 :latest-release-set #{;; the api doesn't list the *other* latest downloads unfortunately.
+                                       ;; rely on scraping the html to also return a latest-release-set to merge them all together.
+                                       {:wowi/name (:wowi/name addon)
+                                        ;; nfi what 'd' is, it's not neccesary though.
+                                        :wowi/download-url (utils/strip-url-param (:wowi/downloadUri addon) :d)
+                                        :wowi/version (:wowi/version addon)
+                                        :wowi/author (:wowi/author addon)
+                                        :wowi/date (-> addon :wowi/last-update utils/unix-time-to-dtstr)
+                                        ;; :wowi/size ... ;; not available anywhere except archived files.
+                                        }}}]
     {:parsed [(merge addon updates)]}))
 
 ;;
@@ -430,7 +439,7 @@
                     :tag-set :tag-list
                     :title :label
                     :short-description :description}
-        
+
         addon-data (cond-> addon-data
                      true utils/remove-key-ns
                      true (rename-keys rename-map)

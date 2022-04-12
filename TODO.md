@@ -51,26 +51,30 @@
 
 # todo bucket (no order)
 
+* scheduler and cache busting
+    - scrape a thing N times a day
+        - the 'latest' feed. rather than parsing the content, just wipe the cached data
+    - commit changes to json once a day
+    - we have access to the last updated date in the listing pages
+        - wipe out the listing pages daily
+        - inspect the updated date and compare to age (and type?) of cached file
 * I want to see throughput rate on these workers
     - for example, parsed-content worker is processing 100 items/second
-* scheduler
-    - scrape a thing N times a day
-    - commit changes to json once a day
+
 * migrate all of strongbox catalogue scraping here
+    - delete there. means a new major version
 * test coverage
 * http, add retry support
 * tukui support
 * github support
+* CI
 
 ## wowi
 
 * wowi, key spec
-
 * wowi, description, parse these away (bbcode, instaparse):
     - [SIZE=\"5\"][B][I][COLOR=\"Red\"]
 * wowi, description, strip images and links and empty new lines *then* take the first row
-
-
 
 ---
 

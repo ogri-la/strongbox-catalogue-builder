@@ -216,3 +216,8 @@
 (defn-spec before-classic? boolean?
   [dt ::sp/inst]
   (dt-before? dt release-of-wow-classic))
+
+(defn-spec unix-time-to-dtstr ::sp/inst
+  [unix-time pos-int?]
+  (-> unix-time jt/instant str))
+

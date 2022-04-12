@@ -36,20 +36,18 @@
 
                ;; 'blank'
                [" " true]
-               ["   " true] 
+               ["   " true]
 
                ["-" true]
                ["-a" false]
                ["a" false]
-               
+
                ;; actual cases
                ["-------------------------------------" true]
                ["#---------------------------------------#" true]
                ["~~~~~~~~~~~~~~~~~~~~" true]
                ["____________________________________" true]
-               ["-------------------- Summary --------------------" false]
+               ["-------------------- Summary --------------------" false]]]
 
-               ]
-        ]
     (doseq [[given expected] cases]
       (is (= expected (utils/pure-non-alpha-numeric? given))))))
