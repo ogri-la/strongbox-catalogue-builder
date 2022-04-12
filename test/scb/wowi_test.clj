@@ -29,7 +29,7 @@
              :created-date "2022-03-28T09:32:00Z",
              :updated-date "2022-03-29T09:32:00Z",
              :tag-set #{:buffs :classic :combat :debuffs :the-burning-crusade-classic :ui :unit-frames}
-             :game-track-set #{:retail}
+             :game-track-set #{:retail :classic-tbc}
              :wowi/title "IceHUD"
              :wowi/url "https://www.wowinterface.com/downloads/info8149-IceHUD.html",
              :wowi/category-set #{"Classic - General" "Combat Mods" "Casting Bars, Cooldowns"
@@ -108,7 +108,7 @@
                     ;;:name "icehud" ;; html title can't be trusted so neither can the name derived from it
                     :label "IceHUD"
                     :description "Feel free to  if you enjoy using IceHUD and feel generous.",
-                    :game-track-list [:retail]
+                    :game-track-list [:classic-tbc :retail]
                     :created-date "2022-03-28T09:32:00Z",
                     :updated-date "2022-03-29T09:32:00Z",
                     :download-count 419918

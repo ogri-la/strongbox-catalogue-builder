@@ -268,6 +268,10 @@
         category-set (set (select categories [:a html/text]))
         tag-set (tags/category-set-to-tag-set :wowinterface category-set)
 
+        game-track-set (if (contains? tag-set :the-burning-crusade-classic)
+                         (conj game-track-set :classic-tbc)
+                         game-track-set)
+
         source-id (extract-source-id-2 (:url downloaded-item))
 
         description  (-> html-snippet
@@ -324,11 +328,16 @@
         addon-list-html (select html-snippet [:#filepage :div.file])
         extractor (fn [addon-html-snippet]
                     (let [category (:label downloaded-item)
-                          addon-summary (extract-addon-summary addon-html-snippet)]
-                      (if category
-                        (merge addon-summary {:wowi/category-set #{category}
-                                              :tag-set (tags/category-set-to-tag-set :wowinterface #{category})})
-                        addon-summary)))
+                          addon-summary (extract-addon-summary addon-html-snippet)
+                          category-set (if category #{category} #{})
+                          tag-set (tags/category-set-to-tag-set :wowinterface category-set)
+                          game-track-set (if (contains? tag-set :the-burning-crusade-classic) #{:classic-tbc} #{})
+                          ]
+                      (merge addon-summary
+                             {:wowi/category-set category-set
+                              :tag-set tag-set
+                              :game-track-set game-track-set
+                              })))
         addon-list (mapv extractor addon-list-html)
         addon-url-list (mapv :wowi/url addon-list)]
     {:download (into listing-page-list addon-url-list)
