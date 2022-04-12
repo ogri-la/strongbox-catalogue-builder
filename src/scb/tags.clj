@@ -32,6 +32,7 @@ sp/placeholder
    "Data Mods" [:data]
    "Developer Utilities" [:dev]
    "Utility Mods" [:utility] ;; misc?
+   "WoW Tools & Utilities" [:dev]
    "Action Bar Mods" [:action-bar :ui]
    "Tradeskill Mods" [:tradeskill]
    "Classic - General" [:classic]
@@ -45,6 +46,8 @@ sp/placeholder
    "Class Compilations" [:class :compilation]
    "DPS Compilations" [:dps :compilation]
 
+   "Plug-Ins & Patches" [:plugins]
+   "Beta-version AddOns" [:beta]
    "Discontinued and Outdated Mods" [:discontinued]
    })
 
