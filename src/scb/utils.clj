@@ -10,7 +10,6 @@
    [clj-http.client]
    [orchestra.core :refer [defn-spec]]
    [clojure.pprint]
-   [clojure.set]
    [clojure.string]
    [java-time :as jt]
    [java-time.format]
@@ -209,9 +208,10 @@
   (jt/before? (todt date-1) (todt date-2)))
 
 (def release-of-wow-classic
-  "the date wow classic went live. Addon development may have started before that.
-  https://worldofwarcraft.com/en-us/news/22990080/mark-your-calendars-wow-classic-launch-and-testing-schedule"
-  "2019-08-26T00:00:00Z")
+  "the date wow classic beta was made available to the public.
+  - https://wowpedia.fandom.com/wiki/World_of_Warcraft:_Classic#Notes_and_trivia
+  - https://worldofwarcraft.com/en-us/news/22990080/mark-your-calendars-wow-classic-launch-and-testing-schedule"
+  "2019-05-15T00:00:00Z")
 
 (defn-spec before-classic? boolean?
   [dt ::sp/inst]
