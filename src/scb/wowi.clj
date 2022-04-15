@@ -176,6 +176,7 @@
 (defn-spec parse-addon-detail-page :result/map
   [downloaded-item :result/downloaded-item]
   (let [html-snippet (to-html downloaded-item)
+
         coerce-releases
         (fn [row]
           {;; this could be guessed by splitting on the hyphen and then removing common elements between releases.
@@ -190,6 +191,10 @@
                          "WoW Retail" :retail
                          "WoW Classic" :classic
                          "The Burning Crusade WoW Classic" :classic-tbc)})
+
+        latest-release-list (->> (select html-snippet [:.infobox :div#download :a])
+                                 (map :attrs)
+                                 (mapv coerce-releases))
 
         ;; the 'Version: 9.2.0.0, Classic: 9.1.5.0' string to the left of the downloads.
         ;; I haven't seen a 'TBC' version string yet ...
@@ -223,8 +228,13 @@
         (fn [compat-string]
           (last (re-find (re-matcher #"\(([\d\.]+)\)" compat-string))))
 
+        ;; warning! compatibility is known to be incomplete/misleading, so more work is required
         game-track-set (set (mapv (comp utils/game-version-to-game-track
                                         game-version-from-compat-string) compatibility))
+
+        game-track-set (into game-track-set (mapv :game-track latest-release-list))
+
+        ;; fills in most of the blanks for the huge number of dead and ancient addons
         game-track-set (if (utils/before-classic? updated-date)
                          (conj game-track-set :retail)
                          game-track-set)
@@ -288,6 +298,22 @@
                          ;;(remove clojure.string/blank?) ;; covered by above test
                          vec)
 
+        map-versions (fn [latest-release-list, latest-release-versions]
+                       (case (count latest-release-versions)
+                         ;; we have a 'version' and a 'classic' value.
+                         ;; there may be 2 or more releases
+                         2 (let [[[_ retail] [_ classic]] latest-release-versions]
+                             (for [release latest-release-list
+                                   :let [game-track (:game-track release)]]
+                               (assoc release :version (if (= game-track :retail) retail classic))))
+
+                         ;; we have just one value for 'Version'. it doesn't matter whether it's classic or not, it's getting it.
+                         1 (assoc-in latest-release-list [0 :version] (get-in latest-release-versions [0 1]))
+
+                         ;; we have nothing :(
+                         0 (do (warn "no version for" source-id)
+                               latest-release-list)))
+
         struct
         {:source :wowinterface
          :source-id source-id
@@ -305,13 +331,13 @@
          ;;:wowi/web-updated-date (some-> dt-updated :content first)
          ;;:wowi/web-created-date (some-> dt-created :content first (swallow "unknown"))
          :wowi/downloads (some-> num-downloads :content first (clojure.string/replace #"," "") utils/str-to-int)
-         :wowi/favourites (some-> num-favourites :content first (clojure.string/replace #"," "") utils/str-to-int)
+         :wowi/favorites (some-> num-favourites :content first (clojure.string/replace #"," "") utils/str-to-int)
          :wowi/checksum (some-> md5 :content first :attrs :value)
          :wowi/category-set category-set
          :wowi/latest-release-versions version-strings
-         :wowi/latest-release (->> (select html-snippet [:.infobox :div#download :a])
-                                   (map :attrs)
-                                   (mapv coerce-releases))
+         :wowi/latest-release-list latest-release-list
+         :latest-release-set (set (map-versions latest-release-list version-strings))
+
          :wowi/archived-files archived-files}
         struct (utils/drop-nils struct (keys struct))]
     {:parsed [struct]}))
@@ -378,21 +404,30 @@
             (warn "wowi, discovered api addon detail with more than one item:" (:url downloaded-item)))
 
         addon (first addon-list)
+
+        removals [:version ;; single value for the 'latest' version. misleading when there are multiple latest versions.
+                  :pendingUpdate ;; I can guess it's purpose but it's not useful to us
+                  :addons ;; always null
+                  :categoryId ;; the '40' in 'https://www.wowinterface.com/downloads/index.php?cid=40'. addons may belong to many categories however...?
+                  ]
+        addon (apply dissoc addon removals)
+
         addon (utils/prefix-keys addon "wowi")
         updates {:source :wowinterface
                  :source-id (:wowi/id addon)
                  :name (utils/slugify (:wowi/title addon))
                  :short-description (some-> addon :wowi/description clojure.string/split-lines first)
-                 :latest-release-set #{;; the api doesn't list the *other* latest downloads unfortunately.
-                                       ;; rely on scraping the html to also return a latest-release-set to merge them all together.
-                                       {:wowi/name (:wowi/fileName addon)
-                                        ;; nfi what 'd' is, it's not neccesary though.
-                                        :wowi/download-url (utils/strip-url-param (:wowi/downloadUri addon) :d)
-                                        :wowi/version (:wowi/version addon)
-                                        :wowi/author (:wowi/author addon)
-                                        :date (some-> addon :wowi/lastUpdate utils/unix-time-to-dtstr)
-                                        ;; :wowi/size ... ;; not available anywhere except archived files.
-                                        }}}]
+                 ;; the api doesn't list the *other* latest downloads unfortunately.
+                 ;; rely on scraping the html for a complete list of releases.
+                 ;;:latest-release-set #{
+                 ;;                      {:wowi/name (:wowi/fileName addon)
+                 ;;                       ;; nfi what 'd' is, it's not neccesary though.
+                 ;;                       :wowi/download-url (utils/strip-url-param (:wowi/downloadUri addon) :d)
+                 ;;                       :wowi/version (:wowi/version addon)
+                 ;;                       :wowi/author (:wowi/author addon)
+                 ;;                       :date (some-> addon :wowi/lastUpdate utils/unix-time-to-dtstr)
+                 ;;                       ;; :wowi/size ... ;; available from the html addon detail page, but not scraped yet. unused anyway
+                 }]
     {:parsed [(merge addon updates)]}))
 
 ;;

@@ -1,6 +1,6 @@
 (ns scb.specs
   (:require
-   [java-time]
+   ;;[java-time]
    [clojure.spec.alpha :as s]
    [me.raynes.fs :as fs]))
 
@@ -56,6 +56,8 @@
 (s/def ::game-track #{:retail :classic :classic-tbc})
 (s/def ::game-track-list (s/coll-of ::game-track :kind vector? :distinct true))
 
+(s/def ::interface-version int?) ;; 90005, 11307, 20501
+
 ;;
 
 (s/def :addon/name ::non-blank-string)
@@ -107,6 +109,15 @@
                    ]))
 (s/def :addon/summary-list (s/coll-of :addon/summary))
 
+(s/def ::release-label ::label)
+(s/def :addon/release
+  (s/keys :req-un [::version
+                   ::download-url
+                   ::game-track]
+          :opt-un [::interface-version
+                   :addon/release-label]))
+(s/def :addon/release-list (s/coll-of :addon/release))
+
 ;; --- catalogues
 
 (s/def :catalogue/version int?)
@@ -141,3 +152,4 @@
 
 (s/def :result/downloaded-item (s/keys :req-un [::url :http/response]
                                        :opt-un [::label]))
+
