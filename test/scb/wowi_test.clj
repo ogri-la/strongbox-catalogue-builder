@@ -2,7 +2,7 @@
   (:require
    ;;[taoensso.timbre :as timbre :refer [debug info warn error spy]]
    [clojure.test :refer [deftest is testing use-fixtures]]
-   [clj-http.fake :refer [with-global-fake-routes-in-isolation]]
+   ;;[clj-http.fake :refer [with-global-fake-routes-in-isolation]]
    [scb.helper :as helper :refer [fixture-path]]
    [scb
     [core :as core]
@@ -99,9 +99,7 @@
                                             "The tooltip lists all of your characters across both factions on all servers. The current character is listed first for quick reference. Character names are colored by class. Faction icons, class icons, and character levels can also be shown if desired."
                                             "Right-click the plugin for options.Language Support"
                                             "Works in all locales. Translated into English, Deutsch, Espa�ol, Fran�ais, Italiano, Portugu�s, Русский, 한국어, 简体中文, and 正體中文."
-                                            "To add or update translations for any locale, enter them on the Broker Played Time localization page on CurseForge, and then leave a comment, or send me a PM here or on CurseForge, to let me know that you�ve made changes. If you don�t have a Curse account and don�t want to create one, you can PM me your translations instead. Thanks!"]
-                     }]}
-          ]
+                                            "To add or update translations for any locale, enter them on the Broker Played Time localization page on CurseForge, and then leave a comment, or send me a PM here or on CurseForge, to let me know that you�ve made changes. If you don�t have a Curse account and don�t want to create one, you can PM me your translations instead. Thanks!"]}]}]
 
       (is (= expected (wowi/parse-addon-detail-page (as-downloaded-item url fixture)))))))
 

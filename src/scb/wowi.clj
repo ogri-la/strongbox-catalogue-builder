@@ -228,7 +228,7 @@
         (fn [compat-string]
           (last (re-find (re-matcher #"\(([\d\.]+)\)" compat-string))))
 
-        ;; warning! compatibility is known to be incomplete/misleading, so more work is required
+        ;; warning! compatibility is known to be incomplete/misleading, so more munging is required.
         game-track-set (set (mapv (comp utils/game-version-to-game-track
                                         game-version-from-compat-string) compatibility))
 

@@ -48,6 +48,9 @@
     'wowi/latest-release' list
     'wowi/latest-release-versions' list
     jeez
+* "Compatible with Retail, Classic & TBC"
+    - single download
+    - https://www.wowinterface.com/downloads/info11551-MapCoords.html
 
 # todo bucket (no order)
 
