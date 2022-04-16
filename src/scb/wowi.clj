@@ -385,7 +385,8 @@
                                   :source :wowinterface
                                   :name (utils/slugify (:wowi/title addon))
                                   :api-url (api-addon-url (:wowi/id addon))
-                                  :web-url (web-addon-url (:wowi/id addon))})))
+                                  :web-url (web-addon-url (:wowi/id addon))
+                                  :game-track-set (->> addon :wowi/gameVersions (map utils/game-version-to-game-track) set)})))
 
         addon-list (->> downloaded-item
                         :response
