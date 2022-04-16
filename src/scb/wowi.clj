@@ -61,6 +61,8 @@
     (and (string? downloaded-item)
          (fs/exists? downloaded-item)) (-> downloaded-item slurp html/html-snippet)
 
+    (string? downloaded-item) (html/html-snippet downloaded-item)
+
     ;; downloaded item
     (contains? downloaded-item :response) (-> downloaded-item :response :body html/html-snippet)))
 
@@ -438,6 +440,12 @@
     (file-list? (:url downloaded-item)) (parse-api-file-list downloaded-item)
     :else (parse-api-addon-detail downloaded-item)))
 
+(defn dead-page?
+  "returns true if there is a section like 'Message: Removed per author's request'"
+  [html-snippet]
+  (boolean
+   (some-> html-snippet (html/select [:td.tcat html/content]) first (= "Message"))))
+
 (defmethod core/parse-content "www.wowinterface.com"
   [downloaded-item]
   ;; figure out what sort of item we have to parse.
@@ -445,10 +453,15 @@
   ;; we also can't rely on a link in the category page going to a listing page - it may go to another category page.
   ;; ('index' -> 'standalone addons', 'index' -> 'class & role specific')
   ;; so we need to parse the content and look at the structure.
-  (cond
-    (category-group-page? (:url downloaded-item)) (parse-category-group-page (to-html downloaded-item))
-    (category-listing-page? (:url downloaded-item)) (parse-category-listing downloaded-item)
-    :else (parse-addon-detail-page downloaded-item)))
+  (try
+    (cond
+      (category-group-page? (:url downloaded-item)) (parse-category-group-page (to-html downloaded-item))
+      (category-listing-page? (:url downloaded-item)) (parse-category-listing downloaded-item)
+      :else (parse-addon-detail-page downloaded-item))
+    (catch NullPointerException exc
+      ;; there are maybe a dozen of these pages, no need to always check for it
+      (if-not (dead-page? (to-html downloaded-item))
+        (throw exc)))))
 
 ;; --- catalogue wrangling
 

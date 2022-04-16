@@ -146,6 +146,14 @@
   (core/put-item (core/get-state :download-queue) url)
   nil)
 
+(defn parse-url-content
+  "downloads and parses the given URL, bypasses queues.
+  allows us to grap the exception object with `*e`"
+  [url]
+  (let [resp {:url url
+              :response (http/download url {})}]
+    (core/parse-content resp)))
+
 (defn write-catalogue
   "generates a catalogue and writes it to disk"
   []
@@ -171,6 +179,7 @@
   (download-url wowi/api-file-list))
 
 (defn http-state-urls
+  "prints the list of base64 decoded urls in `/path/to/state/http`"
   []
   (let [dec (java.util.Base64/getUrlDecoder)
         decode (fn [path]
@@ -185,4 +194,3 @@
                        (mapv decode))]
 
     (clojure.pprint/pprint path-list)))
-
