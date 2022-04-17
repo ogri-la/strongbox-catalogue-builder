@@ -40,6 +40,7 @@
                                 :data-broker
                                 :leveling
                                 :quests},
+                     :web-name "broker-played-time",
                      :updated-date "2022-02-23T07:14:00Z",
                      :wowi/archived-files [{:date "2021-11-23T04:12:00Z",
                                             :wowi/author "LudiusMaximus",
@@ -92,7 +93,7 @@
                                                  :game-track :classic-tbc}],
                      :wowi/latest-release-versions [["Version" "9.2.0.0"]
                                                     ["Classic" "9.1.5.0"]],
-                     :wowi/title "Broker Played Time",
+                     :wowi/web-title "Broker Played Time",
                      :wowi/url "https://www.wowinterface.com/downloads/info8149-IceHUD.html",
                      :wowi/web-description ["DataBroker plugin to track played time across all your characters."
                                             "It differs from similar addons in that it only tracks played time; it does not track other things like experience or money."
@@ -112,7 +113,7 @@
           {:parsed
            [{:source :wowinterface,
              :source-id 8149,
-             ;;:name "icehud" ;; html title cant be trusted, so neither can the name derived from it.
+             :web-name "icehud"
              :created-date "2022-03-28T09:32:00Z",
              :updated-date "2022-03-29T09:32:00Z",
              :tag-set #{:buffs :classic :combat :debuffs :the-burning-crusade-classic :ui :unit-frames}
@@ -120,7 +121,7 @@
              :latest-release-set #{{:download-url "https://www.wowinterface.com/downloads/landing.php?fileid=8149"
                                     :game-track :retail
                                     :version "1.13.13"}}
-             :wowi/title "IceHUD"
+             :wowi/web-title "IceHUD"
              :wowi/url "https://www.wowinterface.com/downloads/info8149-IceHUD.html",
              :wowi/category-set #{"Classic - General" "Combat Mods" "Casting Bars, Cooldowns"
                                   "Buff, Debuff, Spell" "The Burning Crusade Classic" "Unit Mods"}
@@ -195,7 +196,7 @@
           expected {:source :wowinterface,
                     :source-id 8149,
                     :url "https://www.wowinterface.com/downloads/info8149-IceHUD.html"
-                    ;;:name "icehud" ;; html title can't be trusted so neither can the name derived from it
+                    :name "icehud"
                     :label "IceHUD"
                     :description "Feel free to  if you enjoy using IceHUD and feel generous.",
                     :game-track-list [:classic-tbc :retail]

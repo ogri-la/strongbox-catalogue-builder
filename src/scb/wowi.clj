@@ -143,14 +143,20 @@
   (try
     (let [extract-updated-date #(-> % (subs 8) trim) ;; "Updated 09-07-18 01:27 PM " => "09-07-18 01:27 PM"
           anchor (-> snippet (select [[:a (html/attr-contains :href "fileinfo")]]) first)
-          label (-> anchor :content first trim)]
-      {:source :wowinterface
-       :source-id (extract-source-id anchor)
-       :name (-> label utils/slugify)
-       :wowi/url (web-addon-url (extract-source-id anchor))
-       :wowi/title label
-       :wowi/web-updated-date (-> snippet (select [:div.updated html/content]) first extract-updated-date)
-       :wowi/downloads (-> snippet (select [:div.downloads html/content]) first (clojure.string/replace #"\D*" "") utils/to-int)})
+          label (-> anchor :content first trim)
+          truncated? (clojure.string/ends-with? label "...")
+          struct {:source :wowinterface
+                  :source-id (extract-source-id anchor)
+                  :web-name (-> label utils/slugify)
+                  :wowi/url (web-addon-url (extract-source-id anchor))
+                  :wowi/web-title label
+                  ;; favourites? author? we can source these reliably from the API
+                  :wowi/web-updated-date (-> snippet (select [:div.updated html/content]) first extract-updated-date)
+                  :wowi/downloads (-> snippet (select [:div.downloads html/content]) first (clojure.string/replace #"\D*" "") utils/to-int)}
+          ]
+      (cond-> struct
+        truncated? (dissoc :web-name :wowi/web-title)))
+
     (catch RuntimeException re
       (error* re (format "failed to scrape snippet, excluding from results: %s" (.getMessage re)) :payload snippet))))
 
@@ -319,14 +325,14 @@
         struct
         {:source :wowinterface
          :source-id source-id
-         ;;:name (utils/slugify label) ;; can't trust the title from the webpage to be correct, rely on the api for these.
+         :web-name (utils/slugify title)
          :game-track-set game-track-set
          :updated-date updated-date
          :created-date (some-> dt-created :content first (swallow "unknown") format-wowinterface-dt)
          :tag-set tag-set
          :short-web-description (first description)
          :wowi/web-description description
-         :wowi/title title
+         :wowi/web-title title
          :wowi/url (:url downloaded-item)
          :wowi/compatibility compatibility
          ;; we don't really need these
@@ -472,14 +478,15 @@
         (select-keys addon-data [:source
                                  :source-id
                                  :game-track-set
-                                 ;;:label ;; prefer the 'title' from the api
                                  :name
+                                 :web-name
                                  :short-description
                                  :short-web-description
                                  :tag-set
                                  :updated-date
                                  :created-date
                                  :wowi/title
+                                 :wowi/web-title
                                  :wowi/url
                                  :wowi/downloads])
 
@@ -495,7 +502,14 @@
                      true (update :tag-list (comp vec sort))
                      true (update :game-track-list (comp vec sort))
                      (not (:description addon-data)) (rename-keys {:short-web-description :description})
-                     true (dissoc :short-web-description))]
+                     true (dissoc :short-web-description))
+
+        ;; only use the `web-title` if we don't have regular values.
+        ;; if using the `web-title`, also use it's corresponding slug `web-name` for consistency.
+        ;; otherwise, bin these keys.
+        addon-data (if (not (:label addon-data))
+                     (rename-keys addon-data {:web-title :label, :web-name :name})
+                     (dissoc addon-data :web-title :web-name))]
     addon-data))
 
 (defmethod core/to-catalogue-addon :wowinterface
