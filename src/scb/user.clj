@@ -112,6 +112,14 @@
      :response {:body (->> "test/fixtures/wowinterface--addon-detail--multiple-downloads--tabber.html"
                            fs/absolute fs/normalized str slurp)}})))
 
+(defn wowi-html-addon-detail-2
+  []
+  (clojure.pprint/pprint
+   (wowi/parse-addon-detail-page
+    {:url "https://www.wowinterface.com/downloads/info24155"
+     :response {:body (->> "test/fixtures/wowinterface--addon-detail--single-download--supports-all.html"
+                           fs/absolute fs/normalized str slurp)}})))
+
 (defn wowi-api-addon-list
   []
   (->> (wowi/parse-api-file-list {:url wowi/api-file-list

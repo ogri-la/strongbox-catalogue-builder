@@ -221,3 +221,18 @@
   [unix-time pos-int?]
   (-> unix-time jt/instant str))
 
+(defn-spec guess-game-track (s/nilable ::sp/game-track)
+  "returns the first game track it finds in the given string, preferring `:classic-tbc`, then `:classic`, then `:retail` (most to least specific).
+  returns `nil` if no game track found."
+  [string (s/nilable string?)]
+  (when string
+    (let [;; matches 'classic-tbc', 'classic-bc', 'classic-bcc', 'classic_tbc', 'classic_bc', 'classic_bcc', 'tbc', 'tbcc', 'bc', 'bcc'
+          ;; but not 'classictbc' or 'classicbc' or 'classicbcc'
+          ;; see tests.
+          classic-tbc-regex #"(?i)classic[\W_]t?bcc?|[\W_]t?bcc?\W?|t?bcc?$"
+          classic-regex #"(?i)classic|vanilla"
+          retail-regex #"(?i)retail|mainline"]
+      (cond
+        (re-find classic-tbc-regex string) :classic-tbc
+        (re-find classic-regex string) :classic
+        (re-find retail-regex string) :retail))))

@@ -16,30 +16,28 @@
     - done
 * write catalogue
     - done
-
-
-# todo 0.1 release
-
-* wowi, parse latest feed
-    - https://www.wowinterface.com/rss/latest.xml
 * wowi, scrape html description
     - we have cases where there is no api detail to pull description from
+    - done
 * wowi, add created date
+    - done
 * deal with tag "discontinued-and-outdated-mods"
     - something common across all hosts
+    - done
 * wowi, description, strip any lines with no alpha-numeric in them
+    - done
 * wowi, tags, turn this 
         ["class-compilations", "classic", "dps-compilations",
         "generic-compilations", "graphical-compilations",
         "minimalistic-compilations"],
    into 
         [compilation]
-
+    - done
 * add obvious game tracks without guessing
     - for example, if it hasn't been updated since classic was introduced, it was retail
     - if it has the tag 'the-burning-crusade-classic', then give it :classic-tbc
     - ...
-
+    - done
 * wowi, sort addon data keys
 * wowi, archived-files not namespaced
 * wowi, deal with 
@@ -48,12 +46,20 @@
     'wowi/latest-release' list
     'wowi/latest-release-versions' list
     jeez
+    - done
 * "Compatible with Retail, Classic & TBC"
     - single download
     - https://www.wowinterface.com/downloads/info11551-MapCoords.html
+    - done
+
+# todo 0.1 release
 
 # todo bucket (no order)
 
+* wowi, parse latest feed
+    - https://www.wowinterface.com/rss/latest.xml
+* 'game-track' in latest-release-set is wrong
+    - it uses 'retail' from the html when it's obviously not retail
 * scheduler and cache busting
     - scrape a thing N times a day
         - the 'latest' feed. rather than parsing the content, just wipe the cached data

@@ -117,7 +117,7 @@
              :created-date "2022-03-28T09:32:00Z",
              :updated-date "2022-03-29T09:32:00Z",
              :tag-set #{:buffs :classic :combat :debuffs :the-burning-crusade-classic :ui :unit-frames}
-             :game-track-set #{:retail :classic-tbc}
+             :game-track-set #{:classic-tbc :retail}
              :latest-release-set #{{:download-url "https://www.wowinterface.com/downloads/landing.php?fileid=8149"
                                     :game-track :retail
                                     :version "1.13.13"}}

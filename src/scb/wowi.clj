@@ -147,9 +147,9 @@
           truncated? (clojure.string/ends-with? label "...")
           struct {:source :wowinterface
                   :source-id (extract-source-id anchor)
-                  :web-name (-> label utils/slugify)
+                  :listing-name (-> label utils/slugify)
                   :wowi/url (web-addon-url (extract-source-id anchor))
-                  :wowi/web-title label
+                  :wowi/listing-title label ;; I've seen underscores and truncation here, do not use if you can avoid it
                   ;; favourites? author? we can source these reliably from the API
                   :wowi/web-updated-date (-> snippet (select [:div.updated html/content]) first extract-updated-date)
                   :wowi/downloads (-> snippet (select [:div.downloads html/content]) first (clojure.string/replace #"\D*" "") utils/to-int)}
@@ -195,6 +195,8 @@
                                url (str host (:href row))]
                            ;; "https://www.wowinterface.com/downloads/landing.php?fileid=5332"
                            (utils/strip-url-param url :s))
+           ;; this can't be trusted, at least for single downloads. see:
+           ;; - https://www.wowinterface.com/downloads/info25230
            :game-track (case (:title row)
                          "WoW Retail" :retail
                          "WoW Classic" :classic
@@ -203,6 +205,25 @@
         latest-release-list (->> (select html-snippet [:.infobox :div#download :a])
                                  (map :attrs)
                                  (mapv coerce-releases))
+
+        ;;latest-release-list (if (= 1 (count latest-release-list))
+        ;;                      (update-in latest-release-list [0] #(dissoc % :game-track))
+        ;;                      latest-release-list)
+
+        ;; some addon pages have the string "Compatible with Retail, Classic & TBC" on it.
+        ;; this correlates with the API file list's `gameVersions`, I think, but the inverse isn't true,
+        ;; i.e., the html won't show this string if the api's `gameVersions` lists all versions.
+        compatible-with-string
+        (some-> html-snippet
+                (html/select [:#multitoc html/content])
+                first ;; "Compatible with Retail, Classic & TBC"
+                )
+
+        compatible-with-set
+        (some->> (clojure.string/split (or compatible-with-string "") #"\W")
+                 (map utils/guess-game-track)
+                 (remove nil?)
+                 set)
 
         ;; the 'Version: 9.2.0.0, Classic: 9.1.5.0' string to the left of the downloads.
         ;; I haven't seen a 'TBC' version string yet ...
@@ -237,10 +258,13 @@
           (last (re-find (re-matcher #"\(([\d\.]+)\)" compat-string))))
 
         ;; warning! compatibility is known to be incomplete/misleading, so more munging is required.
-        game-track-set (set (mapv (comp utils/game-version-to-game-track
-                                        game-version-from-compat-string) compatibility))
+        game-track-set (->> compatibility
+                            (map (comp utils/game-version-to-game-track game-version-from-compat-string))
+                            set)
 
-        game-track-set (into game-track-set (mapv :game-track latest-release-list))
+        game-track-set (into game-track-set (remove nil? (map :game-track latest-release-list)))
+
+        ;;game-track-set (into game-track-set compatible-with-set)
 
         ;; fills in most of the blanks for the huge number of dead and ancient addons
         game-track-set (if (utils/before-classic? updated-date)
@@ -322,6 +346,11 @@
                          0 (do (warn "no version for" source-id)
                                latest-release-list)))
 
+        latest-release-set (set (map-versions latest-release-list version-strings))
+
+        ;; todo: attach game tracks from game-track-set
+        ;; ...
+
         struct
         {:source :wowinterface
          :source-id source-id
@@ -331,6 +360,7 @@
          :created-date (some-> dt-created :content first (swallow "unknown") format-wowinterface-dt)
          :tag-set tag-set
          :short-web-description (first description)
+         :latest-release-set latest-release-set
          :wowi/web-description description
          :wowi/web-title title
          :wowi/url (:url downloaded-item)
@@ -343,9 +373,8 @@
          :wowi/checksum (some-> md5 :content first :attrs :value)
          :wowi/category-set category-set
          :wowi/latest-release-versions version-strings
+         :wowi/compatible-with compatible-with-string
          :wowi/latest-release-list latest-release-list
-         :latest-release-set (set (map-versions latest-release-list version-strings))
-
          :wowi/archived-files archived-files}
         struct (utils/drop-nils struct (keys struct))]
     {:parsed [struct]}))
@@ -480,6 +509,7 @@
                                  :game-track-set
                                  :name
                                  :web-name
+                                 :listing-name
                                  :short-description
                                  :short-web-description
                                  :tag-set
@@ -487,6 +517,7 @@
                                  :created-date
                                  :wowi/title
                                  :wowi/web-title
+                                 :wowi/listing-title
                                  :wowi/url
                                  :wowi/downloads])
 
@@ -509,7 +540,15 @@
         ;; otherwise, bin these keys.
         addon-data (if (not (:label addon-data))
                      (rename-keys addon-data {:web-title :label, :web-name :name})
-                     (dissoc addon-data :web-title :web-name))]
+                     (dissoc addon-data :web-title :web-name))
+
+        addon-data (if (not (:label addon-data))
+                     (rename-keys addon-data {:listing-title :label, :listing-name :name})
+                     (dissoc addon-data :listing-title :listing-name))
+
+        ;; todo: if nothing to download, skip
+
+        ]
     addon-data))
 
 (defmethod core/to-catalogue-addon :wowinterface
