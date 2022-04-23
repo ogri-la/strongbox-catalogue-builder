@@ -3,6 +3,7 @@
    [clojure.spec.alpha :as s]
    [orchestra.core :refer [defn-spec]]
    [me.raynes.fs :as fs]
+   [clojure.set :refer [rename-keys]]
    [clojure.string :refer [trim lower-case upper-case]]
    [taoensso.timbre :as timbre :refer [debug info warn error spy]]
    [net.cgrand.enlive-html :as html :refer [select]]
@@ -59,6 +60,8 @@
     ;; path to file
     (and (string? downloaded-item)
          (fs/exists? downloaded-item)) (-> downloaded-item slurp html/html-snippet)
+
+    (string? downloaded-item) (html/html-snippet downloaded-item)
 
     ;; downloaded item
     (contains? downloaded-item :response) (-> downloaded-item :response :body html/html-snippet)))
@@ -140,14 +143,20 @@
   (try
     (let [extract-updated-date #(-> % (subs 8) trim) ;; "Updated 09-07-18 01:27 PM " => "09-07-18 01:27 PM"
           anchor (-> snippet (select [[:a (html/attr-contains :href "fileinfo")]]) first)
-          label (-> anchor :content first trim)]
-      {:source :wowinterface
-       :source-id (extract-source-id anchor)
-       :name (-> label utils/slugify)
-       :wowi/url (web-addon-url (extract-source-id anchor))
-       :wowi/title label
-       :wowi/web-updated-date (-> snippet (select [:div.updated html/content]) first extract-updated-date)
-       :wowi/downloads (-> snippet (select [:div.downloads html/content]) first (clojure.string/replace #"\D*" "") utils/to-int)})
+          label (-> anchor :content first trim)
+          truncated? (clojure.string/ends-with? label "...")
+          struct {:source :wowinterface
+                  :source-id (extract-source-id anchor)
+                  :listing-name (-> label utils/slugify)
+                  :wowi/url (web-addon-url (extract-source-id anchor))
+                  :wowi/listing-title label ;; I've seen underscores and truncation here, do not use if you can avoid it
+                  ;; favourites? author? we can source these reliably from the API
+                  :wowi/web-updated-date (-> snippet (select [:div.updated html/content]) first extract-updated-date)
+                  :wowi/downloads (-> snippet (select [:div.downloads html/content]) first (clojure.string/replace #"\D*" "") utils/to-int)}
+          ]
+      (cond-> struct
+        truncated? (dissoc :web-name :wowi/web-title)))
+
     (catch RuntimeException re
       (error* re (format "failed to scrape snippet, excluding from results: %s" (.getMessage re)) :payload snippet))))
 
@@ -175,18 +184,50 @@
 (defn-spec parse-addon-detail-page :result/map
   [downloaded-item :result/downloaded-item]
   (let [html-snippet (to-html downloaded-item)
+
+        source-id (extract-source-id-2 (:url downloaded-item))
+
+        ;; some addon pages have the string "Compatible with Retail, Classic & TBC" on it.
+        ;; this correlates with the API file list's `gameVersions`, I think, but the inverse isn't true,
+        ;; i.e., the html won't show this string if the api's `gameVersions` lists all versions.
+        compatible-with-string
+        (some-> html-snippet
+                (html/select [:#multitoc html/content])
+                first)
+
+        compatible-with-set
+        (some->> (clojure.string/split (or compatible-with-string "") #"\W")
+                 (map utils/guess-game-track)
+                 (remove nil?)
+                 set)
+
         coerce-releases
         (fn [row]
           {;; this could be guessed by splitting on the hyphen and then removing common elements between releases.
            ;; would only work on multiple downloads.
            ;; wouldn't work on single releases
            ;;:version nil 
-           :download-url (let [url (str host (:href row))] ;; https://www.wowinterface.com/downloads/landing.php?s=64f6d79344812e1f152c1fcc54871e2a&fileid=5332
-                           (utils/strip-url-param url :s))     ;; https://www.wowinterface.com/downloads/landing.php?fileid=5332
+           :download-url (let [;; "https://www.wowinterface.com/downloads/landing.php?s=64f6d79344812e1f152c1fcc54871e2a&fileid=5332"
+                               url (str host (:href row))]
+                           ;; "https://www.wowinterface.com/downloads/landing.php?fileid=5332"
+                           (utils/strip-url-param url :s))
+           ;; this can't be trusted, at least for single downloads. see:
+           ;; - https://www.wowinterface.com/downloads/info25230
            :game-track (case (:title row)
                          "WoW Retail" :retail
                          "WoW Classic" :classic
                          "The Burning Crusade WoW Classic" :classic-tbc)})
+
+        latest-release-list (->> (select html-snippet [:.infobox :div#download :a])
+                                 (map :attrs)
+                                 (mapv coerce-releases))
+
+        ;; 2022-04-23: disabled. I'd rather an addon be too lenient with false-retail game tracks than too strict.
+        ;; for single releases we can't trust it. it will always be 'retail'
+        ;; .. this introduces the new problem of addons without a game track :(
+        ;;latest-release-list (if (= 1 (count latest-release-list))
+        ;;                      (update-in latest-release-list [0] #(dissoc % :game-track))
+        ;;                      latest-release-list)
 
         ;; the 'Version: 9.2.0.0, Classic: 9.1.5.0' string to the left of the downloads.
         ;; I haven't seen a 'TBC' version string yet ...
@@ -195,6 +236,26 @@
             first
             (clojure.string/split #", "))
         version-strings (mapv #(clojure.string/split % #": ") version-strings)
+
+        ;; map the game version to th
+        map-versions (fn [latest-release-list, latest-release-versions]
+                       (case (count latest-release-versions)
+                         ;; we have a 'version' and a 'classic' value.
+                         ;; there may be 2 or more releases
+                         2 (let [[[_ retail] [_ classic]] latest-release-versions]
+                             (vec
+                              (for [release latest-release-list
+                                    :let [game-track (:game-track release)]]
+                                (assoc release :version (if (= game-track :retail) retail classic)))))
+
+                         ;; we have just one value for 'Version'. it doesn't matter whether it's classic or not, it's getting it.
+                         1 (assoc-in latest-release-list [0 :version] (get-in latest-release-versions [0 1]))
+
+                         ;; we have nothing :(
+                         0 (do (warn "no version for" source-id)
+                               latest-release-list)))
+
+        latest-release-set (map-versions latest-release-list version-strings) ;; not a set just yet ...
 
         infobox
         (select html-snippet #{[:.TabTab second :td] ;; handles tabber when images are present
@@ -213,14 +274,44 @@
          _ categories] ;; categories may be missing
         infobox
 
+        updated-date (some-> dt-updated :content first format-wowinterface-dt)
         compatibility (html/select compatibility [:div html/text])
 
         game-version-from-compat-string
         (fn [compat-string]
           (last (re-find (re-matcher #"\(([\d\.]+)\)" compat-string))))
 
-        game-track-set (set (mapv (comp utils/game-version-to-game-track
-                                        game-version-from-compat-string) compatibility))
+        ;; warning! compatibility is known to be incomplete/misleading, so more munging is required.
+        game-track-set (->> compatibility
+                            (map (comp utils/game-version-to-game-track game-version-from-compat-string))
+                            set)
+
+        ;; when there is just one release on the detail page, it's *always* 'retail', even if it's not.
+        ;; if there is exactly one entry in the game-track-set, replace it with that.
+        latest-release-set (if (and (= 1 (count latest-release-set))
+                                     (= 1 (count game-track-set)))
+                              (assoc-in latest-release-set [0 :game-track] (first game-track-set))
+                              latest-release-set)
+
+        ;; when there is just one release but more than one in the compatibility list, duplicate the release for each 
+        latest-release-set (if (and (= 1 (count latest-release-set))
+                                    (> (count game-track-set) 1))
+                             (->> game-track-set
+                                  (map #(assoc (first latest-release-set) :game-track %))
+                                  set)
+                             latest-release-set)
+
+        latest-release-set (set latest-release-set) ;; now we're a set :)
+
+        ;; makes sense when there are > 1 releases available, otherwise pointless.
+        game-track-set (into game-track-set (remove nil? (map :game-track latest-release-set)))
+
+        ;;game-track-set (into game-track-set compatible-with-set)
+
+        ;; fills in most of the blanks for the huge number of dead and ancient addons
+        game-track-set (if (utils/before-classic? updated-date)
+                         (conj game-track-set :retail)
+                         game-track-set)
 
         ;; "archived files"
         arc (select html-snippet [:div#other_t [:div (html/nth-of-type 3)] :tr])
@@ -235,23 +326,24 @@
              (fn [x]
                {k (html/text x)}))
 
+        ;; archived files
         arc (html/at arc
                      ;; extract the filename and it's link from the filename column
                      [:tr [html/first-of-type :td]]
                      (fn [td]
                        (let [a (-> td :content  first :content second)]
-                         {:name (-> a :content first)
-                          :download-url (let [url (str host (-> a :attrs :href))]
-                                          (utils/strip-url-param url :s))}))
+                         {:wowi/name (-> a :content first)
+                          :wowi/download-url (let [url (str host (-> a :attrs :href))]
+                                               (utils/strip-url-param url :s))}))
 
                      ;; each transformation consumes a `:td`, so it's `first-of-type` each time
-                     [:tr [html/first-of-type :td]] (kv :version)
-                     [:tr [html/first-of-type :td]] (kv :size) ;; todo: convert to bytes perhaps?
-                     [:tr [html/first-of-type :td]] (kv :author)
+                     [:tr [html/first-of-type :td]] (kv :wowi/version)
+                     [:tr [html/first-of-type :td]] (kv :wowi/size) ;; todo: convert to bytes?
+                     [:tr [html/first-of-type :td]] (kv :wowi/author)
                      ;; comp'ing `kv` here seems to work as `html/text` returns text if given text :) 
                      [:tr [html/first-of-type :td]] (comp (kv :date) format-wowinterface-dt html/text))
 
-        ;; we now have something like: [{:tag :tr, :content [{:name "..."}, {:size "..."}, ...]}, ...]
+        ;; we now have something like: [{:tag :tr, :content [{:wowi/name "..."}, {:wowi/size "..."}, ...]}, ...]
         ;; convert it into a single list of maps [{...}, {...}, ...]
         archived-files (mapv #(into {} (:content %)) arc)
 
@@ -263,29 +355,48 @@
         category-set (set (select categories [:a html/text]))
         tag-set (tags/category-set-to-tag-set :wowinterface category-set)
 
-        source-id (extract-source-id-2 (:url downloaded-item))
-        
+        game-track-set (if (contains? tag-set :the-burning-crusade-classic)
+                         (conj game-track-set :classic-tbc)
+                         game-track-set)
+
+        description  (-> html-snippet
+                         (select [:div.postmessage])
+                         first
+                         (html/at [:*] html/text)
+                         first
+                         clojure.string/split-lines)
+        description (->> description
+                         (remove utils/pure-non-alpha-numeric?)
+                         ;;(remove clojure.string/blank?) ;; covered by above test
+                         vec)
+
+        ;; todo: attach game tracks from game-track-set
+        ;; ...
+
         struct
         {:source :wowinterface
          :source-id source-id
-         ;;:name (utils/slugify label) ;; can't trust the title from the webpage to be correct, rely on the api for these.
+         :web-name (utils/slugify title)
          :game-track-set game-track-set
-         :updated-date (some-> dt-updated :content first format-wowinterface-dt)
+         :updated-date updated-date
          :created-date (some-> dt-created :content first (swallow "unknown") format-wowinterface-dt)
          :tag-set tag-set
-         :wowi/title title
+         :short-web-description (first description)
+         :latest-release-set latest-release-set
+         :wowi/web-description description
+         :wowi/web-title title
          :wowi/url (:url downloaded-item)
          :wowi/compatibility compatibility
-         :wowi/web-updated-date (some-> dt-updated :content first)
-         :wowi/web-created-date (some-> dt-created :content first (swallow "unknown"))
+         ;; we don't really need these
+         ;;:wowi/web-updated-date (some-> dt-updated :content first)
+         ;;:wowi/web-created-date (some-> dt-created :content first (swallow "unknown"))
          :wowi/downloads (some-> num-downloads :content first (clojure.string/replace #"," "") utils/str-to-int)
-         :wowi/favourites (some-> num-favourites :content first (clojure.string/replace #"," "") utils/str-to-int)
+         :wowi/favorites (some-> num-favourites :content first (clojure.string/replace #"," "") utils/str-to-int)
          :wowi/checksum (some-> md5 :content first :attrs :value)
          :wowi/category-set category-set
          :wowi/latest-release-versions version-strings
-         :wowi/latest-release (->> (select html-snippet [:.infobox :div#download :a])
-                                   (map :attrs)
-                                   (mapv coerce-releases))
+         :wowi/compatible-with compatible-with-string
+         :wowi/latest-release-list latest-release-list
          :wowi/archived-files archived-files}
         struct (utils/drop-nils struct (keys struct))]
     {:parsed [struct]}))
@@ -306,11 +417,14 @@
         addon-list-html (select html-snippet [:#filepage :div.file])
         extractor (fn [addon-html-snippet]
                     (let [category (:label downloaded-item)
-                          addon-summary (extract-addon-summary addon-html-snippet)]
-                      (if category
-                        (merge addon-summary {:wowi/category-set #{category}
-                                              :tag-set (tags/category-set-to-tag-set :wowinterface #{category})})
-                        addon-summary)))
+                          addon-summary (extract-addon-summary addon-html-snippet)
+                          category-set (if category #{category} #{})
+                          tag-set (tags/category-set-to-tag-set :wowinterface category-set)
+                          game-track-set (if (contains? tag-set :the-burning-crusade-classic) #{:classic-tbc} #{})]
+                      (merge addon-summary
+                             {:wowi/category-set category-set
+                              :tag-set tag-set
+                              :game-track-set game-track-set})))
         addon-list (mapv extractor addon-list-html)
         addon-url-list (mapv :wowi/url addon-list)]
     {:download (into listing-page-list addon-url-list)
@@ -328,7 +442,8 @@
                                   :source :wowinterface
                                   :name (utils/slugify (:wowi/title addon))
                                   :api-url (api-addon-url (:wowi/id addon))
-                                  :web-url (web-addon-url (:wowi/id addon))})))
+                                  :web-url (web-addon-url (:wowi/id addon))
+                                  :game-track-set (->> addon :wowi/gameVersions (map utils/game-version-to-game-track) set)})))
 
         addon-list (->> downloaded-item
                         :response
@@ -349,14 +464,30 @@
             (warn "wowi, discovered api addon detail with more than one item:" (:url downloaded-item)))
 
         addon (first addon-list)
+
+        removals [:version ;; single value for the 'latest' version. misleading when there are multiple latest versions.
+                  :pendingUpdate ;; I can guess it's purpose but it's not useful to us
+                  :addons ;; always null
+                  :categoryId ;; the '40' in 'https://www.wowinterface.com/downloads/index.php?cid=40'. addons may belong to many categories however...?
+                  ]
+        addon (apply dissoc addon removals)
+
         addon (utils/prefix-keys addon "wowi")
         updates {:source :wowinterface
                  :source-id (:wowi/id addon)
                  :name (utils/slugify (:wowi/title addon))
-                 :description (some-> addon :wowi/description clojure.string/split-lines first)
-                 :latest-release-list #{{:version (:wowi/version addon)
-                                         ;; nfi what 'd' is, it's not neccesary though.
-                                         :download-url (utils/strip-url-param (:wowi/downloadUri addon) :d)}}}]
+                 :short-description (some-> addon :wowi/description clojure.string/split-lines first)
+                 ;; the api doesn't list the *other* latest downloads unfortunately.
+                 ;; rely on scraping the html for a complete list of releases.
+                 ;;:latest-release-set #{
+                 ;;                      {:wowi/name (:wowi/fileName addon)
+                 ;;                       ;; nfi what 'd' is, it's not neccesary though.
+                 ;;                       :wowi/download-url (utils/strip-url-param (:wowi/downloadUri addon) :d)
+                 ;;                       :wowi/version (:wowi/version addon)
+                 ;;                       :wowi/author (:wowi/author addon)
+                 ;;                       :date (some-> addon :wowi/lastUpdate utils/unix-time-to-dtstr)
+                 ;;                       ;; :wowi/size ... ;; available from the html addon detail page, but not scraped yet. unused anyway
+                 }]
     {:parsed [(merge addon updates)]}))
 
 ;;
@@ -367,6 +498,12 @@
     (file-list? (:url downloaded-item)) (parse-api-file-list downloaded-item)
     :else (parse-api-addon-detail downloaded-item)))
 
+(defn dead-page?
+  "returns true if there is a section like 'Message: Removed per author's request'"
+  [html-snippet]
+  (boolean
+   (some-> html-snippet (html/select [:td.tcat html/content]) first (= "Message"))))
+
 (defmethod core/parse-content "www.wowinterface.com"
   [downloaded-item]
   ;; figure out what sort of item we have to parse.
@@ -374,40 +511,71 @@
   ;; we also can't rely on a link in the category page going to a listing page - it may go to another category page.
   ;; ('index' -> 'standalone addons', 'index' -> 'class & role specific')
   ;; so we need to parse the content and look at the structure.
-  (cond
-    (category-group-page? (:url downloaded-item)) (parse-category-group-page (to-html downloaded-item))
-    (category-listing-page? (:url downloaded-item)) (parse-category-listing downloaded-item)
-    :else (parse-addon-detail-page downloaded-item)))
+  (try
+    (cond
+      (category-group-page? (:url downloaded-item)) (parse-category-group-page (to-html downloaded-item))
+      (category-listing-page? (:url downloaded-item)) (parse-category-listing downloaded-item)
+      :else (parse-addon-detail-page downloaded-item))
+    (catch NullPointerException exc
+      ;; there are maybe a dozen of these pages, no need to always check for it
+      (if-not (dead-page? (to-html downloaded-item))
+        (throw exc)))))
 
 ;; --- catalogue wrangling
 
-(defn-spec -to-catalogue-addon (s/or :ok :addon/summary, :invalid nil?)
+(defn-spec -to-catalogue-addon (s/or :ok map?, :invalid nil?) ;;(s/or :ok :addon/summary, :invalid nil?)
   [addon-data :addon/part]
   (let [addon-data
         (select-keys addon-data [:source
                                  :source-id
                                  :game-track-set
-                                 ;;:label ;; prefer the 'title' from the api
                                  :name
-                                 :description
+                                 :web-name
+                                 :listing-name
+                                 :short-description
+                                 :short-web-description
                                  :tag-set
                                  :updated-date
+                                 :created-date
                                  :wowi/title
+                                 :wowi/web-title
+                                 :wowi/listing-title
                                  :wowi/url
                                  :wowi/downloads])
 
-        addon-data (utils/remove-key-ns addon-data)
-        addon-data (clojure.set/rename-keys addon-data {:downloads :download-count
-                                                        :game-track-set :game-track-list
-                                                        :tag-set :tag-list
-                                                        :title :label})
-        addon-data (update-in addon-data [:tag-list] (comp vec sort))
-        addon-data (update-in addon-data [:game-track-list] (comp vec sort))]
+        rename-map {:downloads :download-count
+                    :game-track-set :game-track-list
+                    :tag-set :tag-list
+                    :title :label
+                    :short-description :description}
 
-    (if-not (s/valid? :addon/summary addon-data)
-      (warn (format "%s (%s) failed to coerce addon data to a valid :addon/summary" (:source-id addon-data) (:source addon-data)))
-      addon-data)))
+        addon-data (cond-> addon-data
+                     true utils/remove-key-ns
+                     true (rename-keys rename-map)
+                     true (update :tag-list (comp vec sort))
+                     true (update :game-track-list (comp vec sort))
+                     (not (:description addon-data)) (rename-keys {:short-web-description :description})
+                     true (dissoc :short-web-description))
+
+        ;; only use the `web-title` if we don't have regular values.
+        ;; if using the `web-title`, also use it's corresponding slug `web-name` for consistency.
+        ;; otherwise, bin these keys.
+        addon-data (if (not (:label addon-data))
+                     (rename-keys addon-data {:web-title :label, :web-name :name})
+                     (dissoc addon-data :web-title :web-name))
+
+        addon-data (if (not (:label addon-data))
+                     (rename-keys addon-data {:listing-title :label, :listing-name :name})
+                     (dissoc addon-data :listing-title :listing-name))
+
+        ;; todo: if nothing to download, skip
+
+        ]
+    addon-data))
 
 (defmethod core/to-catalogue-addon :wowinterface
   [addon-data]
-  (-to-catalogue-addon addon-data))
+  (let [addon-data (-to-catalogue-addon addon-data)]
+    (if-not (s/valid? :addon/summary addon-data)
+      (warn (format "%s (%s) failed to coerce addon data to a valid :addon/summary" (:source-id addon-data) (:source addon-data)))
+      addon-data)))

@@ -86,26 +86,49 @@
 
 ;; ---
 
-(defn wowi
+(defn wowi-html-landing
   []
-  ;;(clojure.pprint/pprint (->> "test/fixtures/wowinterface--landing.html" fs/absolute fs/normalized str wowi/to-html wowi/parse-category-group-page))
+  (clojure.pprint/pprint (->> "test/fixtures/wowinterface--landing.html" fs/absolute fs/normalized str wowi/to-html wowi/parse-category-group-page)))
 
-  #_(let [html-snippet (->> "test/fixtures/wowinterface--listing.html" fs/absolute fs/normalized str slurp)
-          downloaded-item {:url "https://www.wowinterface.com/downloads/index.php?cid=100&sb=dec_date&so=desc&pt=f&page=1"
-                           :label "The Burning Crusade Classic"
-                           :response {:headers {}
-                                      :body html-snippet}}]
-      (wowi/parse-category-listing downloaded-item))
+(defn wowi-html-listing-page
+  []
+  (let [html-snippet (->> "test/fixtures/wowinterface--listing.html" fs/absolute fs/normalized str slurp)
+        downloaded-item {:url "https://www.wowinterface.com/downloads/index.php?cid=100&sb=dec_date&so=desc&pt=f&page=1"
+                         :label "The Burning Crusade Classic"
+                         :response {:headers {}
+                                    :body html-snippet}}]
+    (wowi/parse-category-listing downloaded-item)))
 
-  ;;(clojure.pprint/pprint
-   ;;(->> "test/fixtures/wowinterface--addon-detail--multiple-downloads--no-tabber.html" fs/absolute fs/normalized str wowi/to-html wowi/parse-addon-detail-page)))
-   ;;(wowi/parse-addon-detail-page
-   ;; {:url "https://www.wowinterface.com/downloads/info24155"
-   ;;  :response {:body (->> "test/fixtures/wowinterface--addon-detail--unknown-compatibility.html" fs/absolute fs/normalized str slurp)}})))
-   ;;(->> (wowi/parse-api-file-list {:url wowi/api-file-list
-   ;;                               :response (http/download wowi/api-file-list {})})
-   ;;    :parsed
-   ;;    (take 100))))
+(defn wowi-html-addon-detail
+  []
+  (clojure.pprint/pprint
+   (->> "test/fixtures/wowinterface--addon-detail--multiple-downloads--no-tabber.html" fs/absolute fs/normalized str wowi/to-html wowi/parse-addon-detail-page)))
+
+(defn wowi-html-addon-detail-2
+  []
+  (clojure.pprint/pprint
+   (wowi/parse-addon-detail-page
+    {:url "https://www.wowinterface.com/downloads/info24155"
+     :response {:body (->> "test/fixtures/wowinterface--addon-detail--multiple-downloads--tabber.html"
+                           fs/absolute fs/normalized str slurp)}})))
+
+(defn wowi-html-addon-detail-2
+  []
+  (clojure.pprint/pprint
+   (wowi/parse-addon-detail-page
+    {:url "https://www.wowinterface.com/downloads/info24155"
+     :response {:body (->> "test/fixtures/wowinterface--addon-detail--single-download--supports-all.html"
+                           fs/absolute fs/normalized str slurp)}})))
+
+(defn wowi-api-addon-list
+  []
+  (->> (wowi/parse-api-file-list {:url wowi/api-file-list
+                                  :response (http/download wowi/api-file-list {})})
+       :parsed
+       (take 100)))
+
+(defn wowi-api-addon-detail
+  []
   (let [resp (wowi/parse-api-addon-detail {:url "https://api.mmoui.com/v4/game/WOW/filedetails/5119.json"
                                            :response (http/download "https://api.mmoui.com/v4/game/WOW/filedetails/5119.json" {})})]
     (clojure.pprint/pprint resp)
@@ -131,6 +154,14 @@
   (core/put-item (core/get-state :download-queue) url)
   nil)
 
+(defn parse-url-content
+  "downloads and parses the given URL, bypasses queues.
+  allows us to grap the exception object with `*e`"
+  [url]
+  (let [resp {:url url
+              :response (http/download url {})}]
+    (core/parse-content resp)))
+
 (defn write-catalogue
   "generates a catalogue and writes it to disk"
   []
@@ -141,7 +172,6 @@
   (let [path (core/state-path :wowinterface source-id)
         addon-data (core/read-addon-data path)]
     (wowi/-to-catalogue-addon addon-data)))
-
 
 (defn refresh-data
   []
@@ -157,6 +187,7 @@
   (download-url wowi/api-file-list))
 
 (defn http-state-urls
+  "prints the list of base64 decoded urls in `/path/to/state/http`"
   []
   (let [dec (java.util.Base64/getUrlDecoder)
         decode (fn [path]
@@ -171,4 +202,3 @@
                        (mapv decode))]
 
     (clojure.pprint/pprint path-list)))
-

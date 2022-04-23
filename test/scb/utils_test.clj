@@ -29,3 +29,25 @@
 
     (doseq [[a b expected] cases]
       (is (= expected (utils/deep-merge a b))))))
+
+(deftest pure-non-alpha-numeric?
+  (let [cases [;; 'empty'
+               ["" true]
+
+               ;; 'blank'
+               [" " true]
+               ["   " true]
+
+               ["-" true]
+               ["-a" false]
+               ["a" false]
+
+               ;; actual cases
+               ["-------------------------------------" true]
+               ["#---------------------------------------#" true]
+               ["~~~~~~~~~~~~~~~~~~~~" true]
+               ["____________________________________" true]
+               ["-------------------- Summary --------------------" false]]]
+
+    (doseq [[given expected] cases]
+      (is (= expected (utils/pure-non-alpha-numeric? given))))))

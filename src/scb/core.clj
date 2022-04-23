@@ -232,6 +232,14 @@
 
 ;; --- storing
 
+(defn write-addon-data
+  [output-path addon-data]
+  (cond-> addon-data
+    (contains? addon-data :tag-set) (update :tag-set (comp vec sort))
+    (contains? addon-data :category-set) (update :category-set (comp vec sort))
+    true utils/order-map
+    true (utils/json-spit output-path)))
+
 (defn merge-addon-data
   [m1 m2]
   (utils/deep-merge m1 m2))
@@ -247,14 +255,12 @@
   (while true
     (let [[item _] (take-item (get-state :parsed-content-queue))
           output-path (state-path (:source item) (:source-id item))
-          existing-item (read-addon-data output-path)]
+          existing-item (read-addon-data output-path)
+          addon-data (merge-addon-data existing-item item)]
       (try
-        (-> existing-item
-            (merge-addon-data item)
-            utils/order-map
-            (utils/json-spit output-path))
+        (write-addon-data output-path addon-data)
         (catch Exception exc
-          (error* "unhandled exception storing content" :exc exc :payload item))))))
+          (error* "unhandled exception storing content" :exc exc :payload addon-data))))))
 
 ;; ---
 

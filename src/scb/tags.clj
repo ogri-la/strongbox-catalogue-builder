@@ -8,6 +8,11 @@
 
 sp/placeholder
 
+;; rules of thumb:
+;; * prefer singluar tags rather than plural.
+;; * prefer broadly common over very speific
+;; * ...
+
 (def wowi-replacements
   "wowinterface-specific categories that are replaced"
   {"Character Advancement" [:quests :leveling :achievements]
@@ -25,10 +30,25 @@ sp/placeholder
    "Unit Mods" [:unit-frames]
    "Raid Mods" [:unit-frames :raid-frames]
    "Data Mods" [:data]
+   "Developer Utilities" [:dev]
    "Utility Mods" [:utility] ;; misc?
+   "WoW Tools & Utilities" [:dev]
    "Action Bar Mods" [:action-bars :ui]
    "Tradeskill Mods" [:tradeskill]
-   "Classic - General" [:classic]})
+   "Classic - General" [:classic]
+
+   "Guild Compilations" [:guild :compilations]
+   "Minimalistic Compilations" [:compilations]
+   "Generic Compilations" [:compilations]
+   "Tank Compilations" [:tank :compilations]
+   "Healer Compilations" [:healers :compilations]
+   "Graphical Compilations" [:compilations]
+   "Class Compilations" [:class :compilations]
+   "DPS Compilations" [:dps :compilations]
+
+   "Plug-Ins & Patches" [:plugins]
+   "Beta-version AddOns" [:beta]
+   "Discontinued and Outdated Mods" [:discontinued]})
 
 (def wowi-supplements
   "wowinterface-specific categories that gain new tags"
