@@ -185,6 +185,23 @@
   [downloaded-item :result/downloaded-item]
   (let [html-snippet (to-html downloaded-item)
 
+        source-id (extract-source-id-2 (:url downloaded-item))
+
+        ;; some addon pages have the string "Compatible with Retail, Classic & TBC" on it.
+        ;; this correlates with the API file list's `gameVersions`, I think, but the inverse isn't true,
+        ;; i.e., the html won't show this string if the api's `gameVersions` lists all versions.
+        compatible-with-string
+        (some-> html-snippet
+                (html/select [:#multitoc html/content])
+                first ;; "Compatible with Retail, Classic & TBC"
+                )
+
+        compatible-with-set
+        (some->> (clojure.string/split (or compatible-with-string "") #"\W")
+                 (map utils/guess-game-track)
+                 (remove nil?)
+                 set)
+
         coerce-releases
         (fn [row]
           {;; this could be guessed by splitting on the hyphen and then removing common elements between releases.
@@ -206,24 +223,12 @@
                                  (map :attrs)
                                  (mapv coerce-releases))
 
+        ;; 2022-04-23: disabled. I'd rather an addon be too lenient with false-retail game tracks than too-strict.
+        ;; for single releases we can't trust it. it will always be 'retail'
+        ;; .. this introduces the new problem of addons without a game track :(
         ;;latest-release-list (if (= 1 (count latest-release-list))
         ;;                      (update-in latest-release-list [0] #(dissoc % :game-track))
         ;;                      latest-release-list)
-
-        ;; some addon pages have the string "Compatible with Retail, Classic & TBC" on it.
-        ;; this correlates with the API file list's `gameVersions`, I think, but the inverse isn't true,
-        ;; i.e., the html won't show this string if the api's `gameVersions` lists all versions.
-        compatible-with-string
-        (some-> html-snippet
-                (html/select [:#multitoc html/content])
-                first ;; "Compatible with Retail, Classic & TBC"
-                )
-
-        compatible-with-set
-        (some->> (clojure.string/split (or compatible-with-string "") #"\W")
-                 (map utils/guess-game-track)
-                 (remove nil?)
-                 set)
 
         ;; the 'Version: 9.2.0.0, Classic: 9.1.5.0' string to the left of the downloads.
         ;; I haven't seen a 'TBC' version string yet ...
@@ -232,6 +237,26 @@
             first
             (clojure.string/split #", "))
         version-strings (mapv #(clojure.string/split % #": ") version-strings)
+
+        ;; map the game version to th
+        map-versions (fn [latest-release-list, latest-release-versions]
+                       (case (count latest-release-versions)
+                         ;; we have a 'version' and a 'classic' value.
+                         ;; there may be 2 or more releases
+                         2 (let [[[_ retail] [_ classic]] latest-release-versions]
+                             (vec
+                              (for [release latest-release-list
+                                    :let [game-track (:game-track release)]]
+                                (assoc release :version (if (= game-track :retail) retail classic)))))
+
+                         ;; we have just one value for 'Version'. it doesn't matter whether it's classic or not, it's getting it.
+                         1 (assoc-in latest-release-list [0 :version] (get-in latest-release-versions [0 1]))
+
+                         ;; we have nothing :(
+                         0 (do (warn "no version for" source-id)
+                               latest-release-list)))
+
+        latest-release-set (map-versions latest-release-list version-strings) ;; not a set just yet ...
 
         infobox
         (select html-snippet #{[:.TabTab second :td] ;; handles tabber when images are present
@@ -262,7 +287,25 @@
                             (map (comp utils/game-version-to-game-track game-version-from-compat-string))
                             set)
 
-        game-track-set (into game-track-set (remove nil? (map :game-track latest-release-list)))
+        ;; when there is just one release on the detail page, it's *always* 'retail', even if it's not.
+        ;; if there is exactly one entry in the game-track-set, replace it with that.
+        latest-release-set (if (and (= 1 (count latest-release-set))
+                                     (= 1 (count game-track-set)))
+                              (assoc-in latest-release-set [0 :game-track] (first game-track-set))
+                              latest-release-set)
+
+        ;; when there is just one release but more than one in the compatibility list, duplicate the release for each 
+        latest-release-set (if (and (= 1 (count latest-release-set))
+                                    (> (count game-track-set) 1))
+                             (->> game-track-set
+                                  (map #(assoc (first latest-release-set) :game-track %))
+                                  set)
+                             latest-release-set)
+
+        latest-release-set (set latest-release-set) ;; now we're a set :)
+
+        ;; makes sense when there are > 1 releases available, otherwise pointless.
+        game-track-set (into game-track-set (remove nil? (map :game-track latest-release-set)))
 
         ;;game-track-set (into game-track-set compatible-with-set)
 
@@ -317,8 +360,6 @@
                          (conj game-track-set :classic-tbc)
                          game-track-set)
 
-        source-id (extract-source-id-2 (:url downloaded-item))
-
         description  (-> html-snippet
                          (select [:div.postmessage])
                          first
@@ -329,24 +370,6 @@
                          (remove utils/pure-non-alpha-numeric?)
                          ;;(remove clojure.string/blank?) ;; covered by above test
                          vec)
-
-        map-versions (fn [latest-release-list, latest-release-versions]
-                       (case (count latest-release-versions)
-                         ;; we have a 'version' and a 'classic' value.
-                         ;; there may be 2 or more releases
-                         2 (let [[[_ retail] [_ classic]] latest-release-versions]
-                             (for [release latest-release-list
-                                   :let [game-track (:game-track release)]]
-                               (assoc release :version (if (= game-track :retail) retail classic))))
-
-                         ;; we have just one value for 'Version'. it doesn't matter whether it's classic or not, it's getting it.
-                         1 (assoc-in latest-release-list [0 :version] (get-in latest-release-versions [0 1]))
-
-                         ;; we have nothing :(
-                         0 (do (warn "no version for" source-id)
-                               latest-release-list)))
-
-        latest-release-set (set (map-versions latest-release-list version-strings))
 
         ;; todo: attach game tracks from game-track-set
         ;; ...

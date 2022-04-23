@@ -56,6 +56,12 @@
 
 # todo bucket (no order)
 
+* write snippets to distinct files and ordered merging
+    - defer any derived value scraping until then
+* write snippets to a db
+    - I also want to browse the db like a file system so I can diff changes
+        - https://github.com/twopoint718/SQLiteFS
+        - https://github.com/narumatt/sqlitefs
 * wowi, parse latest feed
     - https://www.wowinterface.com/rss/latest.xml
 * 'game-track' in latest-release-set is wrong
