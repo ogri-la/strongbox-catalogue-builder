@@ -17,10 +17,10 @@ sp/placeholder
   "wowinterface-specific categories that are replaced"
   {"Character Advancement" [:quests :leveling :achievements]
    "Other" [:misc]
-   "Suites" [:compilation]
-   "Graphic UI Mods" [:ui :ui-replacement]
+   "Suites" [:compilations]
+   "Graphic UI Mods" [:ui :ui-replacements]
    "UI Media" [:ui] ;; audio video ?
-   "ROFL" [:misc :mini-game]
+   "ROFL" [:misc :mini-games]
    "Combat Mods" [:combat]
    "Buff, Debuff, Spell" [:buffs :debuffs]
    "Casting Bars, Cooldowns" [:buffs :debuffs :ui]
@@ -33,18 +33,18 @@ sp/placeholder
    "Developer Utilities" [:dev]
    "Utility Mods" [:utility] ;; misc?
    "WoW Tools & Utilities" [:dev]
-   "Action Bar Mods" [:action-bar :ui]
+   "Action Bar Mods" [:action-bars :ui]
    "Tradeskill Mods" [:tradeskill]
    "Classic - General" [:classic]
 
-   "Guild Compilations" [:guild :compilation]
-   "Minimalistic Compilations" [:compilation]
-   "Generic Compilations" [:compilation]
-   "Tank Compilations" [:tank :compilation]
-   "Healer Compilations" [:healers :compilation]
-   "Graphical Compilations" [:compilation]
-   "Class Compilations" [:class :compilation]
-   "DPS Compilations" [:dps :compilation]
+   "Guild Compilations" [:guild :compilations]
+   "Minimalistic Compilations" [:compilations]
+   "Generic Compilations" [:compilations]
+   "Tank Compilations" [:tank :compilations]
+   "Healer Compilations" [:healers :compilations]
+   "Graphical Compilations" [:compilations]
+   "Class Compilations" [:class :compilations]
+   "DPS Compilations" [:dps :compilations]
 
    "Plug-Ins & Patches" [:plugins]
    "Beta-version AddOns" [:beta]
@@ -84,7 +84,7 @@ sp/placeholder
 
 (def tukui-replacements
   "tukui-specific categories that are replaced"
-  {"Edited UIs & Compilations" [:ui :compilation]
+  {"Edited UIs & Compilations" [:ui :compilations]
    "Full UI Replacements" [:ui]
    "Skins" [:ui]
    "Tooltips" [:tooltip] ;; singular
@@ -115,21 +115,21 @@ sp/placeholder
    "Demon Hunter" [:class]
    "Hunter" [:class]
 
-   "Alchemy" [:profession]
-   "Cooking" [:profession]
-   "Mining" [:profession]
-   "Engineering" [:profession]
-   "Jewelcrafting" [:profession]
-   "Tailoring" [:profession]
-   "First Aid" [:profession]
-   "Fishing" [:profession]
-   "Leatherworking" [:profession]
-   "Enchanting" [:profession]
-   "Blacksmithing" [:profession]
-   "Inscription" [:profession]
-   "Skinning" [:profession]
-   "Archaeology" [:profession]
-   "Herbalism" [:profession]})
+   "Alchemy" [:professions]
+   "Cooking" [:professions]
+   "Mining" [:professions]
+   "Engineering" [:professions]
+   "Jewelcrafting" [:professions]
+   "Tailoring" [:professions]
+   "First Aid" [:professions]
+   "Fishing" [:professions]
+   "Leatherworking" [:professions]
+   "Enchanting" [:professions]
+   "Blacksmithing" [:professions]
+   "Inscription" [:professions]
+   "Skinning" [:professions]
+   "Archaeology" [:professions]
+   "Herbalism" [:professions]})
 
 (def replacement-map
   {:wowinterface (merge general-replacements wowi-replacements)

@@ -193,8 +193,7 @@
         compatible-with-string
         (some-> html-snippet
                 (html/select [:#multitoc html/content])
-                first ;; "Compatible with Retail, Classic & TBC"
-                )
+                first)
 
         compatible-with-set
         (some->> (clojure.string/split (or compatible-with-string "") #"\W")
@@ -223,7 +222,7 @@
                                  (map :attrs)
                                  (mapv coerce-releases))
 
-        ;; 2022-04-23: disabled. I'd rather an addon be too lenient with false-retail game tracks than too-strict.
+        ;; 2022-04-23: disabled. I'd rather an addon be too lenient with false-retail game tracks than too strict.
         ;; for single releases we can't trust it. it will always be 'retail'
         ;; .. this introduces the new problem of addons without a game track :(
         ;;latest-release-list (if (= 1 (count latest-release-list))
