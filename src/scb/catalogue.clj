@@ -33,6 +33,7 @@
                      (and (fs/file? path)
                           (clojure.string/ends-with? path ".json")))
 
+        ;; todo: add another step to merge snippets into a whole and put them in state dir root
         file-list (->> (core/paths :state-path)
                        fs/list-dir
                        (filter json-file?)

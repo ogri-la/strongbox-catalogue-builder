@@ -1,58 +1,15 @@
 # done
 
-* wowi, fetch structured data
-    - fileList as well as each individual details
-    - done
-* order keys for diffing
-    - done
-* wowi, description and changelog
-    - done
-* tag/category normalisation
-    - done
-* wowi, namespace keys
-    - wowi/archived-files, wowi/date-updated, etc
-    - preserve the original values
-    - derived/formatted values go into a local ns 
-    - done
-* write catalogue
-    - done
-* wowi, scrape html description
-    - we have cases where there is no api detail to pull description from
-    - done
-* wowi, add created date
-    - done
-* deal with tag "discontinued-and-outdated-mods"
-    - something common across all hosts
-    - done
-* wowi, description, strip any lines with no alpha-numeric in them
-    - done
-* wowi, tags, turn this 
-        ["class-compilations", "classic", "dps-compilations",
-        "generic-compilations", "graphical-compilations",
-        "minimalistic-compilations"],
-   into 
-        [compilation]
-    - done
-* add obvious game tracks without guessing
-    - for example, if it hasn't been updated since classic was introduced, it was retail
-    - if it has the tag 'the-burning-crusade-classic', then give it :classic-tbc
-    - ...
-    - done
-* wowi, sort addon data keys
-* wowi, archived-files not namespaced
-* wowi, deal with 
-    'latest-release-list' and 
-    'archived-files' list and 
-    'wowi/latest-release' list
-    'wowi/latest-release-versions' list
-    jeez
-    - done
-* "Compatible with Retail, Classic & TBC"
-    - single download
-    - https://www.wowinterface.com/downloads/info11551-MapCoords.html
-    - done
+# todo 0.2 release
 
-# todo 0.1 release
+* scheduler and cache busting
+    - scrape a thing N times a day
+        - the 'latest' feed. rather than parsing the content, just wipe the cached data
+    - commit changes to json once a day
+    - wowi
+        - we have access to the last updated date in the listing pages
+            - wipe out the listing pages daily
+            - inspect the updated date and compare to age (and type?) of cached file
 
 # todo bucket (no order)
 
@@ -66,16 +23,9 @@
     - https://www.wowinterface.com/rss/latest.xml
 * 'game-track' in latest-release-set is wrong
     - it uses 'retail' from the html when it's obviously not retail
-* scheduler and cache busting
-    - scrape a thing N times a day
-        - the 'latest' feed. rather than parsing the content, just wipe the cached data
-    - commit changes to json once a day
-    - we have access to the last updated date in the listing pages
-        - wipe out the listing pages daily
-        - inspect the updated date and compare to age (and type?) of cached file
+        - it is difficult to guess at this without leaving some addons with no game tracks at all
 * I want to see throughput rate on these workers
     - for example, parsed-content worker is processing 100 items/second
-
 * migrate all of strongbox catalogue scraping here
     - delete there. means a new major version
 * test coverage

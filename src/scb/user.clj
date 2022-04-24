@@ -196,7 +196,7 @@
                    ;;(warn "decoding" filename)
                    (String. (.decode dec filename))))
 
-        path-list (->> (core/paths :state-http-cache-path)
+        path-list (->> (core/paths :cache-http-path)
                        fs/list-dir
                        (map str)
                        (mapv decode))]

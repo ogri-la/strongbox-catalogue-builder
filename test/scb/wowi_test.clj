@@ -35,6 +35,7 @@
                      :short-web-description "DataBroker plugin to track played time across all your characters.",
                      :source :wowinterface,
                      :source-id 8149,
+                     :filename "web--detail"
                      :tag-set #{:achievements
                                 :data
                                 :data-broker
@@ -113,6 +114,7 @@
           {:parsed
            [{:source :wowinterface,
              :source-id 8149,
+             :filename "web--detail"
              :web-name "icehud"
              :created-date "2022-03-28T09:32:00Z",
              :updated-date "2022-03-29T09:32:00Z",

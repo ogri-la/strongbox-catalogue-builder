@@ -28,9 +28,14 @@
 
 (defn state-dir
   []
-  ;;(utils/temp-dir)
   (str (fs/file fs/*cwd* "state")) ;; "/path/to/strongbox-catalogue-builder/state"
   )
+
+(defn cache-dir
+  []
+  (str (fs/file fs/*cwd* "cache")) ;; "/path/to/strongbox-catalogue-builder/state"
+  )
+
 
 ;; --- state wrangling
 
@@ -49,9 +54,11 @@
 (defn paths
   [& path]
   (let [state-path (state-dir)
+        cache-path (cache-dir) 
         path-map {:state-path state-path ;; /path/to/state
+                  :cache-path cache-path
                   :state-file-path (->> "state.edn" (fs/file state-path) str) ;; /path/to/state/state.edn
-                  :state-http-cache-path (->> "http" (fs/file state-path) str) ;; /path/to/state/http
+                  :cache-http-path (->> "http" (fs/file cache-path) str) ;; /path/to/cache/http
                   :state-log-file-path (->> "log" (fs/file state-path) str) ;; /path/to/state/log
                   }]
     (if path
@@ -125,7 +132,7 @@
   [url & [request-opts]]
   (let [user-agent "strongbox-catalogue-builder 0.0.1 (https://github.com/ogri-la/strongbox-catalogue-builder)"
         default-request-opts {:headers {"User-Agent" user-agent}
-                              :cache-root (paths :state-http-cache-path)}
+                              :cache-root (paths :cache-http-path)}
         request-opts (merge default-request-opts request-opts)]
     (try
       (http/download url request-opts)
@@ -234,8 +241,12 @@
 
 (defn write-addon-data
   [output-path addon-data]
+  (when (not (fs/exists? (fs/parent output-path)))
+    (fs/mkdirs (fs/parent output-path)))
   (cond-> addon-data
+    ;; wowi-specific
     (contains? addon-data :tag-set) (update :tag-set (comp vec sort))
+    ;; wowi-specific
     (contains? addon-data :category-set) (update :category-set (comp vec sort))
     true utils/order-map
     true (utils/json-spit output-path)))
@@ -246,17 +257,22 @@
 
 (defn state-path
   "returns a path like `/path/to/state/wowinterface--12345.json`"
-  [source source-id]
-  (str (fs/file (paths :state-path) (format "%s--%s.json" (name source) source-id))))
+  [source source-id filename]
+  (let [;; /path/to/state/wowinterface/12345/filename.json
+        output-dir (fs/file (paths :state-path) (name source) (str source-id))
+        output-path (fs/file output-dir filename)]
+    (str output-path)))
 
 (defn write-content-worker
   "takes parsed content and writes to the fs"
   []
   (while true
     (let [[item _] (take-item (get-state :parsed-content-queue))
-          output-path (state-path (:source item) (:source-id item))
-          existing-item (read-addon-data output-path)
-          addon-data (merge-addon-data existing-item item)]
+          output-path (state-path (:source item) (:source-id item) (:filename item))
+          ;;existing-item (read-addon-data output-path)
+          ;;addon-data (merge-addon-data existing-item item)
+          addon-data item ;; no more clever merging here
+          ]
       (try
         (write-addon-data output-path addon-data)
         (catch Exception exc
@@ -404,7 +420,8 @@
 (defn init-state-dirs
   []
   (run! fs/mkdirs [(paths :state-path)
-                   (paths :state-http-cache-path)]))
+                   (paths :cache-path)
+                   (paths :cache-http-path)]))
 
 (defn -start
   []

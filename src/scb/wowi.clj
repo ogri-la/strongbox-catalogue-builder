@@ -376,6 +376,8 @@
         struct
         {:source :wowinterface
          :source-id source-id
+         :filename "web--detail"
+         
          :web-name (utils/slugify title)
          :game-track-set game-track-set
          :updated-date updated-date
@@ -422,7 +424,8 @@
                           tag-set (tags/category-set-to-tag-set :wowinterface category-set)
                           game-track-set (if (contains? tag-set :the-burning-crusade-classic) #{:classic-tbc} #{})]
                       (merge addon-summary
-                             {:wowi/category-set category-set
+                             {:filename (str "listing--" (utils/slugify category))
+                              :wowi/category-set category-set
                               :tag-set tag-set
                               :game-track-set game-track-set})))
         addon-list (mapv extractor addon-list-html)
@@ -440,6 +443,8 @@
                                  ;; todo: prefix these with 'sb'
                                  {:source-id (:wowi/id addon)
                                   :source :wowinterface
+                                  :filename "api--filelist"
+                                  
                                   :name (utils/slugify (:wowi/title addon))
                                   :api-url (api-addon-url (:wowi/id addon))
                                   :web-url (web-addon-url (:wowi/id addon))
@@ -475,6 +480,7 @@
         addon (utils/prefix-keys addon "wowi")
         updates {:source :wowinterface
                  :source-id (:wowi/id addon)
+                 :filename "api--detail"
                  :name (utils/slugify (:wowi/title addon))
                  :short-description (some-> addon :wowi/description clojure.string/split-lines first)
                  ;; the api doesn't list the *other* latest downloads unfortunately.
