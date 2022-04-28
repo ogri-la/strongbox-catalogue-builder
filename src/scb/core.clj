@@ -98,9 +98,14 @@
   [regex]
   (filter (fn [[_ url]] (re-find regex url)) (cache-path-list)))
 
-(defn state-paths-matching
-  [glob-pattern]
+(defn-spec state-paths-matching (s/coll-of ::sp/extant-file)
+  [glob-pattern string?]
   (mapv str (glob/glob (str (paths :state-path) "/" glob-pattern))))
+
+(defn-spec state-paths-for-addon (s/coll-of ::sp/extant-file)
+  [source :addon/source, source-id :addon/source-id]
+  (let [glob-pattern (format "%s/%s/*.json" (name source) source-id)]
+    (state-paths-matching glob-pattern)))
 
 ;; --- queue wrangling
 
@@ -237,7 +242,7 @@
 ;; ... we had problems keeping it all in memory previously. We'd prune as we go along but ...
 ;; I feel slurping from the disk as neccessary is more robust right now.
 (defmulti to-catalogue-addon
-  "coerces addon data from a file.
+  "coerces a list of addon data read from state files into a catalogue entry, dispatched using the first `:source` value.
   all addon data in files is guaranteed to have at least a `source` and `source-id`."
   (comp keyword :source first))
 
@@ -263,6 +268,10 @@
         value-fn -addon-data-value-fn ;; defined 'outside' so it can reference itself
         opts {:key-fn key-fn :value-fn value-fn}]
     (utils/json-slurp path opts)))
+
+(defn-spec find-read-addon-data (s/coll-of :addon/part)
+  [source :addon/source, source-id :addon/source-id]
+  (mapv read-addon-data (state-paths-for-addon source source-id)))
 
 ;; --- storing
 

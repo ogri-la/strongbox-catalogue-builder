@@ -185,11 +185,9 @@
   []
   (catalogue/write-catalogue (catalogue/marshall-catalogue) "/tmp/catalogue.json"))
 
-#_(defn to-catalogue-addon
-    [source-id]
-    (let [path (core/state-path :wowinterface source-id)
-          addon-data (core/read-addon-data path)]
-      (wowi/-to-catalogue-addon addon-data)))
+(defn to-catalogue-addon
+  [source source-id]
+  (core/to-catalogue-addon (core/find-read-addon-data source source-id)))
 
 (defn refresh-data
   []

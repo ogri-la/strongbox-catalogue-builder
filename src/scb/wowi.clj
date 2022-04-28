@@ -533,8 +533,13 @@
 ;; --- catalogue wrangling
 
 (defn-spec -to-catalogue-addon (s/or :ok map?, :invalid nil?) ;;(s/or :ok :addon/summary, :invalid nil?)
-  [addon-data :addon/part]
-  (let [addon-data
+  [addon-data-list (s/coll-of :addon/part)]
+  (let [;; TODO: sort data
+        _ (mapv :filename addon-data-list)
+
+        addon-data (reduce core/merge-addon-data {} addon-data-list)
+
+        addon-data
         (select-keys addon-data [:source
                                  :source-id
                                  :game-track-set
@@ -583,10 +588,7 @@
 
 (defmethod core/to-catalogue-addon :wowinterface
   [addon-data-list]
-  (let [;; TODO: sort addon-data-list. web data comes first, overridden by API data
-
-        addon-data (reduce core/merge-addon-data {} addon-data-list)
-        addon-data (-to-catalogue-addon addon-data)]
+  (let [addon-data (-to-catalogue-addon addon-data-list)]
     (if-not (s/valid? :addon/summary addon-data)
       (warn (format "%s (%s) failed to coerce addon data to a valid :addon/summary" (:source-id addon-data) (:source addon-data)))
       addon-data)))
