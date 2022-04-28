@@ -145,15 +145,16 @@
           anchor (-> snippet (select [[:a (html/attr-contains :href "fileinfo")]]) first)
           label (-> anchor :content first trim)
           truncated? (clojure.string/ends-with? label "...")
+          web-updated-date (-> snippet (select [:div.updated html/content]) first extract-updated-date)
           struct {:source :wowinterface
                   :source-id (extract-source-id anchor)
-                  :listing-name (-> label utils/slugify)
+                  :listing-name (-> label utils/slugify) ;; todo: rename `:name` and sort merge order
+                  :updated-date (format-wowinterface-dt web-updated-date)
                   :wowi/url (web-addon-url (extract-source-id anchor))
                   :wowi/listing-title label ;; I've seen underscores and truncation here, do not use if you can avoid it
                   ;; favourites? author? we can source these reliably from the API
-                  :wowi/web-updated-date (-> snippet (select [:div.updated html/content]) first extract-updated-date)
-                  :wowi/downloads (-> snippet (select [:div.downloads html/content]) first (clojure.string/replace #"\D*" "") utils/to-int)}
-          ]
+                  :wowi/web-updated-date web-updated-date
+                  :wowi/downloads (-> snippet (select [:div.downloads html/content]) first (clojure.string/replace #"\D*" "") utils/to-int)}]
       (cond-> struct
         truncated? (dissoc :web-name :wowi/web-title)))
 
@@ -195,11 +196,12 @@
                 (html/select [:#multitoc html/content])
                 first)
 
-        compatible-with-set
-        (some->> (clojure.string/split (or compatible-with-string "") #"\W")
-                 (map utils/guess-game-track)
-                 (remove nil?)
-                 set)
+        ;; unused, for now
+        ;;compatible-with-set
+        ;;(some->> (clojure.string/split (or compatible-with-string "") #"\W")
+        ;;         (map utils/guess-game-track)
+        ;;         (remove nil?)
+        ;;         set)
 
         coerce-releases
         (fn [row]
@@ -289,9 +291,9 @@
         ;; when there is just one release on the detail page, it's *always* 'retail', even if it's not.
         ;; if there is exactly one entry in the game-track-set, replace it with that.
         latest-release-set (if (and (= 1 (count latest-release-set))
-                                     (= 1 (count game-track-set)))
-                              (assoc-in latest-release-set [0 :game-track] (first game-track-set))
-                              latest-release-set)
+                                    (= 1 (count game-track-set)))
+                             (assoc-in latest-release-set [0 :game-track] (first game-track-set))
+                             latest-release-set)
 
         ;; when there is just one release but more than one in the compatibility list, duplicate the release for each 
         latest-release-set (if (and (= 1 (count latest-release-set))
@@ -376,8 +378,8 @@
         struct
         {:source :wowinterface
          :source-id source-id
-         :filename "web--detail"
-         
+         :filename "web--detail.json"
+
          :web-name (utils/slugify title)
          :game-track-set game-track-set
          :updated-date updated-date
@@ -424,7 +426,7 @@
                           tag-set (tags/category-set-to-tag-set :wowinterface category-set)
                           game-track-set (if (contains? tag-set :the-burning-crusade-classic) #{:classic-tbc} #{})]
                       (merge addon-summary
-                             {:filename (str "listing--" (utils/slugify category))
+                             {:filename (str "listing--" (utils/slugify category) ".json")
                               :wowi/category-set category-set
                               :tag-set tag-set
                               :game-track-set game-track-set})))
@@ -443,8 +445,9 @@
                                  ;; todo: prefix these with 'sb'
                                  {:source-id (:wowi/id addon)
                                   :source :wowinterface
-                                  :filename "api--filelist"
-                                  
+                                  :filename "api--filelist.json"
+                                  :updated-date (some-> addon :wowi/lastUpdate utils/unix-time-to-dtstr)
+
                                   :name (utils/slugify (:wowi/title addon))
                                   :api-url (api-addon-url (:wowi/id addon))
                                   :web-url (web-addon-url (:wowi/id addon))
@@ -480,7 +483,7 @@
         addon (utils/prefix-keys addon "wowi")
         updates {:source :wowinterface
                  :source-id (:wowi/id addon)
-                 :filename "api--detail"
+                 :filename "api--detail.json"
                  :name (utils/slugify (:wowi/title addon))
                  :short-description (some-> addon :wowi/description clojure.string/split-lines first)
                  ;; the api doesn't list the *other* latest downloads unfortunately.
@@ -575,13 +578,15 @@
                      (dissoc addon-data :listing-title :listing-name))
 
         ;; todo: if nothing to download, skip
-
         ]
     addon-data))
 
 (defmethod core/to-catalogue-addon :wowinterface
-  [addon-data]
-  (let [addon-data (-to-catalogue-addon addon-data)]
+  [addon-data-list]
+  (let [;; TODO: sort addon-data-list. web data comes first, overridden by API data
+
+        addon-data (reduce core/merge-addon-data {} addon-data-list)
+        addon-data (-to-catalogue-addon addon-data)]
     (if-not (s/valid? :addon/summary addon-data)
       (warn (format "%s (%s) failed to coerce addon data to a valid :addon/summary" (:source-id addon-data) (:source addon-data)))
       addon-data)))

@@ -112,14 +112,6 @@
      :response {:body (->> "test/fixtures/wowinterface--addon-detail--multiple-downloads--tabber.html"
                            fs/absolute fs/normalized str slurp)}})))
 
-(defn wowi-html-addon-detail-2
-  []
-  (clojure.pprint/pprint
-   (wowi/parse-addon-detail-page
-    {:url "https://www.wowinterface.com/downloads/info24155"
-     :response {:body (->> "test/fixtures/wowinterface--addon-detail--single-download--supports-all.html"
-                           fs/absolute fs/normalized str slurp)}})))
-
 (defn wowi-api-addon-list
   []
   (->> (wowi/parse-api-file-list {:url wowi/api-file-list
@@ -140,9 +132,35 @@
 (def stop core/stop)
 (def start core/start)
 (def restart core/restart)
-(def status core/status)
+
+(defn status
+  []
+  (if-not (core/started?)
+    (warn "start app first: `(core/start)`")
+    (run! (fn [q-kw]
+            (println (format "%s items in %s" (.size ^LinkedBlockingQueue (core/get-state q-kw)) q-kw)))
+          core/queue-list)))
+
+(defn wait-for-empty-queues
+  "blocks the thread until all queues are empty for a few seconds"
+  []
+  (let [;; count items in all queues ...
+        check #(apply + (mapv (fn [q-kw] (.size ^LinkedBlockingQueue (core/get-state q-kw))) core/queue-list))]
+    ;; then loop until they're 0 three times in a row
+    (loop [num-checks 0
+           total-queue-items (check)]
+      (println (str (format "checking ... %s total queue items" total-queue-items)
+                    (if (> num-checks 0) (format " (%s)" (inc num-checks)) "")))
+      (when (or (< num-checks 2)
+                (not (zero? total-queue-items)))
+        (Thread/sleep (if (< total-queue-items 1000) 2000 5000)) ;; sleep longer when the number of items is over 1000
+        (recur (if (not (zero? total-queue-items)) 0 (inc num-checks)) ;; only increment checks if the number of items has hit zero
+               (check))))))
 
 (defn clear-recent-urls
+  "because processing a url may yield urls that have already been processed in the current run,
+  recent-urls builds up a list of urls in state as addons are being scraped and then skips processing of already-visited urls.
+  this list of urls needs to be wiped between scrapes otherwise urls will be skipped."
   []
   (swap! core/state assoc :recent-urls #{})
   nil)
@@ -167,11 +185,11 @@
   []
   (catalogue/write-catalogue (catalogue/marshall-catalogue) "/tmp/catalogue.json"))
 
-(defn to-catalogue-addon
-  [source-id]
-  (let [path (core/state-path :wowinterface source-id)
-        addon-data (core/read-addon-data path)]
-    (wowi/-to-catalogue-addon addon-data)))
+#_(defn to-catalogue-addon
+    [source-id]
+    (let [path (core/state-path :wowinterface source-id)
+          addon-data (core/read-addon-data path)]
+      (wowi/-to-catalogue-addon addon-data)))
 
 (defn refresh-data
   []
@@ -186,19 +204,73 @@
   ;; scrape all of the api
   (download-url wowi/api-file-list))
 
-(defn http-state-urls
-  "prints the list of base64 decoded urls in `/path/to/state/http`"
+(defn delete-cache-path
+  "deletes a cache file rooted in the `:cache-http-path` directory."
+  [[cache-path url]]
+  (warn "attempting to delete cache for:" url)
+  (utils/safe-delete-file cache-path (core/paths :cache-http-path))
+  nil)
+
+(defn delete-addon-cache
+  "deletes cache files for given addon"
+  [source source-id]
+  (run! delete-cache-path
+        (core/cache-paths-matching (re-pattern (format "info%s$|%s\\.json$" source-id source-id)))))
+
+(defn foo
   []
-  (let [dec (java.util.Base64/getUrlDecoder)
-        decode (fn [path]
-                 (let [filename (fs/base-name path)
-                       [^String filename _] (fs/split-ext (first (fs/split-ext filename)))]
-                   ;;(warn "decoding" filename)
-                   (String. (.decode dec filename))))
+  (->> (wowi/parse-api-file-list {:url wowi/api-file-list
+                                  :response (http/download wowi/api-file-list)})
+       :parsed
+       (filterv (comp (partial utils/less-than-n-days-old? 14) :updated-date))))
 
-        path-list (->> (core/paths :cache-http-path)
-                       fs/list-dir
-                       (map str)
-                       (mapv decode))]
+(defn daily-addon-update
+  "deletes the listing pages and API filelist cache,
+  refreshes addon data, downloading missing cache files as necessary,
+  finds addons updated in the last day using fresh data,
+  deletes their cache, refreshes data again.
 
-    (clojure.pprint/pprint path-list)))
+  remember: we can't trust the API filelist or listing pages to be complete, we have to consult both.
+  todo: quantify this discrepency like I did in strongbox
+  "
+  []
+  (run! delete-cache-path (core/cache-paths-matching #"page=|cat|filelist"))
+  (refresh-data)
+  (wait-for-empty-queues)
+
+  (let [updated-recently-from-listings
+        (->> (core/state-paths-matching "wowinterface/*/listing--*")
+             (group-by (comp str fs/base-name fs/parent)) ;; {"1234" [/path/to/state/1234/listing--combat-mods, ...], ...}
+             vals
+             (map first) ;; there will be 0 or many listing--* files, we want the first
+             (remove nil?) ;; if there are zero, first will give us nils
+             (map core/read-addon-data)
+             (filterv (comp (partial utils/less-than-n-days-old? 14) :updated-date)))
+
+        updated-recently-from-filedetails
+        (->> (wowi/parse-api-file-list {:url wowi/api-file-list
+                                        :response (http/download wowi/api-file-list {})})
+             :parsed
+             (map :updated-date)
+             (remove nil?)
+             (filterv (partial utils/less-than-n-days-old? 14)))
+
+        ;; #{ [:wowinterface 1234], [:wowinterface 4321], ... }
+        addon-id (juxt :source :source-id)
+        updated-recently (set (into (map addon-id updated-recently-from-listings)
+                                    (map addon-id updated-recently-from-filedetails)))
+
+        ;; todo: pmap this
+        _ (run! (partial apply delete-addon-cache) updated-recently)]
+
+    (refresh-data)
+    (wait-for-empty-queues)
+    (write-catalogue)
+
+    nil))
+
+(defn weekly-addon-update
+  "...? purge entire cache and refresh data? perhaps only target addons updated in the last fortnight/month.
+  this would be a big overlap but ensure changing data is "
+  []
+  nil)

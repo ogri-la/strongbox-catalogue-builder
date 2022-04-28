@@ -21,6 +21,7 @@
                  [enlive "1.1.6"]
                  [clojure.java-time "0.3.3"] ;; date/time handling library, https://github.com/dm3/clojure.java-time
                  [slugify "0.0.1"]
+                 [clj-glob "1.0.0"] ;; for /path/*/glob/*ing
                  ]
   
   :managed-dependencies [[org.flatland/ordered "1.5.9"]

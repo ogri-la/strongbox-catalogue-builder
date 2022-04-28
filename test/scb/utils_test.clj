@@ -2,7 +2,7 @@
   (:require
    ;;[taoensso.timbre :as timbre :refer [debug info warn error spy]]
    [clojure.test :refer [deftest is testing use-fixtures]]
-   [scb.helper :as helper :refer [fixture-path]]
+   ;;[scb.helper :as helper :refer [fixture-path]]
    [scb
     [utils :as utils]]))
 

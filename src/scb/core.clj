@@ -3,6 +3,7 @@
    [scb
     [specs :as sp]
     [utils :as utils]]
+   [org.satta.glob :as glob]
    [clojure.java.io]
    [clojure.spec.alpha :as s]
    [orchestra.core :refer [defn-spec]]
@@ -26,17 +27,6 @@
     (timbre/error ^:meta {:payload payload} exc msg)
     (timbre/error exc msg)))
 
-(defn state-dir
-  []
-  (str (fs/file fs/*cwd* "state")) ;; "/path/to/strongbox-catalogue-builder/state"
-  )
-
-(defn cache-dir
-  []
-  (str (fs/file fs/*cwd* "cache")) ;; "/path/to/strongbox-catalogue-builder/state"
-  )
-
-
 ;; --- state wrangling
 
 (def -state-template
@@ -49,21 +39,8 @@
    :recent-urls #{}})
 
 (def queue-list [:download-queue :downloaded-content-queue :parsed-content-queue])
-(def state nil)
 
-(defn paths
-  [& path]
-  (let [state-path (state-dir)
-        cache-path (cache-dir) 
-        path-map {:state-path state-path ;; /path/to/state
-                  :cache-path cache-path
-                  :state-file-path (->> "state.edn" (fs/file state-path) str) ;; /path/to/state/state.edn
-                  :cache-http-path (->> "http" (fs/file cache-path) str) ;; /path/to/cache/http
-                  :state-log-file-path (->> "log" (fs/file state-path) str) ;; /path/to/state/log
-                  }]
-    (if path
-      (get-in path-map path)
-      path-map)))
+(def state nil)
 
 (defn started?
   []
@@ -74,6 +51,56 @@
   (if (nil? state)
     (Exception. (format "app not started, failed to fetch path: %s" path))
     (get-in @state path)))
+
+(defn state-dir
+  []
+  (str (fs/file fs/*cwd* "state"))) ;; "/path/to/strongbox-catalogue-builder/state"
+
+(defn cache-dir
+  []
+  (str (fs/file fs/*cwd* "cache"))) ;; "/path/to/strongbox-catalogue-builder/state"
+
+(defn paths
+  "returns a map of paths used by the app.
+  app does not need to be running."
+  [& path]
+  (let [state-path (state-dir)
+        cache-path (cache-dir)
+        path-map {:state-path state-path ;; /path/to/state
+                  :cache-path cache-path
+                  :state-file-path (->> "state.edn" (fs/file state-path) str) ;; /path/to/state/state.edn
+                  :cache-http-path (->> "http" (fs/file cache-path) str) ;; /path/to/cache/http
+                  :state-log-file-path (->> "log" (fs/file state-path) str) ;; /path/to/state/log
+                  }]
+    (if path
+      (get-in path-map path)
+      path-map)))
+
+(def decoder (java.util.Base64/getUrlDecoder))
+
+(defn decode-cache-name
+  [path]
+  (let [filename (fs/base-name path)
+        [^String filename _] (fs/split-ext (first (fs/split-ext filename)))]
+    (String. (.decode decoder filename))))
+
+(defn cache-path-list
+  "returns a list of pairs as `[cache-path, decoded-url]` in `:cache-http-path`"
+  []
+  (->> (paths :cache-http-path)
+       fs/list-dir
+       (map str)
+       sort
+       (mapv (juxt identity decode-cache-name))))
+
+(defn cache-paths-matching
+  "just like `cache-path-list`, but filters the returned paths to just those whose decoded url matches the given `regex`"
+  [regex]
+  (filter (fn [[_ url]] (re-find regex url)) (cache-path-list)))
+
+(defn state-paths-matching
+  [glob-pattern]
+  (mapv str (glob/glob (str (paths :state-path) "/" glob-pattern))))
 
 ;; --- queue wrangling
 
@@ -212,7 +239,7 @@
 (defmulti to-catalogue-addon
   "coerces addon data from a file.
   all addon data in files is guaranteed to have at least a `source` and `source-id`."
-  (comp keyword :source))
+  (comp keyword :source first))
 
 ;; --- retrieving
 
@@ -256,7 +283,7 @@
   (utils/deep-merge m1 m2))
 
 (defn state-path
-  "returns a path like `/path/to/state/wowinterface--12345.json`"
+  "returns a path like `/path/to/state/wowinterface/12345/somefile.json`"
   [source source-id filename]
   (let [;; /path/to/state/wowinterface/12345/filename.json
         output-dir (fs/file (paths :state-path) (name source) (str source-id))
@@ -326,14 +353,6 @@
         (run-worker worker-fn))
     (dotimes [_ num-instances]
       (run-worker worker-fn))))
-
-(defn status
-  []
-  (if-not (started?)
-    (warn "start app first: `(core/start)`")
-    (run! (fn [q-kw]
-            (println (format "%s items in %s" (.size ^LinkedBlockingQueue (get-state q-kw)) q-kw)))
-          queue-list)))
 
 ;; --- init
 
