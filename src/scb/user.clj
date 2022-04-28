@@ -238,14 +238,16 @@
   (refresh-data)
   (wait-for-empty-queues)
 
-  (let [updated-recently-from-listings
+  (let [age 1
+
+        updated-recently-from-listings
         (->> (core/state-paths-matching "wowinterface/*/listing--*")
              (group-by (comp str fs/base-name fs/parent)) ;; {"1234" [/path/to/state/1234/listing--combat-mods, ...], ...}
              vals
              (map first) ;; there will be 0 or many listing--* files, we want the first
              (remove nil?) ;; if there are zero, first will give us nils
              (map core/read-addon-data)
-             (filterv (comp (partial utils/less-than-n-days-old? 14) :updated-date)))
+             (filterv (comp (partial utils/less-than-n-days-old? age) :updated-date)))
 
         updated-recently-from-filedetails
         (->> (wowi/parse-api-file-list {:url wowi/api-file-list
@@ -253,7 +255,7 @@
              :parsed
              (map :updated-date)
              (remove nil?)
-             (filterv (partial utils/less-than-n-days-old? 14)))
+             (filterv (partial utils/less-than-n-days-old? age)))
 
         ;; #{ [:wowinterface 1234], [:wowinterface 4321], ... }
         addon-id (juxt :source :source-id)
