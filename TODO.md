@@ -25,17 +25,17 @@
     - strongbox throws a 404
     - done
 
-# todo 0.0.2 release
-
 * write catalogues to a temporary repo
     - just until workflow is stable
     - will eventually be strongbox-catalogue I suspect
-    
+    - done
+        - the 'state' directory has been positioned to become the destination for scraped and coerced data
+
+# todo 0.0.2 release
+
 * write result of merging wowi data to the temporary repo
     - this is what strongbox will check for the list of releases and archived files
         - this will need to meet the spec of 'source-updates'
-
-
 
 # todo 0.0.3 release
 
@@ -49,6 +49,7 @@
 
 # todo bucket (no order)
 
+* quantifiy discrepancy between API filelist and wowi website
 * write snippets to a db
     - I also want to browse the db like a file system so I can diff changes
         - https://github.com/twopoint718/SQLiteFS

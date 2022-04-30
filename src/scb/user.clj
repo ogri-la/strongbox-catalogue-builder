@@ -145,7 +145,7 @@
   "blocks the thread until all queues are empty for a few seconds"
   []
   (let [;; count items in all queues ...
-        check #(apply + (mapv (fn [q-kw] (.size ^LinkedBlockingQueue (core/get-state q-kw))) core/queue-list))]
+        check #(apply + (mapv core/queue-size core/queue-list))]
     ;; then loop until they're 0 three times in a row
     (loop [num-checks 0
            total-queue-items (check)]
@@ -206,7 +206,7 @@
 (defn delete-cache-path
   "deletes a cache file rooted in the `:cache-http-path` directory."
   [[cache-path url]]
-  (warn "attempting to delete cache for:" url)
+  (warn "deleting cache:" url)
   (utils/safe-delete-file cache-path (core/paths :cache-http-path))
   nil)
 
@@ -216,22 +216,12 @@
   (run! delete-cache-path
         (core/cache-paths-matching (re-pattern (format "info%s$|%s\\.json$" source-id source-id)))))
 
-(defn foo
-  []
-  (->> (wowi/parse-api-file-list {:url wowi/api-file-list
-                                  :response (http/download wowi/api-file-list)})
-       :parsed
-       (filterv (comp (partial utils/less-than-n-days-old? 14) :updated-date))))
-
 (defn daily-addon-update
   "deletes the listing pages and API filelist cache,
   refreshes addon data, downloading missing cache files as necessary,
   finds addons updated in the last day using fresh data,
   deletes their cache, refreshes data again.
-
-  remember: we can't trust the API filelist or listing pages to be complete, we have to consult both.
-  todo: quantify this discrepency like I did in strongbox
-  "
+  remember: we can't trust the API filelist or listing pages to be complete, we have to consult both."
   []
   (run! delete-cache-path (core/cache-paths-matching #"page=|cat|filelist"))
   (refresh-data)
@@ -259,19 +249,11 @@
         ;; #{ [:wowinterface 1234], [:wowinterface 4321], ... }
         addon-id (juxt :source :source-id)
         updated-recently (set (into (map addon-id updated-recently-from-listings)
-                                    (map addon-id updated-recently-from-filedetails)))
+                                    (map addon-id updated-recently-from-filedetails)))]
 
-        ;; todo: pmap this
-        _ (run! (partial apply delete-addon-cache) updated-recently)]
-
+    (run! (partial apply delete-addon-cache) updated-recently)
     (refresh-data)
     (wait-for-empty-queues)
     (write-catalogue)
 
     nil))
-
-(defn weekly-addon-update
-  "...? purge entire cache and refresh data? perhaps only target addons updated in the last fortnight/month.
-  this would be a big overlap but ensure changing data is "
-  []
-  nil)

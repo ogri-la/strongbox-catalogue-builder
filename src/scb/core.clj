@@ -58,11 +58,14 @@
 
 (defn cache-dir
   []
-  (str (fs/file fs/*cwd* "cache"))) ;; "/path/to/strongbox-catalogue-builder/state"
+  (str (fs/file fs/*cwd* "cache"))) ;; "/path/to/strongbox-catalogue-builder/cache"
 
 (defn paths
-  "returns a map of paths used by the app.
-  app does not need to be running."
+  "when called with no args, returns a map of all paths.
+  when called with a single argument, returns a specific path or `nil` if path not found.
+  when called with multiple arguments, the first argument is for the path root, subsequent
+  arguments are path segments and the whole thing is returned a single path string.
+  returns `nil` if a given `path` doesn't exist."
   [& [path & rest]]
   (let [state-path (state-dir)
         cache-path (cache-dir)
@@ -74,12 +77,13 @@
                   :catalogue-path state-path}]
     (if-not path
       path-map
-      (let [path (get path-map path)]
-        (str (apply fs/file (into [path] rest)))))))
+      (when-let [path (get path-map path)]
+        (str (apply fs/file (into [path] (map str rest))))))))
 
 (def decoder (java.util.Base64/getUrlDecoder))
 
 (defn decode-cache-name
+  "decodes a URL-safe base64 encoded cached filename"
   [path]
   (let [filename (fs/base-name path)
         [^String filename _] (fs/split-ext (first (fs/split-ext filename)))]
@@ -100,15 +104,21 @@
   (filter (fn [[_ url]] (re-find regex url)) (cache-path-list)))
 
 (defn-spec state-paths-matching (s/coll-of ::sp/extant-file)
+  "returns a list of files rooted in the `:state-path` path, matching the given `glob-pattern`"
   [glob-pattern string?]
   (mapv str (glob/glob (str (paths :state-path) "/" glob-pattern))))
 
 (defn-spec state-paths-for-addon (s/coll-of ::sp/extant-file)
+  "returns a list of state files for an addon with the given `source` and `source-id`"
   [source :addon/source, source-id :addon/source-id]
   (let [glob-pattern (format "%s/%s/*.json" (name source) source-id)]
     (state-paths-matching glob-pattern)))
 
 ;; --- queue wrangling
+
+(defn queue-size
+  [q-kw]
+  (.size ^LinkedBlockingQueue (get-state q-kw)))
 
 (defn put-item
   [q i]
@@ -243,7 +253,7 @@
 ;; ... we had problems keeping it all in memory previously. We'd prune as we go along but ...
 ;; I feel slurping from the disk as neccessary is more robust right now.
 (defmulti to-catalogue-addon
-  "coerces a list of addon data read from state files into a catalogue entry, dispatched using the first `:source` value.
+  "coerces a list of addon data read from state files into a `:addon/summary`, dispatched using the `:source` value of the first item.
   all addon data in files is guaranteed to have at least a `source` and `source-id`."
   (comp keyword :source first))
 
@@ -293,23 +303,17 @@
   (utils/deep-merge m1 m2))
 
 (defn state-path
-  "returns a path like `/path/to/state/wowinterface/12345/somefile.json`"
+  "returns a path to an addon state file, given it's `source`, `source-id` and a state `filename`.
+  returns a path like: `/path/to/state/wowinterface/12345/somefile.json`"
   [source source-id filename]
-  (let [;; /path/to/state/wowinterface/12345/filename.json
-        output-dir (fs/file (paths :state-path) (name source) (str source-id))
-        output-path (fs/file output-dir filename)]
-    (str output-path)))
+  (paths :state-path (name source) source-id filename))
 
 (defn write-content-worker
   "takes parsed content and writes to the fs"
   []
   (while true
-    (let [[item _] (take-item (get-state :parsed-content-queue))
-          output-path (state-path (:source item) (:source-id item) (:filename item))
-          ;;existing-item (read-addon-data output-path)
-          ;;addon-data (merge-addon-data existing-item item)
-          addon-data item ;; no more clever merging here
-          ]
+    (let [[addon-data _] (take-item (get-state :parsed-content-queue))
+          output-path (state-path (:source addon-data) (:source-id addon-data) (:filename addon-data))]
       (try
         (write-addon-data output-path addon-data)
         (catch Exception exc
