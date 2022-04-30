@@ -43,13 +43,13 @@
     (format-catalogue-data-for-output addon-list (utils/datestamp-now-ymd))))
 
 (defn validate
-  "validates the given data as a `:catalogue/catalogue`, returning nil if data is invalid"
-  [catalogue]
+  "validates the given `catalogue-data` as a `:catalogue/catalogue`, returning `nil` if invalid"
+  [catalogue-data]
   (info "validating catalogue ...")
-  (sp/valid-or-nil :catalogue/catalogue catalogue))
+  (sp/valid-or-nil :catalogue/catalogue catalogue-data))
 
 (defn-spec write-catalogue (s/or :ok ::sp/extant-file, :error nil?)
-  "write catalogue to given `output-file` as JSON. returns path to output file"
+  "writes `catalogue-data` to given `output-file` as JSON. returns path to output file."
   [catalogue-data :catalogue/catalogue, output-file ::sp/file]
   (locking (.intern ^String output-file)
     (if (some->> catalogue-data validate (utils/dump-json-file output-file))

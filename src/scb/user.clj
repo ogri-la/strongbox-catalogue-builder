@@ -183,7 +183,8 @@
 (defn write-catalogue
   "generates a catalogue and writes it to disk"
   []
-  (catalogue/write-catalogue (catalogue/marshall-catalogue) "/tmp/catalogue.json"))
+  (let [output-path (core/paths :catalogue-path "full-catalogue.json")]
+    (catalogue/write-catalogue (catalogue/marshall-catalogue) output-path)))
 
 (defn to-catalogue-addon
   [source source-id]

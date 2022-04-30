@@ -63,18 +63,19 @@
 (defn paths
   "returns a map of paths used by the app.
   app does not need to be running."
-  [& path]
+  [& [path & rest]]
   (let [state-path (state-dir)
         cache-path (cache-dir)
         path-map {:state-path state-path ;; /path/to/state
                   :cache-path cache-path
-                  :state-file-path (->> "state.edn" (fs/file state-path) str) ;; /path/to/state/state.edn
                   :cache-http-path (->> "http" (fs/file cache-path) str) ;; /path/to/cache/http
-                  :state-log-file-path (->> "log" (fs/file state-path) str) ;; /path/to/state/log
-                  }]
-    (if path
-      (get-in path-map path)
-      path-map)))
+                  :log-file-path (->> "log" (fs/file fs/*cwd*) str) ;; /path/to/log
+                  ;;:state-file-path (->> "state.edn" (fs/file state-path) str) ;; /path/to/state/state.edn
+                  :catalogue-path state-path}]
+    (if-not path
+      path-map
+      (let [path (get path-map path)]
+        (str (apply fs/file (into [path] rest)))))))
 
 (def decoder (java.util.Base64/getUrlDecoder))
 
@@ -437,7 +438,7 @@
                             :async? false
                             :output-fn :inherit
                             :min-level :error
-                            :fn (custom-spit-appender (paths :state-log-file-path))}
+                            :fn (custom-spit-appender (paths :log-file-path))}
                      :println {:enabled? true
                                :async? false
                                :output-fn :inherit
@@ -466,7 +467,7 @@
   (alter-var-root #'state (constantly (-start)))
   (init-logging)
   (init-state-dirs)
-  (thaw-state (paths :state-file-path))
+  ;;(thaw-state (paths :state-file-path))
   (run-worker download-worker)
   (run-many-workers parser-worker 5)
   (run-many-workers write-content-worker 5)
@@ -482,7 +483,8 @@
   (info "stopping")
   (when-not (nil? state)
     (cleanup)
-    (freeze-state (paths :state-file-path)))
+    ;;(freeze-state (paths :state-file-path))
+    )
   nil)
 
 (defn restart

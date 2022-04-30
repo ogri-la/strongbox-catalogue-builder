@@ -545,7 +545,7 @@
 (defn-spec -to-catalogue-addon (s/or :ok map?, :invalid nil?) ;;(s/or :ok :addon/summary, :invalid nil?)
   [addon-data-list (s/coll-of :addon/part)]
   (if-not (some #{"api--detail.json"} (mapv :filename addon-data-list))
-    (warn (format "%s (%s) failed to find API detail, excluding" (:source-id (first addon-data-list)) (:source (first addon-data-list))))
+    (warn (format "failed to find API detail, excluding: %s (%s)" (:source-id (first addon-data-list)) (:source (first addon-data-list))))
     (let [addon-data-list (sort-by addon-data-list-cmp addon-data-list)
           addon-data (reduce core/merge-addon-data {} addon-data-list)
           addon-data
@@ -597,5 +597,5 @@
   (when-let [addon-data (-to-catalogue-addon addon-data-list)]
     (if (s/valid? :addon/summary addon-data)
       addon-data
-      (warn (format "%s (%s) failed to coerce addon data to a valid :addon/summary" (:source-id addon-data) (:source addon-data))))))
+      (warn (format "failed to coerce addon data to a valid :addon/summary, excluding: %s (%s)" (:source-id addon-data) (:source addon-data))))))
 
