@@ -532,63 +532,70 @@
 
 ;; --- catalogue wrangling
 
+(defn-spec addon-data-list-cmp int?
+  "sort-by fn for `addon-data`.
+  'listing--*' at the very bottom, 'web--*' next, 'api--*' last"
+  [addon-data :addon/part]
+  (let [key (-> addon-data :filename (subs 0 3))]
+    (case key
+      "lis" -1
+      "web" 0
+      "api" 1)))
+
 (defn-spec -to-catalogue-addon (s/or :ok map?, :invalid nil?) ;;(s/or :ok :addon/summary, :invalid nil?)
   [addon-data-list (s/coll-of :addon/part)]
-  (let [;; TODO: sort data
-        _ (mapv :filename addon-data-list)
+  (if-not (some #{"api--detail.json"} (mapv :filename addon-data-list))
+    (warn (format "%s (%s) failed to find API detail, excluding" (:source-id (first addon-data-list)) (:source (first addon-data-list))))
+    (let [addon-data-list (sort-by addon-data-list-cmp addon-data-list)
+          addon-data (reduce core/merge-addon-data {} addon-data-list)
+          addon-data
+          (select-keys addon-data [:source
+                                   :source-id
+                                   :game-track-set
+                                   :name
+                                   :web-name
+                                   :listing-name
+                                   :short-description
+                                   :short-web-description
+                                   :tag-set
+                                   :updated-date
+                                   :created-date
+                                   :wowi/title
+                                   :wowi/web-title
+                                   :wowi/listing-title
+                                   :wowi/url
+                                   :wowi/downloads])
 
-        addon-data (reduce core/merge-addon-data {} addon-data-list)
+          rename-map {:downloads :download-count
+                      :game-track-set :game-track-list
+                      :tag-set :tag-list
+                      :title :label
+                      :short-description :description}
 
-        addon-data
-        (select-keys addon-data [:source
-                                 :source-id
-                                 :game-track-set
-                                 :name
-                                 :web-name
-                                 :listing-name
-                                 :short-description
-                                 :short-web-description
-                                 :tag-set
-                                 :updated-date
-                                 :created-date
-                                 :wowi/title
-                                 :wowi/web-title
-                                 :wowi/listing-title
-                                 :wowi/url
-                                 :wowi/downloads])
+          addon-data (cond-> addon-data
+                       true utils/remove-key-ns
+                       true (rename-keys rename-map)
+                       true (update :tag-list (comp vec sort))
+                       true (update :game-track-list (comp vec sort))
+                       (not (:description addon-data)) (rename-keys {:short-web-description :description})
+                       true (dissoc :short-web-description))
 
-        rename-map {:downloads :download-count
-                    :game-track-set :game-track-list
-                    :tag-set :tag-list
-                    :title :label
-                    :short-description :description}
+          ;; only use the `web-title` if we don't have regular values.
+          ;; if using the `web-title`, also use it's corresponding slug `web-name` for consistency.
+          ;; otherwise, bin these keys.
+          addon-data (if (not (:label addon-data))
+                       (rename-keys addon-data {:web-title :label, :web-name :name})
+                       (dissoc addon-data :web-title :web-name))
 
-        addon-data (cond-> addon-data
-                     true utils/remove-key-ns
-                     true (rename-keys rename-map)
-                     true (update :tag-list (comp vec sort))
-                     true (update :game-track-list (comp vec sort))
-                     (not (:description addon-data)) (rename-keys {:short-web-description :description})
-                     true (dissoc :short-web-description))
-
-        ;; only use the `web-title` if we don't have regular values.
-        ;; if using the `web-title`, also use it's corresponding slug `web-name` for consistency.
-        ;; otherwise, bin these keys.
-        addon-data (if (not (:label addon-data))
-                     (rename-keys addon-data {:web-title :label, :web-name :name})
-                     (dissoc addon-data :web-title :web-name))
-
-        addon-data (if (not (:label addon-data))
-                     (rename-keys addon-data {:listing-title :label, :listing-name :name})
-                     (dissoc addon-data :listing-title :listing-name))
-
-        ;; todo: if nothing to download, skip
-        ]
-    addon-data))
+          addon-data (if (not (:label addon-data))
+                       (rename-keys addon-data {:listing-title :label, :listing-name :name})
+                       (dissoc addon-data :listing-title :listing-name))]
+      addon-data)))
 
 (defmethod core/to-catalogue-addon :wowinterface
   [addon-data-list]
-  (let [addon-data (-to-catalogue-addon addon-data-list)]
-    (if-not (s/valid? :addon/summary addon-data)
-      (warn (format "%s (%s) failed to coerce addon data to a valid :addon/summary" (:source-id addon-data) (:source addon-data)))
-      addon-data)))
+  (when-let [addon-data (-to-catalogue-addon addon-data-list)]
+    (if (s/valid? :addon/summary addon-data)
+      addon-data
+      (warn (format "%s (%s) failed to coerce addon data to a valid :addon/summary" (:source-id addon-data) (:source addon-data))))))
+

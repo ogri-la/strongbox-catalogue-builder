@@ -236,7 +236,7 @@
   (refresh-data)
   (wait-for-empty-queues)
 
-  (let [age 1
+  (let [age 2 ;; days. 2 days will ensure nothing is missed
 
         updated-recently-from-listings
         (->> (core/state-paths-matching "wowinterface/*/listing--*")

@@ -15,12 +15,17 @@
 * write snippets to distinct files
     - done
 
-# todo 0.0.2 release
-
 * order snippet merging
     - defer some derived values until then
     - I reckon github will get the same treatment
         - repo data, release data, html data, etc
+    - done
+
+* exclude addons with no api details (for now)
+    - strongbox throws a 404
+    - done
+
+# todo 0.0.2 release
 
 * write catalogues to a temporary repo
     - just until workflow is stable
@@ -28,6 +33,9 @@
     
 * write result of merging wowi data to the temporary repo
     - this is what strongbox will check for the list of releases and archived files
+        - this will need to meet the spec of 'source-updates'
+
+
 
 # todo 0.0.3 release
 
