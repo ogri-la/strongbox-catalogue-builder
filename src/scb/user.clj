@@ -190,6 +190,13 @@
   [source source-id]
   (core/to-catalogue-addon (core/find-read-addon-data source source-id)))
 
+(defn write-addon-details
+  "generates a `detail.json` file"
+  [source source-id]
+  (let [output-path (core/paths :state-path (name source) source-id "detail.json")
+        addon-data (core/to-addon-detail (core/find-read-addon-data source source-id))]
+    (core/write-addon-data output-path addon-data)))
+
 (defn refresh-data
   []
   ;; rm all .json files in state/

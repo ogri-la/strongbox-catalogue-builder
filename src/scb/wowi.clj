@@ -539,10 +539,16 @@
       "web" 0
       "api" 1)))
 
-(defn-spec -to-catalogue-addon (s/or :ok map?, :invalid nil?) ;;(s/or :ok :addon/summary, :invalid nil?)
+(defn-spec sort-merge-addon-data-list map?
+  "returns a map of addon data sorted and merged from the given `addon-data-list`"
   [addon-data-list (s/coll-of :addon/part)]
   (let [addon-data-list (sort-by addon-data-list-cmp addon-data-list)
-        addon-data (reduce core/merge-addon-data {} addon-data-list)
+        addon-data (reduce core/merge-addon-data {} addon-data-list)]
+    addon-data))
+
+(defn-spec -to-catalogue-addon map?
+  [addon-data-list (s/coll-of :addon/part)]
+  (let [addon-data (sort-merge-addon-data-list addon-data-list)
 
         addon-data
         (select-keys addon-data [:source
@@ -570,6 +576,7 @@
                        (update :game-track-list (comp vec sort)))]
     addon-data))
 
+;; todo: rename `to-addon-summary`
 (defmethod core/to-catalogue-addon :wowinterface
   [addon-data-list]
   (if-not (some #{"api--detail.json"} (mapv :filename addon-data-list))
@@ -578,3 +585,55 @@
       (if (s/valid? :addon/summary addon-data)
         addon-data
         (warn (format "failed to coerce addon data to a valid :addon/summary, excluding: %s (%s)" (:source-id addon-data) (:source addon-data)))))))
+
+;;
+
+(defn -to-addon-detail
+  [addon-data-list]
+  (let [addon-data (sort-merge-addon-data-list addon-data-list)
+
+        addon-data
+        (select-keys addon-data [:latest-release-set
+                                 :wowi/archived-files ;; todo: 'archived-file-list' ?
+                                 ])
+
+        addon-data (merge addon-data
+                          (-to-catalogue-addon addon-data-list))
+
+        rename-map {:latest-release-set :latest-release-list
+                    :wowi/archived-files :previous-release-list}
+
+        addon-data (-> addon-data
+                       (rename-keys rename-map)
+                       ;; todo: convert latest-release-set to a map, keyed by game track
+                       )
+
+        release-rename-map {:wowi/name :release-label
+                            :wowi/download-url :download-url
+                            :wowi/version :version}
+        coerce-release (fn [release-list]
+                         (mapv #(rename-keys % release-rename-map) release-list))
+
+        add-game-tracks (fn [release-list]
+                          (vec
+                           (flatten
+                            (for [game-track (:game-track-list addon-data)]
+                              (mapv #(assoc % :game-track game-track) release-list)))))
+
+        addon-data (-> addon-data
+                       (update :latest-release-list coerce-release)
+                       (update :previous-release-list coerce-release)
+                       ;; this sucks but we have no way of knowing what game track a previous release
+                       ;; supported unless we peek inside the zip file itself. next best thing is assume
+                       ;; all previous releases of the addon support the declared/detected game tracks.
+                       (update :previous-release-list add-game-tracks))]
+
+    addon-data))
+
+(defmethod core/to-addon-detail :wowinterface
+  [addon-data-list]
+  (when-let [addon-data (-to-addon-detail addon-data-list)]
+    (if (s/valid? :addon/detail addon-data)
+      addon-data
+      (do (warn (format "failed to coerce addon data to a valid :addon/detail, excluding: %s (%s)" (:source-id addon-data) (:source addon-data)))
+          (s/explain :addon/detail addon-data)))))

@@ -37,6 +37,9 @@
     - this is what strongbox will check for the list of releases and archived files
         - this will need to meet the spec of 'source-updates'
 
+* bug, handle addons with no game-track-list
+    - investigate but just default to retail
+
 # todo 0.0.3 release
 
 * shorten catalogue

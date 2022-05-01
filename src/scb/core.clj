@@ -257,6 +257,11 @@
   all addon data in files is guaranteed to have at least a `source` and `source-id`."
   (comp keyword :source first))
 
+(defmulti to-addon-detail
+  "coerces a list of addon data read from state files into a `:addon/detail`, dispatched using the `:source` value of the first item.
+  all addon data in files is guaranteed to have at least a `source` and `source-id`."
+  (comp keyword :source first))
+
 ;; --- retrieving
 
 (defn -addon-data-value-fn
