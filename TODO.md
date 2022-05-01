@@ -52,6 +52,10 @@
 
 # todo bucket (no order)
 
+* a per-addon 'state' file that accumulates changes
+    - like latest-release-list that has game track data not present elsewhere
+    - like downloads
+    - how to associate these changes with a date?
 * quantifiy discrepancy between API filelist and wowi website
 * write snippets to a db
     - I also want to browse the db like a file system so I can diff changes
