@@ -3,6 +3,7 @@
    [scb
     [specs :as sp]
     [utils :as utils]]
+   [org.satta.glob :as glob]
    [clojure.java.io]
    [clojure.spec.alpha :as s]
    [orchestra.core :refer [defn-spec]]
@@ -26,12 +27,6 @@
     (timbre/error ^:meta {:payload payload} exc msg)
     (timbre/error exc msg)))
 
-(defn state-dir
-  []
-  ;;(utils/temp-dir)
-  (str (fs/file fs/*cwd* "state")) ;; "/path/to/strongbox-catalogue-builder/state"
-  )
-
 ;; --- state wrangling
 
 (def -state-template
@@ -44,19 +39,8 @@
    :recent-urls #{}})
 
 (def queue-list [:download-queue :downloaded-content-queue :parsed-content-queue])
-(def state nil)
 
-(defn paths
-  [& path]
-  (let [state-path (state-dir)
-        path-map {:state-path state-path ;; /path/to/state
-                  :state-file-path (->> "state.edn" (fs/file state-path) str) ;; /path/to/state/state.edn
-                  :state-http-cache-path (->> "http" (fs/file state-path) str) ;; /path/to/state/http
-                  :state-log-file-path (->> "log" (fs/file state-path) str) ;; /path/to/state/log
-                  }]
-    (if path
-      (get-in path-map path)
-      path-map)))
+(def state nil)
 
 (defn started?
   []
@@ -68,7 +52,73 @@
     (Exception. (format "app not started, failed to fetch path: %s" path))
     (get-in @state path)))
 
+(defn state-dir
+  []
+  (str (fs/file fs/*cwd* "state"))) ;; "/path/to/strongbox-catalogue-builder/state"
+
+(defn cache-dir
+  []
+  (str (fs/file fs/*cwd* "cache"))) ;; "/path/to/strongbox-catalogue-builder/cache"
+
+(defn paths
+  "when called with no args, returns a map of all paths.
+  when called with a single argument, returns a specific path or `nil` if path not found.
+  when called with multiple arguments, the first argument is for the path root, subsequent
+  arguments are path segments and the whole thing is returned a single path string.
+  returns `nil` if a given `path` doesn't exist."
+  [& [path & rest]]
+  (let [state-path (state-dir)
+        cache-path (cache-dir)
+        path-map {:state-path state-path ;; /path/to/state
+                  :cache-path cache-path
+                  :cache-http-path (->> "http" (fs/file cache-path) str) ;; /path/to/cache/http
+                  :log-file-path (->> "log" (fs/file fs/*cwd*) str) ;; /path/to/log
+                  ;;:state-file-path (->> "state.edn" (fs/file state-path) str) ;; /path/to/state/state.edn
+                  :catalogue-path state-path}]
+    (if-not path
+      path-map
+      (when-let [path (get path-map path)]
+        (str (apply fs/file (into [path] (map str rest))))))))
+
+(def decoder (java.util.Base64/getUrlDecoder))
+
+(defn decode-cache-name
+  "decodes a URL-safe base64 encoded cached filename"
+  [path]
+  (let [filename (fs/base-name path)
+        [^String filename _] (fs/split-ext (first (fs/split-ext filename)))]
+    (String. (.decode decoder filename))))
+
+(defn cache-path-list
+  "returns a list of pairs as `[cache-path, decoded-url]` in `:cache-http-path`"
+  []
+  (->> (paths :cache-http-path)
+       fs/list-dir
+       (map str)
+       sort
+       (mapv (juxt identity decode-cache-name))))
+
+(defn cache-paths-matching
+  "just like `cache-path-list`, but filters the returned paths to just those whose decoded url matches the given `regex`"
+  [regex]
+  (filter (fn [[_ url]] (re-find regex url)) (cache-path-list)))
+
+(defn-spec state-paths-matching (s/coll-of ::sp/extant-file)
+  "returns a list of files rooted in the `:state-path` path, matching the given `glob-pattern`"
+  [glob-pattern string?]
+  (mapv str (glob/glob (str (paths :state-path) "/" glob-pattern))))
+
+(defn-spec state-paths-for-addon (s/coll-of ::sp/extant-file)
+  "returns a list of state files for an addon with the given `source` and `source-id`"
+  [source :addon/source, source-id :addon/source-id]
+  (let [glob-pattern (format "%s/%s/*.json" (name source) source-id)]
+    (state-paths-matching glob-pattern)))
+
 ;; --- queue wrangling
+
+(defn queue-size
+  [q-kw]
+  (.size ^LinkedBlockingQueue (get-state q-kw)))
 
 (defn put-item
   [q i]
@@ -125,7 +175,7 @@
   [url & [request-opts]]
   (let [user-agent "strongbox-catalogue-builder 0.0.1 (https://github.com/ogri-la/strongbox-catalogue-builder)"
         default-request-opts {:headers {"User-Agent" user-agent}
-                              :cache-root (paths :state-http-cache-path)}
+                              :cache-root (paths :cache-http-path)}
         request-opts (merge default-request-opts request-opts)]
     (try
       (http/download url request-opts)
@@ -203,9 +253,9 @@
 ;; ... we had problems keeping it all in memory previously. We'd prune as we go along but ...
 ;; I feel slurping from the disk as neccessary is more robust right now.
 (defmulti to-catalogue-addon
-  "coerces addon data from a file.
+  "coerces a list of addon data read from state files into a `:addon/summary`, dispatched using the `:source` value of the first item.
   all addon data in files is guaranteed to have at least a `source` and `source-id`."
-  (comp keyword :source))
+  (comp keyword :source first))
 
 ;; --- retrieving
 
@@ -230,12 +280,20 @@
         opts {:key-fn key-fn :value-fn value-fn}]
     (utils/json-slurp path opts)))
 
+(defn-spec find-read-addon-data (s/coll-of :addon/part)
+  [source :addon/source, source-id :addon/source-id]
+  (mapv read-addon-data (state-paths-for-addon source source-id)))
+
 ;; --- storing
 
 (defn write-addon-data
   [output-path addon-data]
+  (when (not (fs/exists? (fs/parent output-path)))
+    (fs/mkdirs (fs/parent output-path)))
   (cond-> addon-data
+    ;; wowi-specific
     (contains? addon-data :tag-set) (update :tag-set (comp vec sort))
+    ;; wowi-specific
     (contains? addon-data :category-set) (update :category-set (comp vec sort))
     true utils/order-map
     true (utils/json-spit output-path)))
@@ -245,18 +303,17 @@
   (utils/deep-merge m1 m2))
 
 (defn state-path
-  "returns a path like `/path/to/state/wowinterface--12345.json`"
-  [source source-id]
-  (str (fs/file (paths :state-path) (format "%s--%s.json" (name source) source-id))))
+  "returns a path to an addon state file, given it's `source`, `source-id` and a state `filename`.
+  returns a path like: `/path/to/state/wowinterface/12345/somefile.json`"
+  [source source-id filename]
+  (paths :state-path (name source) source-id filename))
 
 (defn write-content-worker
   "takes parsed content and writes to the fs"
   []
   (while true
-    (let [[item _] (take-item (get-state :parsed-content-queue))
-          output-path (state-path (:source item) (:source-id item))
-          existing-item (read-addon-data output-path)
-          addon-data (merge-addon-data existing-item item)]
+    (let [[addon-data _] (take-item (get-state :parsed-content-queue))
+          output-path (state-path (:source addon-data) (:source-id addon-data) (:filename addon-data))]
       (try
         (write-addon-data output-path addon-data)
         (catch Exception exc
@@ -310,14 +367,6 @@
         (run-worker worker-fn))
     (dotimes [_ num-instances]
       (run-worker worker-fn))))
-
-(defn status
-  []
-  (if-not (started?)
-    (warn "start app first: `(core/start)`")
-    (run! (fn [q-kw]
-            (println (format "%s items in %s" (.size ^LinkedBlockingQueue (get-state q-kw)) q-kw)))
-          queue-list)))
 
 ;; --- init
 
@@ -393,7 +442,7 @@
                             :async? false
                             :output-fn :inherit
                             :min-level :error
-                            :fn (custom-spit-appender (paths :state-log-file-path))}
+                            :fn (custom-spit-appender (paths :log-file-path))}
                      :println {:enabled? true
                                :async? false
                                :output-fn :inherit
@@ -404,7 +453,8 @@
 (defn init-state-dirs
   []
   (run! fs/mkdirs [(paths :state-path)
-                   (paths :state-http-cache-path)]))
+                   (paths :cache-path)
+                   (paths :cache-http-path)]))
 
 (defn -start
   []
@@ -421,7 +471,7 @@
   (alter-var-root #'state (constantly (-start)))
   (init-logging)
   (init-state-dirs)
-  (thaw-state (paths :state-file-path))
+  ;;(thaw-state (paths :state-file-path))
   (run-worker download-worker)
   (run-many-workers parser-worker 5)
   (run-many-workers write-content-worker 5)
@@ -437,7 +487,8 @@
   (info "stopping")
   (when-not (nil? state)
     (cleanup)
-    (freeze-state (paths :state-file-path)))
+    ;;(freeze-state (paths :state-file-path))
+    )
   nil)
 
 (defn restart

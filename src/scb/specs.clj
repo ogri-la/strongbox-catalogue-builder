@@ -78,7 +78,7 @@
 
 (s/def :addon/download-count int?)
 
-;; a partial set of addon data
+;; a partial set of addon data ;; TODO: this should be expanded
 (s/def :addon/part (s/keys :req-un [:addon/source-id :addon/source] ;; we need to identify which bit of the addon
                            :opt-un [::name
                                     ::label

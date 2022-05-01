@@ -217,6 +217,12 @@
   [dt ::sp/inst]
   (dt-before? dt release-of-wow-classic))
 
+(defn-spec less-than-n-days-old? boolean?
+  "returns `true` if given `dt` is *less* than `n` days old."
+  [n pos-int?, dt ::sp/inst]
+  (let [n-days-ago (str (jt/minus (jt/instant) (jt/days n)))]
+    (jt/before? (todt n-days-ago) (todt dt))))
+
 (defn-spec unix-time-to-dtstr ::sp/inst
   [unix-time pos-int?]
   (-> unix-time jt/instant str))
@@ -236,3 +242,12 @@
         (re-find classic-tbc-regex string) :classic-tbc
         (re-find classic-regex string) :classic
         (re-find retail-regex string) :retail))))
+
+(defn-spec safe-delete-file boolean?
+  "deletes a *file* only, and only if it exists and is rooted in the given `rooted-in` directory."
+  [path ::sp/extant-file, rooted-in ::sp/extant-dir]
+  (if (and (clojure.string/starts-with? path rooted-in)
+           (fs/file? path))
+    (fs/delete path)
+    false))
+

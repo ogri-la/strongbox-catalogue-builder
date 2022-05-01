@@ -13,4 +13,5 @@ AppDir/
 custom-jre/
 appimagetool
 coverage/
-state*/
+state/
+cache/
