@@ -9,7 +9,7 @@
    [net.cgrand.enlive-html :as html :refer [select]]
    [scb
     [tags :as tags]
-    [core :as core :refer [error*]]
+    [core :as core]
     [utils :as utils]
     [specs :as sp]]
    [java-time]
@@ -136,30 +136,6 @@
                      :url (-> cat :attrs :href final-url)})]
     (debug (format "%s categories found" (count cat-list)))
     {:download (mapv extractor cat-list)}))
-
-(defn extract-addon-summary
-  "extracts a snippet of addon information from a listing of addons"
-  [snippet]
-  (try
-    (let [extract-updated-date #(-> % (subs 8) trim) ;; "Updated 09-07-18 01:27 PM " => "09-07-18 01:27 PM"
-          anchor (-> snippet (select [[:a (html/attr-contains :href "fileinfo")]]) first)
-          label (-> anchor :content first trim)
-          truncated? (clojure.string/ends-with? label "...")
-          web-updated-date (-> snippet (select [:div.updated html/content]) first extract-updated-date)
-          struct {:source :wowinterface
-                  :source-id (extract-source-id anchor)
-                  :listing-name (-> label utils/slugify) ;; todo: rename `:name` and sort merge order
-                  :updated-date (format-wowinterface-dt web-updated-date)
-                  :wowi/url (web-addon-url (extract-source-id anchor))
-                  :wowi/listing-title label ;; I've seen underscores and truncation here, do not use if you can avoid it
-                  ;; favourites? author? we can source these reliably from the API
-                  :wowi/web-updated-date web-updated-date
-                  :wowi/downloads (-> snippet (select [:div.downloads html/content]) first (clojure.string/replace #"\D*" "") utils/to-int)}]
-      (cond-> struct
-        truncated? (dissoc :web-name :wowi/web-title)))
-
-    (catch RuntimeException re
-      (error* re (format "failed to scrape snippet, excluding from results: %s" (.getMessage re)) :payload snippet))))
 
 (defn scrape-category-page-range
   "extract the number of results from the page navigation"
@@ -380,20 +356,20 @@
          :source-id source-id
          :filename "web--detail.json"
 
-         :web-name (utils/slugify title)
+         :name (utils/slugify title)
          :game-track-set game-track-set
          :updated-date updated-date
          :created-date (some-> dt-created :content first (swallow "unknown") format-wowinterface-dt)
          :tag-set tag-set
-         :short-web-description (first description)
+         :short-description (first description)
          :latest-release-set latest-release-set
-         :wowi/web-description description
-         :wowi/web-title title
+         :wowi/description description
+         :wowi/title title
          :wowi/url (:url downloaded-item)
          :wowi/compatibility compatibility
          ;; we don't really need these
-         ;;:wowi/web-updated-date (some-> dt-updated :content first)
-         ;;:wowi/web-created-date (some-> dt-created :content first (swallow "unknown"))
+         :wowi/updated-date (some-> dt-updated :content first)
+         :wowi/created-date (some-> dt-created :content first (swallow "unknown"))
          :wowi/downloads (some-> num-downloads :content first (clojure.string/replace #"," "") utils/str-to-int)
          :wowi/favorites (some-> num-favourites :content first (clojure.string/replace #"," "") utils/str-to-int)
          :wowi/checksum (some-> md5 :content first :attrs :value)
@@ -419,17 +395,38 @@
                             [])
 
         addon-list-html (select html-snippet [:#filepage :div.file])
-        extractor (fn [addon-html-snippet]
-                    (let [category (:label downloaded-item)
-                          addon-summary (extract-addon-summary addon-html-snippet)
-                          category-set (if category #{category} #{})
-                          tag-set (tags/category-set-to-tag-set :wowinterface category-set)
-                          game-track-set (if (contains? tag-set :the-burning-crusade-classic) #{:classic-tbc} #{})]
-                      (merge addon-summary
-                             {:filename (str "listing--" (utils/slugify category) ".json")
-                              :wowi/category-set category-set
-                              :tag-set tag-set
-                              :game-track-set game-track-set})))
+        extractor (fn [snippet]
+                    (try
+                      (let [category (:label downloaded-item)
+                            category-set #{category}
+
+                            tag-set (tags/category-set-to-tag-set :wowinterface category-set)
+                            game-track-set (if (contains? tag-set :the-burning-crusade-classic) #{:classic-tbc} #{})
+
+                            extract-updated-date #(-> % (subs 8) trim) ;; "Updated 09-07-18 01:27 PM " => "09-07-18 01:27 PM"
+                            anchor (-> snippet (select [[:a (html/attr-contains :href "fileinfo")]]) first)
+                            title (-> anchor :content first trim)
+                            updated-date (-> snippet (select [:div.updated html/content]) first extract-updated-date)]
+
+                        {:source :wowinterface
+                         :source-id (extract-source-id anchor)
+                         :filename (str "listing--" (utils/slugify category) ".json")
+
+                         :title title
+                         :name (-> title utils/slugify)
+                         :updated-date (format-wowinterface-dt updated-date)
+                         :tag-set tag-set
+                         :game-track-set game-track-set
+                         :wowi/url (web-addon-url (extract-source-id anchor))
+                         :wowi/title title ;; I've seen underscores and truncation here, do not use if you can avoid it
+                         ;; favourites? author? we can source these reliably from the API
+                         :wowi/updated-date updated-date
+                         :wowi/downloads (-> snippet (select [:div.downloads html/content]) first (clojure.string/replace #"\D*" "") utils/to-int)
+                         :wowi/category-set category-set})
+
+                      (catch RuntimeException re
+                        (core/error* re (format "failed to scrape snippet, excluding from results: %s" (.getMessage re)) :payload snippet))))
+
         addon-list (mapv extractor addon-list-html)
         addon-url-list (mapv :wowi/url addon-list)]
     {:download (into listing-page-list addon-url-list)
@@ -536,7 +533,7 @@
   "sort-by fn for `addon-data`.
   'listing--*' at the very bottom, 'web--*' next, 'api--*' last"
   [addon-data :addon/part]
-  (let [key (-> addon-data :filename (subs 0 3))]
+  (let [key (some-> addon-data :filename (subs 0 3))]
     (case key
       "lis" -1
       "web" 0
@@ -544,58 +541,40 @@
 
 (defn-spec -to-catalogue-addon (s/or :ok map?, :invalid nil?) ;;(s/or :ok :addon/summary, :invalid nil?)
   [addon-data-list (s/coll-of :addon/part)]
-  (if-not (some #{"api--detail.json"} (mapv :filename addon-data-list))
-    (warn (format "failed to find API detail, excluding: %s (%s)" (:source-id (first addon-data-list)) (:source (first addon-data-list))))
-    (let [addon-data-list (sort-by addon-data-list-cmp addon-data-list)
-          addon-data (reduce core/merge-addon-data {} addon-data-list)
-          addon-data
-          (select-keys addon-data [:source
-                                   :source-id
-                                   :game-track-set
-                                   :name
-                                   :web-name
-                                   :listing-name
-                                   :short-description
-                                   :short-web-description
-                                   :tag-set
-                                   :updated-date
-                                   :created-date
-                                   :wowi/title
-                                   :wowi/web-title
-                                   :wowi/listing-title
-                                   :wowi/url
-                                   :wowi/downloads])
+  (let [addon-data-list (sort-by addon-data-list-cmp addon-data-list)
+        addon-data (reduce core/merge-addon-data {} addon-data-list)
 
-          rename-map {:downloads :download-count
-                      :game-track-set :game-track-list
-                      :tag-set :tag-list
-                      :title :label
-                      :short-description :description}
+        addon-data
+        (select-keys addon-data [:source
+                                 :source-id
+                                 :game-track-set
+                                 :name
+                                 :short-description
+                                 :tag-set
+                                 :updated-date
+                                 :created-date
+                                 :wowi/title
+                                 :wowi/url
+                                 :wowi/downloads])
 
-          addon-data (cond-> addon-data
-                       true utils/remove-key-ns
-                       true (rename-keys rename-map)
-                       true (update :tag-list (comp vec sort))
-                       true (update :game-track-list (comp vec sort))
-                       (not (:description addon-data)) (rename-keys {:short-web-description :description})
-                       true (dissoc :short-web-description))
+        rename-map {:downloads :download-count
+                    :game-track-set :game-track-list
+                    :tag-set :tag-list
+                    :title :label
+                    :short-description :description}
 
-          ;; only use the `web-title` if we don't have regular values.
-          ;; if using the `web-title`, also use it's corresponding slug `web-name` for consistency.
-          ;; otherwise, bin these keys.
-          addon-data (if (not (:label addon-data))
-                       (rename-keys addon-data {:web-title :label, :web-name :name})
-                       (dissoc addon-data :web-title :web-name))
-
-          addon-data (if (not (:label addon-data))
-                       (rename-keys addon-data {:listing-title :label, :listing-name :name})
-                       (dissoc addon-data :listing-title :listing-name))]
-      addon-data)))
+        addon-data (-> addon-data
+                       utils/remove-key-ns
+                       (rename-keys rename-map)
+                       (update :tag-list (comp vec sort))
+                       (update :game-track-list (comp vec sort)))]
+    addon-data))
 
 (defmethod core/to-catalogue-addon :wowinterface
   [addon-data-list]
-  (when-let [addon-data (-to-catalogue-addon addon-data-list)]
-    (if (s/valid? :addon/summary addon-data)
-      addon-data
-      (warn (format "failed to coerce addon data to a valid :addon/summary, excluding: %s (%s)" (:source-id addon-data) (:source addon-data))))))
-
+  (if-not (some #{"api--detail.json"} (mapv :filename addon-data-list))
+    (warn (format "failed to find API detail, excluding: %s (%s)" (:source-id (first addon-data-list)) (:source (first addon-data-list))))
+    (when-let [addon-data (-to-catalogue-addon addon-data-list)]
+      (if (s/valid? :addon/summary addon-data)
+        addon-data
+        (warn (format "failed to coerce addon data to a valid :addon/summary, excluding: %s (%s)" (:source-id addon-data) (:source addon-data)))))))

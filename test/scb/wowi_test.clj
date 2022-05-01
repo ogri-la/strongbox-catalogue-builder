@@ -5,7 +5,7 @@
    ;;[clj-http.fake :refer [with-global-fake-routes-in-isolation]]
    [scb.helper :as helper :refer [fixture-path]]
    [scb
-    [core :as core]
+    ;;[core :as core]
     [wowi :as wowi]]))
 
 (use-fixtures :each helper/no-http)
@@ -32,7 +32,7 @@
                                            {:download-url "https://www.wowinterface.com/downloads/dlfile2722/Broker_PlayedTime-9.1.5.0-bcc.zip",
                                             :game-track :classic-tbc,
                                             :version "9.1.5.0"}}
-                     :short-web-description "DataBroker plugin to track played time across all your characters.",
+                     :short-description "DataBroker plugin to track played time across all your characters.",
                      :source :wowinterface,
                      :source-id 8149,
                      :filename "web--detail.json"
@@ -41,7 +41,7 @@
                                 :data-broker
                                 :leveling
                                 :quests},
-                     :web-name "broker-played-time",
+                     :name "broker-played-time",
                      :updated-date "2022-02-23T07:14:00Z",
                      :wowi/archived-files [{:date "2021-11-23T04:12:00Z",
                                             :wowi/author "LudiusMaximus",
@@ -84,6 +84,8 @@
                      :wowi/compatibility ["Classic Patch (1.14.2)"
                                           "Eternity's End (9.2.0)"
                                           "TBC Patch (2.5.3)"]
+                     :wowi/created-date "05-14-10 12:14 PM"
+                     :wowi/updated-date "02-23-22 07:14 AM"
                      :wowi/downloads 8093,
                      :wowi/favorites 42,
                      :wowi/latest-release-list [{:download-url "https://www.wowinterface.com/downloads/landing.php?fileid=16711",
@@ -94,14 +96,14 @@
                                                  :game-track :classic-tbc}],
                      :wowi/latest-release-versions [["Version" "9.2.0.0"]
                                                     ["Classic" "9.1.5.0"]],
-                     :wowi/web-title "Broker Played Time",
+                     :wowi/title "Broker Played Time",
                      :wowi/url "https://www.wowinterface.com/downloads/info8149-IceHUD.html",
-                     :wowi/web-description ["DataBroker plugin to track played time across all your characters."
-                                            "It differs from similar addons in that it only tracks played time; it does not track other things like experience or money."
-                                            "The tooltip lists all of your characters across both factions on all servers. The current character is listed first for quick reference. Character names are colored by class. Faction icons, class icons, and character levels can also be shown if desired."
-                                            "Right-click the plugin for options.Language Support"
-                                            "Works in all locales. Translated into English, Deutsch, Espa�ol, Fran�ais, Italiano, Portugu�s, Русский, 한국어, 简体中文, and 正體中文."
-                                            "To add or update translations for any locale, enter them on the Broker Played Time localization page on CurseForge, and then leave a comment, or send me a PM here or on CurseForge, to let me know that you�ve made changes. If you don�t have a Curse account and don�t want to create one, you can PM me your translations instead. Thanks!"]}]}]
+                     :wowi/description ["DataBroker plugin to track played time across all your characters."
+                                        "It differs from similar addons in that it only tracks played time; it does not track other things like experience or money."
+                                        "The tooltip lists all of your characters across both factions on all servers. The current character is listed first for quick reference. Character names are colored by class. Faction icons, class icons, and character levels can also be shown if desired."
+                                        "Right-click the plugin for options.Language Support"
+                                        "Works in all locales. Translated into English, Deutsch, Espa�ol, Fran�ais, Italiano, Portugu�s, Русский, 한국어, 简体中文, and 正體中文."
+                                        "To add or update translations for any locale, enter them on the Broker Played Time localization page on CurseForge, and then leave a comment, or send me a PM here or on CurseForge, to let me know that you�ve made changes. If you don�t have a Curse account and don�t want to create one, you can PM me your translations instead. Thanks!"]}]}]
 
       (is (= expected (wowi/parse-addon-detail-page (as-downloaded-item url fixture)))))))
 
@@ -115,7 +117,7 @@
            [{:source :wowinterface,
              :source-id 8149,
              :filename "web--detail.json"
-             :web-name "icehud"
+             :name "icehud"
              :created-date "2022-03-28T09:32:00Z",
              :updated-date "2022-03-29T09:32:00Z",
              :tag-set #{:buffs :classic :combat :debuffs :the-burning-crusade-classic :ui :unit-frames}
@@ -123,7 +125,7 @@
              :latest-release-set #{{:download-url "https://www.wowinterface.com/downloads/landing.php?fileid=8149"
                                     :game-track :retail
                                     :version "1.13.13"}}
-             :wowi/web-title "IceHUD"
+             :wowi/title "IceHUD"
              :wowi/url "https://www.wowinterface.com/downloads/info8149-IceHUD.html",
              :wowi/category-set #{"Classic - General" "Combat Mods" "Casting Bars, Cooldowns"
                                   "Buff, Debuff, Spell" "The Burning Crusade Classic" "Unit Mods"}
@@ -132,8 +134,8 @@
              :wowi/latest-release-versions [["Version" "1.13.13"]],
              :wowi/latest-release-list [{:download-url "https://www.wowinterface.com/downloads/landing.php?fileid=8149",
                                          :game-track :retail}],
-             ;;:wowi/web-created-date "03-28-22 09:32 AM",
-             ;;:wowi/web-updated-date "03-29-22 09:32 AM",
+             :wowi/created-date "03-28-22 09:32 AM",
+             :wowi/updated-date "03-29-22 09:32 AM",
              :wowi/downloads 419918,
              :wowi/compatibility ["Visions of N'Zoth (8.3.0)"
                                   "BfA content patch (8.2.5)"]
@@ -168,8 +170,8 @@
                :wowi/size "1MB",
                :wowi/author "Parnic",
                :date "2021-11-11T13:02:00Z"}]
-             :short-web-description "Feel free to  if you enjoy using IceHUD and feel generous.",
-             :wowi/web-description
+             :short-description "Feel free to  if you enjoy using IceHUD and feel generous.",
+             :wowi/description
              ["Feel free to  if you enjoy using IceHUD and feel generous."
               "Summary"
               "IceHUD is a highly configurable and customizable HUD addon in the spirit of DHUD, MetaHUD, and others designed to keep your focus in the center of the screen where your character is."
@@ -193,7 +195,7 @@
     (let [fixture (fixture-path "wowinterface--addon-detail--single-download--tabber.html")
           url "https://www.wowinterface.com/downloads/info8149-IceHUD.html"
           result (wowi/parse-addon-detail-page (as-downloaded-item url fixture))
-          addon-data (-> result :parsed first)
+          addon-data (-> result :parsed first vector)
 
           expected {:source :wowinterface,
                     :source-id 8149,

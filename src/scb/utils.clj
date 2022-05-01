@@ -244,7 +244,7 @@
         (re-find retail-regex string) :retail))))
 
 (defn-spec safe-delete-file boolean?
-  "deletes a *file* only, but only if it exists and is rooted in the given `rooted-in` directory."
+  "deletes a *file* only, and only if it exists and is rooted in the given `rooted-in` directory."
   [path ::sp/extant-file, rooted-in ::sp/extant-dir]
   (if (and (clojure.string/starts-with? path rooted-in)
            (fs/file? path))
