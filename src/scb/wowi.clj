@@ -539,16 +539,18 @@
       "web" 0
       "api" 1)))
 
-(defn-spec sort-merge-addon-data-list map?
+(defn-spec sort-filter-merge-addon-data-list map?
   "returns a map of addon data sorted and merged from the given `addon-data-list`"
   [addon-data-list (s/coll-of :addon/part)]
-  (let [addon-data-list (sort-by addon-data-list-cmp addon-data-list)
+  (let [;; remove any files like `detail.json` from being considered
+        addon-data-list (remove (comp nil? :filename) addon-data-list)
+        addon-data-list (sort-by addon-data-list-cmp addon-data-list)
         addon-data (reduce core/merge-addon-data {} addon-data-list)]
     addon-data))
 
 (defn-spec -to-catalogue-addon map?
   [addon-data-list (s/coll-of :addon/part)]
-  (let [addon-data (sort-merge-addon-data-list addon-data-list)
+  (let [addon-data (sort-filter-merge-addon-data-list addon-data-list)
 
         addon-data
         (select-keys addon-data [:source
@@ -590,7 +592,7 @@
 
 (defn -to-addon-detail
   [addon-data-list]
-  (let [addon-data (sort-merge-addon-data-list addon-data-list)
+  (let [addon-data (sort-filter-merge-addon-data-list addon-data-list)
 
         addon-data
         (select-keys addon-data [:latest-release-set

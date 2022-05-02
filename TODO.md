@@ -31,11 +31,13 @@
     - done
         - the 'state' directory has been positioned to become the destination for scraped and coerced data
 
-# todo 0.0.2 release
-
 * write result of merging wowi data to the temporary repo
     - this is what strongbox will check for the list of releases and archived files
         - this will need to meet the spec of 'source-updates'
+            - close enough
+    - done
+
+# todo 0.0.2 release
 
 * bug, handle addons with no game-track-list
     - investigate but just default to retail

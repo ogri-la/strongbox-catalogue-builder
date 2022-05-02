@@ -195,15 +195,15 @@
   [source source-id]
   (let [output-path (core/paths :state-path (name source) source-id "detail.json")
         addon-data (core/to-addon-detail (core/find-read-addon-data source source-id))]
-    (core/write-addon-data output-path addon-data)))
+    (when addon-data
+      (core/write-addon-data output-path addon-data))))
 
 (defn write-all-addon-details
   []
   (let [;; [[:wowinterface "5673"], [:wowinterface "5607"], ...]
         key (juxt (comp keyword str fs/base-name fs/parent)
                   (comp str fs/base-name))]
-    ;; pmap maybe
-    (run! #(apply write-addon-details (key %)) (core/state-paths-matching "*/*"))))
+    (dorun (pmap #(apply write-addon-details (key %)) (core/state-paths-matching "*/*")))))
 
 (defn refresh-data
   []
