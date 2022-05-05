@@ -37,9 +37,29 @@
             - close enough
     - done
 
+* rename to-catalogue-addon to to-addon-summary
+    - done
+
+- bug, wowi, no description excluding it from details.json
+    - 25879
+        - literally no description
+    - 24598
+        - no description
+    - 24906
+        - addon removed
+        - two listing pages
+        - no api entries
+        - no releases of any sort
+    - description is now optional
+    - done
+
+* bug, wowi, multiple latest releases, no version track for bcc release excluding it from details.json
+    - 25287
+    - 25314
+    - 24964
+    - done
 # todo 0.0.2 release
 
-* rename to-catalogue-addon to to-addon-summary
 
 # todo 0.0.3 release
 

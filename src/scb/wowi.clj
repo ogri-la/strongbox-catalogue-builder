@@ -226,8 +226,20 @@
                                     :let [game-track (:game-track release)]]
                                 (assoc release :version (if (= game-track :retail) retail classic)))))
 
-                         ;; we have just one value for 'Version'. it doesn't matter whether it's classic or not, it's getting it.
-                         1 (assoc-in latest-release-list [0 :version] (get-in latest-release-versions [0 1]))
+                         ;; we have just one value for 'Version'. it doesn't matter whether it's classic or not, all releases are getting it.
+                         ;; note: can't do this, I've seen mismatches between the latest version and the version embedded in the filename :(
+                         ;;1 (mapv #(assoc % :version (get-in latest-release-versions [0 1])) latest-release-list)
+                         1 (mapv (fn [latest-release]
+                                   (let [version-string (get-in latest-release-versions [0 1])
+                                         ;; "https://www.wowinterface.com/downloads/dlfile3121/03-22-22-AutoLoggerClassic-v2.1.1-tbcc-release-bcc.zip" =>
+                                         ;; ["03-22-22-AutoLoggerClassic-v2.1.1-tbcc-release-bcc", ".zip"]
+                                         ;; "https://www.wowinterface.com/downloads/landing.php?fileid=25314" =>
+                                         ;; ["landing" ".php?fileid=25314"]
+                                         [filename, ext] (fs/split-ext (fs/base-name (:download-url latest-release)))]
+                                     (if (= ext ".zip")
+                                       (assoc latest-release :version filename)
+                                       (assoc latest-release :version version-string))))
+                                 latest-release-list)
 
                          ;; we have nothing :(
                          0 (do (warn "no version for" source-id)

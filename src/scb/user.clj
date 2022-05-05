@@ -267,7 +267,7 @@
                                     (map addon-id updated-recently-from-filedetails)))]
 
     (run! (partial apply delete-addon-cache) updated-recently)
-    (refresh-data)
+    (refresh-data) ;; shouldn't we just re-scrape those updated recently? it's cached data but still slow ...
     (wait-for-empty-queues)
     (write-all-addon-details)
     (write-catalogue)
