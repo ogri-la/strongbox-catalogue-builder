@@ -104,7 +104,7 @@
                    :addon/source
                    :addon/source-id]
           :opt-un [::description ;; github may not have a description.
-                   :addon/created-date ;; wowinterface summaries have no created date
+                   :addon/created-date ;; wowinterface addons may have no created date
                    ::game-track-list   ;; more of a set, really
                    ]))
 (s/def :addon/summary-list (s/coll-of :addon/summary))
@@ -117,6 +117,14 @@
           :opt-un [::interface-version
                    :addon/release-label]))
 (s/def :addon/release-list (s/coll-of :addon/release))
+
+(s/def :addon/latest-release-list :addon/release-list)
+(s/def :addon/previous-release-list :addon/release-list)
+
+(s/def :addon/detail (s/merge :addon/summary
+                              (s/keys :req-un [:addon/latest-release-list
+                                               :addon/previous-release-list]
+                                      :opt-un [::description])))
 
 ;; --- catalogues
 

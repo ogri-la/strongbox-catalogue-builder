@@ -1,5 +1,6 @@
 (ns scb.user
   (:require
+   [orchestra.core :refer [defn-spec]]
    [taoensso.timbre :as timbre :refer [debug info warn error spy]]
    [net.cgrand.enlive-html :as html :refer [select]]
    [clojure.pprint]
@@ -186,9 +187,25 @@
   (let [output-path (core/paths :catalogue-path "full-catalogue.json")]
     (catalogue/write-catalogue (catalogue/marshall-catalogue) output-path)))
 
-(defn to-catalogue-addon
+(defn to-addon-summary
   [source source-id]
-  (core/to-catalogue-addon (core/find-read-addon-data source source-id)))
+  (core/to-addon-summary (core/find-read-addon-data source source-id)))
+
+(defn-spec write-addon-details nil?
+  "generates a `detail.json` file"
+  [source :addon/source, source-id :addon/source-id]
+  (let [output-path (core/paths :state-path (name source) source-id "detail.json")
+        addon-data (core/to-addon-detail (core/find-read-addon-data source source-id))]
+    (when addon-data
+      (core/write-addon-data output-path addon-data))))
+
+(defn-spec write-all-addon-details nil?
+  "write `detail.json` for all addons"
+  []
+  (let [;; [[:wowinterface "5673"], [:wowinterface "5607"], ...]
+        id-key (juxt (comp keyword str fs/base-name fs/parent)
+                     (comp str fs/base-name))]
+    (dorun (pmap #(apply write-addon-details (id-key %)) (core/state-paths-matching "*/*")))))
 
 (defn refresh-data
   []
@@ -252,8 +269,9 @@
                                     (map addon-id updated-recently-from-filedetails)))]
 
     (run! (partial apply delete-addon-cache) updated-recently)
-    (refresh-data)
+    (refresh-data) ;; shouldn't we just re-scrape those updated recently? it's cached data but still slow ...
     (wait-for-empty-queues)
+    (write-all-addon-details)
     (write-catalogue)
 
     nil))

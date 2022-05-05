@@ -31,11 +31,35 @@
     - done
         - the 'state' directory has been positioned to become the destination for scraped and coerced data
 
-# todo 0.0.2 release
-
 * write result of merging wowi data to the temporary repo
     - this is what strongbox will check for the list of releases and archived files
         - this will need to meet the spec of 'source-updates'
+            - close enough
+    - done
+
+* rename to-catalogue-addon to to-addon-summary
+    - done
+
+- bug, wowi, no description excluding it from details.json
+    - 25879
+        - literally no description
+    - 24598
+        - no description
+    - 24906
+        - addon removed
+        - two listing pages
+        - no api entries
+        - no releases of any sort
+    - description is now optional
+    - done
+
+* bug, wowi, multiple latest releases, no version track for bcc release excluding it from details.json
+    - 25287
+    - 25314
+    - 24964
+    - done
+# todo 0.0.2 release
+
 
 # todo 0.0.3 release
 
@@ -49,6 +73,15 @@
 
 # todo bucket (no order)
 
+* bug, handle addons with no game-track-list
+    - investigate but just default to retail
+    - all addons in catalogue have a game track
+        - this could have been a bug before non-api addons were excluded
+            - in this case, if we try to add non-api addons *back* in to the catalogue, we'll have to deal with them then.
+* a per-addon 'state' file that accumulates changes
+    - like latest-release-list that has game track data not present elsewhere
+    - like downloads
+    - how to associate these changes with a date?
 * quantifiy discrepancy between API filelist and wowi website
 * write snippets to a db
     - I also want to browse the db like a file system so I can diff changes

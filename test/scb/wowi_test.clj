@@ -190,7 +190,7 @@
               "/icehudCL - command-line access to tweak IceHUD settings (for use with macros, etc.)"]}]}]
       (is (= expected (wowi/parse-addon-detail-page (as-downloaded-item url fixture)))))))
 
-(deftest -to-catalogue-addon
+(deftest -to-addon-summary
   (testing "addon detail page can extract enough for a valid category addon"
     (let [fixture (fixture-path "wowinterface--addon-detail--single-download--tabber.html")
           url "https://www.wowinterface.com/downloads/info8149-IceHUD.html"
@@ -209,4 +209,4 @@
                     :download-count 419918
                     :tag-list [:buffs :classic :combat :debuffs :the-burning-crusade-classic :ui :unit-frames]}]
 
-      (is (= expected (wowi/-to-catalogue-addon addon-data))))))
+      (is (= expected (wowi/-to-addon-summary addon-data))))))

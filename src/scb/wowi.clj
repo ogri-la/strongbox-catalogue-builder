@@ -226,8 +226,20 @@
                                     :let [game-track (:game-track release)]]
                                 (assoc release :version (if (= game-track :retail) retail classic)))))
 
-                         ;; we have just one value for 'Version'. it doesn't matter whether it's classic or not, it's getting it.
-                         1 (assoc-in latest-release-list [0 :version] (get-in latest-release-versions [0 1]))
+                         ;; we have just one value for 'Version'. it doesn't matter whether it's classic or not, all releases are getting it.
+                         ;; note: can't do this, I've seen mismatches between the latest version and the version embedded in the filename :(
+                         ;;1 (mapv #(assoc % :version (get-in latest-release-versions [0 1])) latest-release-list)
+                         1 (mapv (fn [latest-release]
+                                   (let [version-string (get-in latest-release-versions [0 1])
+                                         ;; "https://www.wowinterface.com/downloads/dlfile3121/03-22-22-AutoLoggerClassic-v2.1.1-tbcc-release-bcc.zip" =>
+                                         ;; ["03-22-22-AutoLoggerClassic-v2.1.1-tbcc-release-bcc", ".zip"]
+                                         ;; "https://www.wowinterface.com/downloads/landing.php?fileid=25314" =>
+                                         ;; ["landing" ".php?fileid=25314"]
+                                         [filename, ext] (fs/split-ext (fs/base-name (:download-url latest-release)))]
+                                     (if (= ext ".zip")
+                                       (assoc latest-release :version filename)
+                                       (assoc latest-release :version version-string))))
+                                 latest-release-list)
 
                          ;; we have nothing :(
                          0 (do (warn "no version for" source-id)
@@ -539,10 +551,18 @@
       "web" 0
       "api" 1)))
 
-(defn-spec -to-catalogue-addon (s/or :ok map?, :invalid nil?) ;;(s/or :ok :addon/summary, :invalid nil?)
+(defn-spec sort-filter-merge-addon-data-list map?
+  "returns a map of addon data sorted and merged from the given `addon-data-list`"
   [addon-data-list (s/coll-of :addon/part)]
-  (let [addon-data-list (sort-by addon-data-list-cmp addon-data-list)
-        addon-data (reduce core/merge-addon-data {} addon-data-list)
+  (let [;; removes any files like `detail.json` without a `:filename` from being considered
+        addon-data-list (remove (comp nil? :filename) addon-data-list)
+        addon-data-list (sort-by addon-data-list-cmp addon-data-list)
+        addon-data (reduce core/merge-addon-data {} addon-data-list)]
+    addon-data))
+
+(defn-spec -to-addon-summary map?
+  [addon-data-list (s/coll-of :addon/part)]
+  (let [addon-data (sort-filter-merge-addon-data-list addon-data-list)
 
         addon-data
         (select-keys addon-data [:source
@@ -568,13 +588,68 @@
                        (rename-keys rename-map)
                        (update :tag-list (comp vec sort))
                        (update :game-track-list (comp vec sort)))]
+
     addon-data))
 
-(defmethod core/to-catalogue-addon :wowinterface
+(defmethod core/to-addon-summary :wowinterface
   [addon-data-list]
   (if-not (some #{"api--detail.json"} (mapv :filename addon-data-list))
     (warn (format "failed to find API detail, excluding: %s (%s)" (:source-id (first addon-data-list)) (:source (first addon-data-list))))
-    (when-let [addon-data (-to-catalogue-addon addon-data-list)]
+    (when-let [addon-data (-to-addon-summary addon-data-list)]
       (if (s/valid? :addon/summary addon-data)
         addon-data
         (warn (format "failed to coerce addon data to a valid :addon/summary, excluding: %s (%s)" (:source-id addon-data) (:source addon-data)))))))
+
+;;
+
+(defn -to-addon-detail
+  "generates detailed data from the sum of known data about an addon."
+  [addon-data-list]
+  (let [addon-data (sort-filter-merge-addon-data-list addon-data-list)
+
+        addon-data
+        (select-keys addon-data [:latest-release-set
+                                 :wowi/archived-files])
+
+        addon-data (merge addon-data
+                          (-to-addon-summary addon-data-list))
+
+        rename-map {:latest-release-set :latest-release-list
+                    :wowi/archived-files :previous-release-list}
+
+        addon-data (-> addon-data
+                       (rename-keys rename-map)
+                       ;; todo: opportunity here to convert latest-release-set to a map keyed by game track
+                       )
+
+        release-rename-map {:wowi/name :release-label
+                            :wowi/download-url :download-url
+                            :wowi/version :version}
+        coerce-release (fn [release-list]
+                         (mapv #(rename-keys % release-rename-map) release-list))
+
+        ;; adds game tracks to a previous release.
+        ;; this sucks but we have no way of knowing what game track a previous release
+        ;; supported unless we peek inside the zip file itself. next best thing is assume
+        ;; all previous releases of the addon support the declared/detected game tracks.
+        ;; obviously that isn't accurate but better too loose than too strict
+        add-game-tracks (fn [release-list]
+                          (vec
+                           (flatten
+                            (for [game-track (:game-track-list addon-data)]
+                              (mapv #(assoc % :game-track game-track) release-list)))))
+
+        addon-data (-> addon-data
+                       (update :latest-release-list coerce-release)
+                       (update :previous-release-list coerce-release)
+                       (update :previous-release-list add-game-tracks))]
+
+    addon-data))
+
+(defmethod core/to-addon-detail :wowinterface
+  [addon-data-list]
+  (when-let [addon-data (-to-addon-detail addon-data-list)]
+    (if (s/valid? :addon/detail addon-data)
+      addon-data
+      (do (warn (format "failed to coerce addon data to a valid :addon/detail, excluding: %s (%s)" (:source-id addon-data) (:source addon-data)))
+          (s/explain :addon/detail addon-data)))))

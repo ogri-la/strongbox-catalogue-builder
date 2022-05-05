@@ -252,8 +252,13 @@
 ;; I guess this could be the consumer of `parsed-content-queue` items, building up a catalogue in real-time ...
 ;; ... we had problems keeping it all in memory previously. We'd prune as we go along but ...
 ;; I feel slurping from the disk as neccessary is more robust right now.
-(defmulti to-catalogue-addon
+(defmulti to-addon-summary
   "coerces a list of addon data read from state files into a `:addon/summary`, dispatched using the `:source` value of the first item.
+  all addon data in files is guaranteed to have at least a `source` and `source-id`."
+  (comp keyword :source first))
+
+(defmulti to-addon-detail
+  "coerces a list of addon data read from state files into a `:addon/detail`, dispatched using the `:source` value of the first item.
   all addon data in files is guaranteed to have at least a `source` and `source-id`."
   (comp keyword :source first))
 
@@ -286,8 +291,8 @@
 
 ;; --- storing
 
-(defn write-addon-data
-  [output-path addon-data]
+(defn-spec write-addon-data nil?
+  [output-path ::sp/file, addon-data map?]
   (when (not (fs/exists? (fs/parent output-path)))
     (fs/mkdirs (fs/parent output-path)))
   (cond-> addon-data
