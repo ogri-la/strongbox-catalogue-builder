@@ -39,8 +39,7 @@
 
 # todo 0.0.2 release
 
-* bug, handle addons with no game-track-list
-    - investigate but just default to retail
+* rename to-catalogue-addon to to-addon-summary
 
 # todo 0.0.3 release
 
@@ -54,6 +53,11 @@
 
 # todo bucket (no order)
 
+* bug, handle addons with no game-track-list
+    - investigate but just default to retail
+    - all addons in catalogue have a game track
+        - this could have been a bug before non-api addons were excluded
+            - in this case, if we try to add non-api addons *back* in to the catalogue, we'll have to deal with them then.
 * a per-addon 'state' file that accumulates changes
     - like latest-release-list that has game track data not present elsewhere
     - like downloads

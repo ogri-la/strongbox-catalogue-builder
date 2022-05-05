@@ -186,9 +186,9 @@
   (let [output-path (core/paths :catalogue-path "full-catalogue.json")]
     (catalogue/write-catalogue (catalogue/marshall-catalogue) output-path)))
 
-(defn to-catalogue-addon
+(defn to-addon-summary
   [source source-id]
-  (core/to-catalogue-addon (core/find-read-addon-data source source-id)))
+  (core/to-addon-summary (core/find-read-addon-data source source-id)))
 
 (defn write-addon-details
   "generates a `detail.json` file"
@@ -201,9 +201,9 @@
 (defn write-all-addon-details
   []
   (let [;; [[:wowinterface "5673"], [:wowinterface "5607"], ...]
-        key (juxt (comp keyword str fs/base-name fs/parent)
-                  (comp str fs/base-name))]
-    (dorun (pmap #(apply write-addon-details (key %)) (core/state-paths-matching "*/*")))))
+        id-key (juxt (comp keyword str fs/base-name fs/parent)
+                     (comp str fs/base-name))]
+    (dorun (pmap #(apply write-addon-details (id-key %)) (core/state-paths-matching "*/*")))))
 
 (defn refresh-data
   []

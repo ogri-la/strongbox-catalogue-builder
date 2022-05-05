@@ -548,7 +548,7 @@
         addon-data (reduce core/merge-addon-data {} addon-data-list)]
     addon-data))
 
-(defn-spec -to-catalogue-addon map?
+(defn-spec -to-addon-summary map?
   [addon-data-list (s/coll-of :addon/part)]
   (let [addon-data (sort-filter-merge-addon-data-list addon-data-list)
 
@@ -576,14 +576,14 @@
                        (rename-keys rename-map)
                        (update :tag-list (comp vec sort))
                        (update :game-track-list (comp vec sort)))]
+
     addon-data))
 
-;; todo: rename `to-addon-summary`
-(defmethod core/to-catalogue-addon :wowinterface
+(defmethod core/to-addon-summary :wowinterface
   [addon-data-list]
   (if-not (some #{"api--detail.json"} (mapv :filename addon-data-list))
     (warn (format "failed to find API detail, excluding: %s (%s)" (:source-id (first addon-data-list)) (:source (first addon-data-list))))
-    (when-let [addon-data (-to-catalogue-addon addon-data-list)]
+    (when-let [addon-data (-to-addon-summary addon-data-list)]
       (if (s/valid? :addon/summary addon-data)
         addon-data
         (warn (format "failed to coerce addon data to a valid :addon/summary, excluding: %s (%s)" (:source-id addon-data) (:source addon-data)))))))
@@ -591,6 +591,7 @@
 ;;
 
 (defn -to-addon-detail
+  "generates detailed data from the sum of known data about an addon."
   [addon-data-list]
   (let [addon-data (sort-filter-merge-addon-data-list addon-data-list)
 
@@ -600,7 +601,7 @@
                                  ])
 
         addon-data (merge addon-data
-                          (-to-catalogue-addon addon-data-list))
+                          (-to-addon-summary addon-data-list))
 
         rename-map {:latest-release-set :latest-release-list
                     :wowi/archived-files :previous-release-list}
