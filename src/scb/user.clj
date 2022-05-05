@@ -269,6 +269,7 @@
     (run! (partial apply delete-addon-cache) updated-recently)
     (refresh-data)
     (wait-for-empty-queues)
+    (write-all-addon-details)
     (write-catalogue)
 
     nil))
