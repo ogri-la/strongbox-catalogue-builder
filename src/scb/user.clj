@@ -1,5 +1,6 @@
 (ns scb.user
   (:require
+   [orchestra.core :refer [defn-spec]]
    [taoensso.timbre :as timbre :refer [debug info warn error spy]]
    [net.cgrand.enlive-html :as html :refer [select]]
    [clojure.pprint]
@@ -190,15 +191,16 @@
   [source source-id]
   (core/to-addon-summary (core/find-read-addon-data source source-id)))
 
-(defn write-addon-details
+(defn-spec write-addon-details nil?
   "generates a `detail.json` file"
-  [source source-id]
+  [source :addon/source, source-id :addon/source-id]
   (let [output-path (core/paths :state-path (name source) source-id "detail.json")
         addon-data (core/to-addon-detail (core/find-read-addon-data source source-id))]
     (when addon-data
       (core/write-addon-data output-path addon-data))))
 
-(defn write-all-addon-details
+(defn-spec write-all-addon-details nil?
+  "write `detail.json` for all addons"
   []
   (let [;; [[:wowinterface "5673"], [:wowinterface "5607"], ...]
         id-key (juxt (comp keyword str fs/base-name fs/parent)

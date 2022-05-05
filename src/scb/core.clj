@@ -291,8 +291,8 @@
 
 ;; --- storing
 
-(defn write-addon-data
-  [output-path addon-data]
+(defn-spec write-addon-data nil?
+  [output-path ::sp/file, addon-data map?]
   (when (not (fs/exists? (fs/parent output-path)))
     (fs/mkdirs (fs/parent output-path)))
   (cond-> addon-data

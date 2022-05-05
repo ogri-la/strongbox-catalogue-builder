@@ -554,7 +554,7 @@
 (defn-spec sort-filter-merge-addon-data-list map?
   "returns a map of addon data sorted and merged from the given `addon-data-list`"
   [addon-data-list (s/coll-of :addon/part)]
-  (let [;; remove any files like `detail.json` from being considered
+  (let [;; removes any files like `detail.json` without a `:filename` from being considered
         addon-data-list (remove (comp nil? :filename) addon-data-list)
         addon-data-list (sort-by addon-data-list-cmp addon-data-list)
         addon-data (reduce core/merge-addon-data {} addon-data-list)]
@@ -609,8 +609,7 @@
 
         addon-data
         (select-keys addon-data [:latest-release-set
-                                 :wowi/archived-files ;; todo: 'archived-file-list' ?
-                                 ])
+                                 :wowi/archived-files])
 
         addon-data (merge addon-data
                           (-to-addon-summary addon-data-list))
@@ -620,7 +619,7 @@
 
         addon-data (-> addon-data
                        (rename-keys rename-map)
-                       ;; todo: convert latest-release-set to a map, keyed by game track
+                       ;; todo: opportunity here to convert latest-release-set to a map keyed by game track
                        )
 
         release-rename-map {:wowi/name :release-label
@@ -629,6 +628,11 @@
         coerce-release (fn [release-list]
                          (mapv #(rename-keys % release-rename-map) release-list))
 
+        ;; adds game tracks to a previous release.
+        ;; this sucks but we have no way of knowing what game track a previous release
+        ;; supported unless we peek inside the zip file itself. next best thing is assume
+        ;; all previous releases of the addon support the declared/detected game tracks.
+        ;; obviously that isn't accurate but better too loose than too strict
         add-game-tracks (fn [release-list]
                           (vec
                            (flatten
@@ -638,9 +642,6 @@
         addon-data (-> addon-data
                        (update :latest-release-list coerce-release)
                        (update :previous-release-list coerce-release)
-                       ;; this sucks but we have no way of knowing what game track a previous release
-                       ;; supported unless we peek inside the zip file itself. next best thing is assume
-                       ;; all previous releases of the addon support the declared/detected game tracks.
                        (update :previous-release-list add-game-tracks))]
 
     addon-data))
