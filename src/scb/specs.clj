@@ -120,9 +120,9 @@
 
 (s/def :addon/latest-release-list :addon/release-list)
 (s/def :addon/previous-release-list :addon/release-list)
-(s/def :addon/-detail (s/keys :req-un [::description
-                                       :addon/latest-release-list
-                                       :addon/previous-release-list]))
+(s/def :addon/-detail (s/keys :req-un [:addon/latest-release-list
+                                       :addon/previous-release-list]
+                              :opt-un [::description]))
 
 (s/def :addon/detail (s/merge :addon/summary :addon/-detail))
 
