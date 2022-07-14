@@ -501,9 +501,3 @@
   (info "restarting")
   (stop)
   (tns/refresh :after 'scb.core/start))
-
-;; --- bootstrap
-
-(defn -main
-  [& args]
-  (start))

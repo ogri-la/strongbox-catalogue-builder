@@ -32,6 +32,8 @@
                          [net.cgrand/parsley "0.9.3"]]
   :repl-options {:init-ns scb.user}
 
+  :main scb.user
+
   ;;:profiles {:user {:plugins [[venantius/yagni "0.1.7"]]}}
   :plugins [[jonase/eastwood "0.9.9"]
             [lein-cljfmt "0.8.0"]
