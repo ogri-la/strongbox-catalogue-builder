@@ -6,6 +6,7 @@
   :dependencies [[org.clojure/clojure "1.10.1"]
                  [clj-http "3.12.3"]
                  [org.clojure/tools.namespace "1.2.0"]
+                 [org.clojure/data.csv "1.0.0"] ;; csv handling
 
                  [gui-diff "0.6.7" :exclusions [net.cgrant/parsley
                                                 org.flatland/ordered]] ;; pops up a graphical diff for test results

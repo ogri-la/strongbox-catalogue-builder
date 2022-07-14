@@ -10,6 +10,9 @@
 * commit changes to catalogue and addon json once a day
     - need to be able to invoke a task like in strongbox
 
+* move github catalogue generation from strongbox
+    - having multiple catalogues will help the design adjust itself
+
 # todo bucket (no order)
 
 * bug, handle addons with no game-track-list
