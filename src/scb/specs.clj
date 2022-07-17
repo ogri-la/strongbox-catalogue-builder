@@ -70,7 +70,7 @@
 ;;                                  (catch RuntimeException e
 ;;                                    false))))
 
-(s/def :addon/source #{:wowinterface :curseforge :tukui})
+(s/def :addon/source #{:wowinterface :curseforge :tukui :github})
 (s/def :addon/source-id (s/or ::integer-id? int? ;; tukui has negative ids
                               ::string-id? string?))
 (s/def :addon/category string?)

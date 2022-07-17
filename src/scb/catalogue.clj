@@ -1,8 +1,11 @@
 (ns scb.catalogue
   (:require
    [flatland.ordered.map :as omap]
+   [java-time]
    [scb
+    [constants :as constants]
     [utils :as utils]
+    [github :as github]
     [core :as core]
     [specs :as sp]]
    [clojure.spec.alpha :as s]
@@ -39,7 +42,11 @@
                        (catch Exception e
                          (error (format "failed to convert addon data to a catalogue addon: %s" path-list))
                          (throw e))))
-        addon-list (remove nil? (pmap parse-file file-list))]
+        addon-list (remove nil? (pmap parse-file file-list))
+
+        ;; github
+        addon-list (into addon-list (github/build-catalogue))]
+
     (format-catalogue-data-for-output addon-list (utils/datestamp-now-ymd))))
 
 (defn validate
@@ -55,3 +62,21 @@
     (if (some->> catalogue-data validate (utils/dump-json-file output-file))
       output-file
       (error "catalogue data is invalid, refusing to write:" output-file))))
+
+;;
+
+(defn-spec filter-catalogue :catalogue/catalogue
+  [fn fn?, catalogue :catalogue/catalogue]
+  (let [new-addon-summary-list (filter fn (:addon-summary-list catalogue))]
+    (-> catalogue
+        (assoc-in [:total] (count new-addon-summary-list))
+        (assoc :addon-summary-list new-addon-summary-list))))
+
+(defn-spec shorten-catalogue (s/or :ok :catalogue/catalogue, :problem nil?)
+  "returns a truncated version of `catalogue` where all addons considered unmaintained are removed.
+  an addon is considered unmaintained if it hasn't been updated since before the given `cutoff` date."
+  [catalogue :catalogue/catalogue]
+  (let [maintained? (fn [addon]
+                        (let [dtobj (java-time/zoned-date-time (:updated-date addon))]
+                          (java-time/after? dtobj (utils/todt constants/release-of-previous-expansion))))]
+    (filter-catalogue maintained? catalogue)))
