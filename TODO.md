@@ -1,14 +1,19 @@
 # done
 
-# todo 0.0.3 release
-
-* shorten catalogue
-
 * merge catalogues
     - even though we only have the one catalogue right now
+    - done
+
+* shorten catalogue
+    - done
+
+# todo 0.0.3 release
 
 * commit changes to catalogue and addon json once a day
     - need to be able to invoke a task like in strongbox
+
+* move github catalogue generation from strongbox
+    - having multiple catalogues will help the design adjust itself
 
 # todo bucket (no order)
 

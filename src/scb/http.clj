@@ -20,6 +20,9 @@
 (def expiry-offset-hours 999) ;; doesn't matter too much at this stage.
 (def delay-between-requests 1000) ;; ms, 1sec
 
+(def ^:dynamic *default-pause* 1000) ;; ms, 1sec
+(def ^:dynamic *default-attempts* 3)
+
 (defn-spec url-ext (s/or :ok string? :missing nil?)
   "returns the extension from a given `url` or `nil` if one can't be extracted."
   [url ::sp/url]
@@ -27,6 +30,8 @@
         ext-post (when path (clojure.string/last-index-of path \.))]
     (when (and path ext-post)
       (subs path ext-post))))
+
+;; ---
 
 (defn-spec -cache-key string?
   "safely encode a URI to something that can live cached on the filesystem."
@@ -92,6 +97,33 @@
   (and (fs/exists? cache-key)
        (not (file-older-than cache-key expiry-offset-hours))))
 
+;; ---
+
+(defn http-error?
+  "returns `true` if the http response code is either a client error (4xx) or a server error (5xx)"
+  [http-resp]
+  (and (map? http-resp)
+       (> (get http-resp :status -1) 399)))
+
+(defn http-server-error?
+  "returns `true` if the http response code is a server error (5xx)"
+  [http-resp]
+  (and (map? http-resp)
+       (> (:status http-resp) 499)))
+
+(defn sink-error
+  "given a http response, if response was unsuccessful, emit warning/error message and return nil,
+  else return response."
+  [http-resp]
+  (if-not (http-error? http-resp)
+    ;; no error, pass response through
+    http-resp
+    ;; otherwise, scream and yell and return `nil`:
+    ;;  'HTTP 403 https://github.com/foo/bar "access denied"'
+    (error (format "HTTP %s %s \"%s\"" (:status http-resp) (:host http-resp) (:reason-phrase http-resp)))))
+
+;; ---
+
 (defn -download
   [url & [opts]]
   (let [;; options:
@@ -141,23 +173,29 @@
 
             resp))))))
 
+(defn-spec download-with-backoff (s/or :ok-file ::sp/extant-file, :ok-body string?, :error :http/error)
+  "wrapper around `download` that will pause and retry a download several times with an exponentially increasing duration between each attemp"
+  [url ::sp/url]
+  (loop [attempt 1
+         pause *default-pause*]
+    (let [result (try
+                   (when (> attempt 1)
+                     (warn (format "trying again (attempt %s of 3)" attempt)))
+                   (download url)
+                   (catch Exception e
+                     e))]
+      (if (or (instance? Exception result)
+              (http-server-error? result))
+        (if (= attempt *default-attempts*)
+          ;; tried three times and failed three times. raise the exception or return the error.
+          (if (instance? Exception result)
+            (throw result)
+            result)
+          ;; try again after a pause
+          (do (Thread/sleep pause)
+              (recur (inc attempt) (* pause 2))))
+        result))))
+
 (defn download-file
   [url]
   nil)
-
-(defn http-error?
-  "returns `true` if the http response code is either a client error (4xx) or a server error (5xx)"
-  [http-resp]
-  (and (map? http-resp)
-       (> (get http-resp :status -1) 399)))
-
-(defn sink-error
-  "given a http response, if response was unsuccessful, emit warning/error message and return nil,
-  else return response."
-  [http-resp]
-  (if-not (http-error? http-resp)
-    ;; no error, pass response through
-    http-resp
-    ;; otherwise, scream and yell and return `nil`:
-    ;;  'HTTP 403 https://github.com/foo/bar "access denied"'
-    (error (format "HTTP %s %s \"%s\"" (:status http-resp) (:host http-resp) (:reason-phrase http-resp)))))

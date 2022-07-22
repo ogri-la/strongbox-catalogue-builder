@@ -184,8 +184,14 @@
 (defn write-catalogue
   "generates a catalogue and writes it to disk"
   []
-  (let [output-path (core/paths :catalogue-path "full-catalogue.json")]
-    (catalogue/write-catalogue (catalogue/marshall-catalogue) output-path)))
+  (let [all-catalogue-data (catalogue/marshall-catalogue)
+        shortened-catalogue-data (catalogue/shorten-catalogue all-catalogue-data)
+        wowi-catalogue-data (catalogue/filter-catalogue #(-> % :source (= :wowinterface)) all-catalogue-data)
+        github-catalogue-data (catalogue/filter-catalogue #(-> % :source (= :github)) all-catalogue-data)]
+    (catalogue/write-catalogue all-catalogue-data (core/paths :catalogue-path "full-catalogue.json"))
+    (catalogue/write-catalogue shortened-catalogue-data (core/paths :catalogue-path "short-catalogue.json"))
+    (catalogue/write-catalogue wowi-catalogue-data (core/paths :catalogue-path "wowinterface-catalogue.json"))
+    (catalogue/write-catalogue github-catalogue-data (core/paths :catalogue-path "github-catalogue.json"))))
 
 (defn to-addon-summary
   [source source-id]
