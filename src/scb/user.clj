@@ -275,12 +275,3 @@
     (write-catalogue)
 
     nil))
-
-;; --- bootstrap
-
-(defn -main
-  [& args]
-  (core/start)
-  (daily-addon-update)
-  (core/stop)
-  (System/exit 0))
