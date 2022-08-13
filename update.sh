@@ -7,7 +7,7 @@ set -eux
 
 commit_msg=$1
 
-lein run
+lein run --action scrape-catalogue
 
 {
     cd state
