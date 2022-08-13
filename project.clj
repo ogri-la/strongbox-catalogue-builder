@@ -4,10 +4,10 @@
   :license {:name "EPL-2.0 OR GPL-2.0-or-later WITH Classpath-exception-2.0"
             :url "https://www.eclipse.org/legal/epl-2.0/"}
   :dependencies [[org.clojure/clojure "1.10.1"]
+                 [org.clojure/tools.cli "1.0.206"] ;; cli arg parsing
                  [clj-http "3.12.3"]
                  [org.clojure/tools.namespace "1.2.0"]
                  [org.clojure/data.csv "1.0.0"] ;; csv handling
-
                  [gui-diff "0.6.7" :exclusions [net.cgrant/parsley
                                                 org.flatland/ordered]] ;; pops up a graphical diff for test results
                  [org.flatland/ordered "1.5.9"] ;; gui-diff bumped transitive dependency
@@ -31,7 +31,10 @@
                          ;; https://github.com/cgrand/parsley/issues/15
                          ;; see `gui-diff` exclusion
                          [net.cgrand/parsley "0.9.3"]]
+
   :repl-options {:init-ns scb.user}
+
+  :main scb.main
 
   ;;:profiles {:user {:plugins [[venantius/yagni "0.1.7"]]}}
   :plugins [[jonase/eastwood "0.9.9"]

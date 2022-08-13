@@ -60,7 +60,8 @@
   [catalogue-data :catalogue/catalogue, output-file ::sp/file]
   (locking (.intern ^String output-file)
     (if (some->> catalogue-data validate (utils/dump-json-file output-file))
-      output-file
+      (do (info "wrote catalogue" output-file)
+          output-file)
       (error "catalogue data is invalid, refusing to write:" output-file))))
 
 ;;

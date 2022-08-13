@@ -494,7 +494,8 @@
                  :source-id (:wowi/id addon)
                  :filename "api--detail.json"
                  :name (utils/slugify (:wowi/title addon))
-                 :short-description (some-> addon :wowi/description clojure.string/split-lines first)
+                 ;; disabled, prefer the html description with elements stripped to the description with bb-code preserved
+                 ;;:short-description (some-> addon :wowi/description clojure.string/split-lines first)
                  ;; the api doesn't list the *other* latest downloads unfortunately.
                  ;; rely on scraping the html for a complete list of releases.
                  ;;:latest-release-set #{

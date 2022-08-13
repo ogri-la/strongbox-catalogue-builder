@@ -354,16 +354,17 @@
   [worker-fn]
   (let [f (future
             (try
-              (info "starting worker" worker-fn)
+              (debug "starting worker" worker-fn)
               (worker-fn)
               (catch java.lang.InterruptedException ie
-                (warn "interrupted"))
+                (debug "worker interrupted"))
               (catch Exception e
                 (error e (format "uncaught exception in worker '%s': %s" worker-fn e)))
               (finally
                 (debug "worker is done:" worker-fn))))]
-    (add-cleanup #(future-cancel f))
-    nil))
+    (add-cleanup #(do (debug "stopping worker" worker-fn)
+                      (future-cancel f))))
+  nil)
 
 (defn run-many-workers
   [worker-fn num-instances]
@@ -484,13 +485,16 @@
 
 (defn cleanup
   []
+  (info "cleaning up")
   (doseq [cleanup-fn (get-state :cleanup)]
-    (debug "cleaned up" cleanup-fn (cleanup-fn))))
+    (cleanup-fn)
+    (debug "cleaned up" cleanup-fn)))
 
 (defn stop
   []
   (info "stopping")
-  (when-not (nil? state)
+  (if (nil? state)
+    (info "(not started)")
     (cleanup)
     ;;(freeze-state (paths :state-file-path))
     )
@@ -501,9 +505,3 @@
   (info "restarting")
   (stop)
   (tns/refresh :after 'scb.core/start))
-
-;; --- bootstrap
-
-(defn -main
-  [& args]
-  (start))

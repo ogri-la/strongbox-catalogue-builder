@@ -22,10 +22,10 @@
   (if flag
     (do
       (st/instrument)
-      (info "instrumentation is ON"))
+      (debug "spec instrumentation ON"))
     (do
       (st/unstrument)
-      (info "instrumentation is OFF"))))
+      (debug "spec instrumentation OFF"))))
 
 (defn nilable
   "converts a false-y `x` to `nil`, else `x`"

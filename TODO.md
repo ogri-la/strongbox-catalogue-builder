@@ -4,18 +4,40 @@
     - even though we only have the one catalogue right now
     - done
 
-* shorten catalogue
-    - done
+* prefer descriptions scraped from html
+    - they have the tags stripped out
 
 # todo 0.0.3 release
 
+* shorten catalogue
+    - done
+
 * commit changes to catalogue and addon json once a day
     - need to be able to invoke a task like in strongbox
+        - lein run --args
+    - need to manipulate the ./state directory
+        - like git commit
+
+* run on a schedule like strongbox-catalogue
+    - update.sh -> starts catalogue builder -> starts a daily scrape -> commits results -> pushes
 
 * move github catalogue generation from strongbox
     - having multiple catalogues will help the design adjust itself
 
 # todo bucket (no order)
+
+* wowi, descriptions, filter common leading words in descriptions
+    - "about", "description", "general", "general description", "what", "info", "information", "credits", "features", "intro", "introduction", "note", "overview", "preamble" (really), "purpose", "synopsis"
+    - "donate", "donation", "paypal", "support", "patreon"
+    - $name-of-addon, $version-string, "version"
+    - "discontinued" seems popular ...
+    - "english", "enGB", "enUS"
+    - "hello", "hey", "hi"
+    - "important", "news", "update", "updated", "urgent", "warning"
+    - "summary", "special thanks", "special note"
+    - "what is it", "what does it do", "what is ...", "what it is", "what's this"
+
+    - cat full-catalogue.json | jq '."addon-summary-list"[].description' | sort | less
 
 * bug, handle addons with no game-track-list
     - investigate but just default to retail
