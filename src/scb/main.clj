@@ -10,13 +10,9 @@
   {:write-catalogue #(user/write-catalogue)
    :write-wowinterface-catalogue #(user/write-catalogue {:source-list [:wowinterface]})
    :write-github-catalogue #(user/write-catalogue {:source-list [:github]})
-   :write-short-catalogue #(user/write-catalogue {:source-list [:short]})
-   :write-full-catalogue #(user/write-catalogue {:source-list [:full]})
-
    :scrape-catalogue #(user/daily-addon-update)
    :scrape-wowinterface-catalogue #(user/daily-addon-update {:source-list [:wowinterface]})
-   :scrape-github-catalogue #(user/daily-addon-update {:source-list [:github]})
-   })
+   :scrape-github-catalogue #(user/daily-addon-update {:source-list [:github]})})
 
 (defn start
   [{:keys [action]}]

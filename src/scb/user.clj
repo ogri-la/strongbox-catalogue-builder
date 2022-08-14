@@ -183,7 +183,7 @@
     (core/parse-content resp)))
 
 (defn marshall-catalogue
-  "reads addon data from the state directory, has the right ns parse it and generates a full catalogue."
+  "reads addon data for each source in given `source-list` (or all known sources) and returns a single list of addons."
   [source-list]
   (let [source-map {:wowinterface wowi/build-catalogue
                     :github github/build-catalogue}
@@ -192,12 +192,12 @@
     (catalogue/format-catalogue-data-for-output addon-list (utils/datestamp-now-ymd))))
 
 (defn write-catalogue
-  "generates a catalogue and writes it to disk"
-  [& [{:keys [source-list] :or {source-list nil}}]]
+  "generates a catalogue for each source in `source-list` and writes the corresponding catalogue to disk.
+  if `source-list` is empty/nil, then a catalogue for all known sources, a shortened and full catalogue are written to disk."
+  [& [{:keys [source-list]}]]
   (let [all-catalogue-data (marshall-catalogue source-list)
 
         source-filter (fn [source] #(-> % :source (= source)))
-
         source-map {:wowinterface #(catalogue/filter-catalogue (source-filter :wowinterface) %)
                     :github #(catalogue/filter-catalogue (source-filter :github) %)
                     :short #(catalogue/shorten-catalogue %)
@@ -206,7 +206,11 @@
         source-path-map {:wowinterface "wowinterface-catalogue.json"
                          :github "github-catalogue.json"
                          :short "short-catalogue.json"
-                         :full "full-catalogue.json"}]
+                         :full "full-catalogue.json"}
+
+        source-order [:wowinterface :github :full :short]
+
+        source-list (if (empty? source-list) source-order source-list)]
 
     (doseq [source source-list
             :let [data ((get source-map source) all-catalogue-data)
@@ -259,13 +263,13 @@
   (run! delete-cache-path
         (core/cache-paths-matching (re-pattern (format "info%s$|%s\\.json$" source-id source-id)))))
 
-(defn daily-addon-update
+(defn daily-wowi-update
   "deletes the listing pages and API filelist cache,
   refreshes addon data, downloading missing cache files as necessary,
   finds addons updated in the last day using fresh data,
   deletes their cache, refreshes data again.
   remember: we can't trust the API filelist or listing pages to be complete, we have to consult both."
-  [& [{:keys [source-list]}]]
+  []
   (run! delete-cache-path (core/cache-paths-matching #"page=|cat|filelist"))
   (refresh-data)
   (wait-for-empty-queues)
@@ -298,6 +302,13 @@
     (refresh-data) ;; shouldn't we just re-scrape those updated recently? it's cached data but still slow ...
     (wait-for-empty-queues)
     (write-all-addon-details)
-    (write-catalogue)
 
     nil))
+
+(defn daily-addon-update
+  [& [{:keys [source-list]}]]
+  (let [source-map {:wowinterface (fn [] (println "whoa!"))} ;;daily-wowi-update}
+        source-map (select-keys source-map (or source-list (keys source-map)))]
+    (run! #((second %)) source-map)
+    ;; important! pass the original source-list and not one derived from the source-map here.
+    (write-catalogue {:source-list source-list})))

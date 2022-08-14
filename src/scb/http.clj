@@ -35,7 +35,7 @@
 
 (defn-spec -cache-key string?
   "safely encode a URI to something that can live cached on the filesystem."
-  [url ::sp/url, request-opts map?]
+  [url ::sp/url, request-opts (s/nilable map?)]
   (let [;;ext ".nippy" ;;(-> url java.net.URL. .getPath (subs 1) fs/split-ext second (or ""))
         ext (str (url-ext url) ".nippy") ;; ".nippy", ".html.nippy", ".json.nippy"
         enc (java.util.Base64/getUrlEncoder)
@@ -56,7 +56,7 @@
 
 (defn-spec cache-key ::sp/path
   "safely encode a URI to something that can live cached on the filesystem."
-  [url ::sp/url, request-opts map?, cache-root ::sp/extant-dir]
+  [url ::sp/url, request-opts (s/nilable map?), cache-root ::sp/extant-dir]
   (str (fs/file cache-root (-cache-key url request-opts))))
 
 (defn-spec slurp-cache-file any?
@@ -151,7 +151,9 @@
   "downloads the given `url` and returns the http response.
   use `download-file` to download a large/non-textual file.
   accepts a map with the keys: `cache-root`, default is the system temp dir. pass `nil` or use `-download` directly to skip caching."
-  [url & [{:keys [cache-root, delay], :or {cache-root :temp-dir, delay delay-between-requests}  :as opts}]]
+  [url & [{:keys [cache-root, delay],
+           :or {cache-root :temp-dir, delay delay-between-requests}
+           :as opts}]]
   (let [;; lets us rebind utils/temp-dir during tests
         cache-root (if (= cache-root :temp-dir)
                      (utils/temp-dir)

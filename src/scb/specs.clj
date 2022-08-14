@@ -161,3 +161,5 @@
 (s/def :result/downloaded-item (s/keys :req-un [::url :http/response]
                                        :opt-un [::label]))
 
+
+(s/def :http/error map?)
