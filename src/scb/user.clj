@@ -216,7 +216,7 @@
                          :short "short-catalogue.json"
                          :full "full-catalogue.json"}
 
-        source-order [:wowinterface :github :full :short]
+        source-order [:wowinterface :github :tukui :full :short]
 
         source-list (if (empty? source-list) source-order source-list)]
 
@@ -224,8 +224,7 @@
             :let [data ((get source-map source) all-catalogue-data)
                   path (get source-path-map source)]]
       (info source)
-      (when (catalogue/validate data)
-        (catalogue/write-catalogue data (core/paths :catalogue-path path))))))
+      (catalogue/write-catalogue data (core/paths :catalogue-path path)))))
 
 #_(defn to-addon-summary
     [source source-id]
