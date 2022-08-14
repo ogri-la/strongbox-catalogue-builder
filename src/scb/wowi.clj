@@ -654,3 +654,22 @@
       addon-data
       (do (warn (format "failed to coerce addon data to a valid :addon/detail, excluding: %s (%s)" (:source-id addon-data) (:source addon-data)))
           (s/explain :addon/detail addon-data)))))
+
+(defn build-catalogue
+  "reads addon data from the state directory, parses it, returns a list of wowinterface addons."
+  []
+  (let [file-list
+        (->> (core/state-paths-matching "wowinterface/*/*.json")
+             (group-by (comp str fs/base-name fs/parent))) ;; {"1234" [/path/to/state/1234/listing--combat-mods, ...], ...}
+
+        parse-file (fn [[_ path-list]]
+                     (try
+                       (->> path-list
+                            (map core/read-addon-data)
+                            core/to-addon-summary)
+                       (catch Exception e
+                         (error (format "failed to convert addon data to a catalogue addon: %s" path-list))
+                         (throw e))))
+        addon-list (remove nil? (pmap parse-file file-list))]
+    addon-list))
+

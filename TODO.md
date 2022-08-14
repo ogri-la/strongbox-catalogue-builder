@@ -1,14 +1,16 @@
 # done
 
+* merge catalogues
+    - even though we only have the one catalogue right now
+    - done
+
 * prefer descriptions scraped from html
     - they have the tags stripped out
 
 # todo 0.0.3 release
 
 * shorten catalogue
-
-* merge catalogues
-    - even though we only have the one catalogue right now
+    - done
 
 * commit changes to catalogue and addon json once a day
     - need to be able to invoke a task like in strongbox
@@ -19,6 +21,8 @@
 * run on a schedule like strongbox-catalogue
     - update.sh -> starts catalogue builder -> starts a daily scrape -> commits results -> pushes
 
+* move github catalogue generation from strongbox
+    - having multiple catalogues will help the design adjust itself
 
 # todo bucket (no order)
 

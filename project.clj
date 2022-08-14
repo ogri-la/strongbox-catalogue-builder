@@ -7,6 +7,7 @@
                  [org.clojure/tools.cli "1.0.206"] ;; cli arg parsing
                  [clj-http "3.12.3"]
                  [org.clojure/tools.namespace "1.2.0"]
+                 [org.clojure/data.csv "1.0.0"] ;; csv handling
                  [gui-diff "0.6.7" :exclusions [net.cgrant/parsley
                                                 org.flatland/ordered]] ;; pops up a graphical diff for test results
                  [org.flatland/ordered "1.5.9"] ;; gui-diff bumped transitive dependency

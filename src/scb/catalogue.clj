@@ -1,12 +1,12 @@
 (ns scb.catalogue
   (:require
    [flatland.ordered.map :as omap]
+   [java-time]
    [scb
+    [constants :as constants]
     [utils :as utils]
-    [core :as core]
     [specs :as sp]]
    [clojure.spec.alpha :as s]
-   [me.raynes.fs :as fs]
    [taoensso.timbre :as log :refer [debug info warn error spy]]
    [orchestra.core :refer [defn-spec]]))
 
@@ -23,25 +23,6 @@
 
 ;;
 
-;;(defn-spec marshall-catalogue :catalogue/catalogue
-(defn marshall-catalogue
-  "reads addon data from the state directory, has the right ns parse it and generates a full catalogue."
-  []
-  (let [file-list
-        (->> (core/state-paths-matching "wowinterface/*/*.json")
-             (group-by (comp str fs/base-name fs/parent))) ;; {"1234" [/path/to/state/1234/listing--combat-mods, ...], ...}
-
-        parse-file (fn [[_ path-list]]
-                     (try
-                       (->> path-list
-                            (map core/read-addon-data)
-                            core/to-addon-summary)
-                       (catch Exception e
-                         (error (format "failed to convert addon data to a catalogue addon: %s" path-list))
-                         (throw e))))
-        addon-list (remove nil? (pmap parse-file file-list))]
-    (format-catalogue-data-for-output addon-list (utils/datestamp-now-ymd))))
-
 (defn validate
   "validates the given `catalogue-data` as a `:catalogue/catalogue`, returning `nil` if invalid"
   [catalogue-data]
@@ -56,3 +37,22 @@
       (do (info "wrote catalogue" output-file)
           output-file)
       (error "catalogue data is invalid, refusing to write:" output-file))))
+
+;;
+
+(defn filter-catalogue
+  "filters the addons in a catalogue then updates the catalogue's `total` field."
+  [f catalogue]
+  (let [new-addon-summary-list (filter f (:addon-summary-list catalogue))]
+    (-> catalogue
+        (assoc-in [:total] (count new-addon-summary-list))
+        (assoc :addon-summary-list new-addon-summary-list))))
+
+(defn-spec shorten-catalogue (s/or :ok :catalogue/catalogue, :problem nil?)
+  "returns a truncated version of `catalogue` where all addons considered unmaintained are removed.
+  an addon is considered unmaintained if it hasn't been updated since before the given `cutoff` date."
+  [catalogue :catalogue/catalogue]
+  (let [maintained? (fn [addon]
+                      (let [dtobj (java-time/zoned-date-time (:updated-date addon))]
+                        (java-time/after? dtobj (utils/todt constants/release-of-previous-expansion))))]
+    (filter-catalogue maintained? catalogue)))

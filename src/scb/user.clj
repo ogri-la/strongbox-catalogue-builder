@@ -11,6 +11,7 @@
     [utils :as utils]
     [http :as http]
     [wowi :as wowi]
+    [github :as github]
     [core :as core]
     [catalogue :as catalogue]])
   (:import
@@ -87,46 +88,46 @@
 
 ;; ---
 
-(defn wowi-html-landing
-  []
-  (clojure.pprint/pprint (->> "test/fixtures/wowinterface--landing.html" fs/absolute fs/normalized str wowi/to-html wowi/parse-category-group-page)))
+#_(defn wowi-html-landing
+    []
+    (clojure.pprint/pprint (->> "test/fixtures/wowinterface--landing.html" fs/absolute fs/normalized str wowi/to-html wowi/parse-category-group-page)))
 
-(defn wowi-html-listing-page
-  []
-  (let [html-snippet (->> "test/fixtures/wowinterface--listing.html" fs/absolute fs/normalized str slurp)
-        downloaded-item {:url "https://www.wowinterface.com/downloads/index.php?cid=100&sb=dec_date&so=desc&pt=f&page=1"
-                         :label "The Burning Crusade Classic"
-                         :response {:headers {}
-                                    :body html-snippet}}]
-    (wowi/parse-category-listing downloaded-item)))
+#_(defn wowi-html-listing-page
+    []
+    (let [html-snippet (->> "test/fixtures/wowinterface--listing.html" fs/absolute fs/normalized str slurp)
+          downloaded-item {:url "https://www.wowinterface.com/downloads/index.php?cid=100&sb=dec_date&so=desc&pt=f&page=1"
+                           :label "The Burning Crusade Classic"
+                           :response {:headers {}
+                                      :body html-snippet}}]
+      (wowi/parse-category-listing downloaded-item)))
 
-(defn wowi-html-addon-detail
-  []
-  (clojure.pprint/pprint
-   (->> "test/fixtures/wowinterface--addon-detail--multiple-downloads--no-tabber.html" fs/absolute fs/normalized str wowi/to-html wowi/parse-addon-detail-page)))
+#_(defn wowi-html-addon-detail
+    []
+    (clojure.pprint/pprint
+     (->> "test/fixtures/wowinterface--addon-detail--multiple-downloads--no-tabber.html" fs/absolute fs/normalized str wowi/to-html wowi/parse-addon-detail-page)))
 
-(defn wowi-html-addon-detail-2
-  []
-  (clojure.pprint/pprint
-   (wowi/parse-addon-detail-page
-    {:url "https://www.wowinterface.com/downloads/info24155"
-     :response {:body (->> "test/fixtures/wowinterface--addon-detail--multiple-downloads--tabber.html"
-                           fs/absolute fs/normalized str slurp)}})))
+#_(defn wowi-html-addon-detail-2
+    []
+    (clojure.pprint/pprint
+     (wowi/parse-addon-detail-page
+      {:url "https://www.wowinterface.com/downloads/info24155"
+       :response {:body (->> "test/fixtures/wowinterface--addon-detail--multiple-downloads--tabber.html"
+                             fs/absolute fs/normalized str slurp)}})))
 
-(defn wowi-api-addon-list
-  []
-  (->> (wowi/parse-api-file-list {:url wowi/api-file-list
-                                  :response (http/download wowi/api-file-list {})})
-       :parsed
-       (take 100)))
+#_(defn wowi-api-addon-list
+    []
+    (->> (wowi/parse-api-file-list {:url wowi/api-file-list
+                                    :response (http/download wowi/api-file-list {})})
+         :parsed
+         (take 100)))
 
-(defn wowi-api-addon-detail
-  []
-  (let [resp (wowi/parse-api-addon-detail {:url "https://api.mmoui.com/v4/game/WOW/filedetails/5119.json"
-                                           :response (http/download "https://api.mmoui.com/v4/game/WOW/filedetails/5119.json" {})})]
-    (clojure.pprint/pprint resp)
-    (println "-----")
-    resp))
+#_(defn wowi-api-addon-detail
+    []
+    (let [resp (wowi/parse-api-addon-detail {:url "https://api.mmoui.com/v4/game/WOW/filedetails/5119.json"
+                                             :response (http/download "https://api.mmoui.com/v4/game/WOW/filedetails/5119.json" {})})]
+      (clojure.pprint/pprint resp)
+      (println "-----")
+      resp))
 
 ;; ---
 
@@ -181,15 +182,46 @@
               :response (http/download url {})}]
     (core/parse-content resp)))
 
-(defn write-catalogue
-  "generates a catalogue and writes it to disk"
-  []
-  (let [output-path (core/paths :catalogue-path "full-catalogue.json")]
-    (catalogue/write-catalogue (catalogue/marshall-catalogue) output-path)))
+(defn marshall-catalogue
+  "reads addon data for each source in given `source-list` (or all known sources) and returns a single list of addons."
+  [source-list]
+  (let [source-map {:wowinterface wowi/build-catalogue
+                    :github github/build-catalogue}
+        source-map (select-keys source-map (or source-list (keys source-map)))
+        addon-list (vec (mapcat #((second %)) source-map))]
+    (catalogue/format-catalogue-data-for-output addon-list (utils/datestamp-now-ymd))))
 
-(defn to-addon-summary
-  [source source-id]
-  (core/to-addon-summary (core/find-read-addon-data source source-id)))
+(defn write-catalogue
+  "generates a catalogue for each source in `source-list` and writes the corresponding catalogue to disk.
+  if `source-list` is empty/nil, then a catalogue for all known sources, a shortened and full catalogue are written to disk."
+  [& [{:keys [source-list]}]]
+  (let [all-catalogue-data (marshall-catalogue source-list)
+
+        source (fn [source] #(-> % :source (= source)))
+        source-map {:wowinterface #(catalogue/filter-catalogue (source :wowinterface) %)
+                    :github #(catalogue/filter-catalogue (source :github) %)
+                    :short #(catalogue/shorten-catalogue %)
+                    :full identity}
+
+        source-path-map {:wowinterface "wowinterface-catalogue.json"
+                         :github "github-catalogue.json"
+                         :short "short-catalogue.json"
+                         :full "full-catalogue.json"}
+
+        source-order [:wowinterface :github :full :short]
+
+        source-list (if (empty? source-list) source-order source-list)]
+
+    (doseq [source source-list
+            :let [data ((get source-map source) all-catalogue-data)
+                  path (get source-path-map source)]]
+      (info source)
+      (when (catalogue/validate data)
+        (catalogue/write-catalogue data (core/paths :catalogue-path path))))))
+
+#_(defn to-addon-summary
+    [source source-id]
+    (core/to-addon-summary (core/find-read-addon-data source source-id)))
 
 (defn-spec write-addon-details nil?
   "generates a `detail.json` file"
@@ -233,7 +265,7 @@
   (run! delete-cache-path
         (core/cache-paths-matching (re-pattern (format "info%s$|%s\\.json$" source-id source-id)))))
 
-(defn daily-addon-update
+(defn daily-wowi-update
   "deletes the listing pages and API filelist cache,
   refreshes addon data, downloading missing cache files as necessary,
   finds addons updated in the last day using fresh data,
@@ -272,6 +304,13 @@
     (refresh-data) ;; shouldn't we just re-scrape those updated recently? it's cached data but still slow ...
     (wait-for-empty-queues)
     (write-all-addon-details)
-    (write-catalogue)
 
     nil))
+
+(defn daily-addon-update
+  [& [{:keys [source-list]}]]
+  (let [source-map {:wowinterface (fn [] (println "whoa!"))} ;;daily-wowi-update}
+        source-map (select-keys source-map (or source-list (keys source-map)))]
+    (run! #((second %)) source-map)
+    ;; important! pass the original source-list and not one derived from the source-map here.
+    (write-catalogue {:source-list source-list})))
