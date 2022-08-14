@@ -40,9 +40,10 @@
 
 ;;
 
-(defn-spec filter-catalogue :catalogue/catalogue
-  [fn fn?, catalogue :catalogue/catalogue]
-  (let [new-addon-summary-list (filter fn (:addon-summary-list catalogue))]
+(defn filter-catalogue
+  "filters the addons in a catalogue then updates the catalogue's `total` field."
+  [f catalogue]
+  (let [new-addon-summary-list (filter f (:addon-summary-list catalogue))]
     (-> catalogue
         (assoc-in [:total] (count new-addon-summary-list))
         (assoc :addon-summary-list new-addon-summary-list))))

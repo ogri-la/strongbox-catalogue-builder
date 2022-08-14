@@ -9,9 +9,11 @@
 (def action-map
   {:write-catalogue #(user/write-catalogue)
    :write-wowinterface-catalogue #(user/write-catalogue {:source-list [:wowinterface]})
+   ;; no distinction between scraping and writing
    :write-github-catalogue #(user/write-catalogue {:source-list [:github]})
    :scrape-catalogue #(user/daily-addon-update)
    :scrape-wowinterface-catalogue #(user/daily-addon-update {:source-list [:wowinterface]})
+   ;; no distinction between scraping and writing
    :scrape-github-catalogue #(user/daily-addon-update {:source-list [:github]})})
 
 (defn start

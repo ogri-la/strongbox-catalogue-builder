@@ -176,7 +176,7 @@
             resp))))))
 
 (defn-spec download-with-backoff (s/or :ok-file ::sp/extant-file, :ok-body string?, :error :http/error)
-  "wrapper around `download` that will pause and retry a download several times with an exponentially increasing duration between each attemp"
+  "wrapper around `download` that will pause and retry a download several times with an exponentially increasing duration between each attempt"
   [url ::sp/url]
   (loop [attempt 1
          pause *default-pause*]

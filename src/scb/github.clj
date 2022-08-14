@@ -9,11 +9,6 @@
    [orchestra.core :refer [defn-spec]]
    [scb.http :as http]))
 
-(defn spy
-  [x]
-  (println "---->" x)
-  x)
-
 (defn-spec build-catalogue (s/or :ok :addon/summary-list, :error nil?)
   "converts a CSV list of addons to a strongbox-compatible catalogue of addon summaries."
   []

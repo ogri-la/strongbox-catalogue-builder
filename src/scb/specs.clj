@@ -134,9 +134,10 @@
 (s/def :catalogue/total int?)
 (s/def :catalogue/addon-summary-list :addon/summary-list)
 
-(s/def :catalogue/catalogue (s/and (s/keys :req-un [:catalogue/spec :catalogue/datestamp :catalogue/total :catalogue/addon-summary-list])
-                                   (fn [data]
-                                     (= (:total data) (count (:addon-summary-list data))))))
+(s/def :catalogue/catalogue
+  (s/and (s/keys :req-un [:catalogue/spec :catalogue/datestamp :catalogue/total :catalogue/addon-summary-list])
+         (fn [data]
+           (= (:total data) (count (:addon-summary-list data))))))
 
 ;; --- results
 
@@ -160,6 +161,5 @@
 
 (s/def :result/downloaded-item (s/keys :req-un [::url :http/response]
                                        :opt-un [::label]))
-
 
 (s/def :http/error map?)
