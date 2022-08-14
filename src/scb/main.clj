@@ -11,10 +11,13 @@
    :write-wowinterface-catalogue #(user/write-catalogue {:source-list [:wowinterface]})
    ;; no distinction between scraping and writing
    :write-github-catalogue #(user/write-catalogue {:source-list [:github]})
+   :write-tukui-catalogue #(user/write-catalogue {:source-list [:tukui]})
+
    :scrape-catalogue #(user/daily-addon-update)
    :scrape-wowinterface-catalogue #(user/daily-addon-update {:source-list [:wowinterface]})
    ;; no distinction between scraping and writing
-   :scrape-github-catalogue #(user/daily-addon-update {:source-list [:github]})})
+   :scrape-github-catalogue #(user/daily-addon-update {:source-list [:github]})
+   :scrape-tukui-catalogue #(user/daily-addon-update {:source-list [:tukui]})})
 
 (defn start
   [{:keys [action]}]

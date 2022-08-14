@@ -8,8 +8,10 @@
    [me.raynes.fs :as fs]
    [gui.diff :refer [with-gui-diff]]
    [scb
+    [specs :as specs]
     [utils :as utils]
     [http :as http]
+    [tukui :as tukui]
     [wowi :as wowi]
     [github :as github]
     [core :as core]
@@ -185,7 +187,8 @@
 (defn marshall-catalogue
   "reads addon data for each source in given `source-list` (or all known sources) and returns a single list of addons."
   [source-list]
-  (let [source-map {:wowinterface wowi/build-catalogue
+  (let [source-map {:tukui tukui/build-catalogue
+                    :wowinterface wowi/build-catalogue
                     :github github/build-catalogue}
         source-map (select-keys source-map (or source-list (keys source-map)))
         addon-list (vec (mapcat #((second %)) source-map))]
@@ -197,13 +200,18 @@
   [& [{:keys [source-list]}]]
   (let [all-catalogue-data (marshall-catalogue source-list)
 
-        source (fn [source] #(-> % :source (= source)))
-        source-map {:wowinterface #(catalogue/filter-catalogue (source :wowinterface) %)
+        source (fn [& source-list]
+                 (fn [row]
+                   (some #{(:source row)} (set source-list))))
+
+        source-map {:tukui #(catalogue/filter-catalogue (apply source specs/tukui-source-list) %)
+                    :wowinterface #(catalogue/filter-catalogue (source :wowinterface) %)
                     :github #(catalogue/filter-catalogue (source :github) %)
                     :short #(catalogue/shorten-catalogue %)
                     :full identity}
 
-        source-path-map {:wowinterface "wowinterface-catalogue.json"
+        source-path-map {:tukui "tukui-catalogue.json"
+                         :wowinterface "wowinterface-catalogue.json"
                          :github "github-catalogue.json"
                          :short "short-catalogue.json"
                          :full "full-catalogue.json"}
@@ -309,7 +317,7 @@
 
 (defn daily-addon-update
   [& [{:keys [source-list]}]]
-  (let [source-map {:wowinterface (fn [] (println "whoa!"))} ;;daily-wowi-update}
+  (let [source-map {:wowinterface daily-wowi-update}
         source-map (select-keys source-map (or source-list (keys source-map)))]
     (run! #((second %)) source-map)
     ;; important! pass the original source-list and not one derived from the source-map here.
