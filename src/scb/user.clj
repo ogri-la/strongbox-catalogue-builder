@@ -11,6 +11,7 @@
     [utils :as utils]
     [http :as http]
     [wowi :as wowi]
+    [github :as github]
     [core :as core]
     [catalogue :as catalogue]])
   (:import
@@ -181,17 +182,36 @@
               :response (http/download url {})}]
     (core/parse-content resp)))
 
+(defn marshall-catalogue
+  "reads addon data from the state directory, has the right ns parse it and generates a full catalogue."
+  [source-list]
+  (let [source-map {:wowinterface wowi/build-catalogue
+                    :github github/build-catalogue}
+        source-map (select-keys source-map (or source-list (keys source-map)))
+        addon-list (vec (mapcat #((second %)) source-map))]
+    (catalogue/format-catalogue-data-for-output addon-list (utils/datestamp-now-ymd))))
+
 (defn write-catalogue
   "generates a catalogue and writes it to disk"
-  []
-  (let [all-catalogue-data (catalogue/marshall-catalogue)
-        shortened-catalogue-data (catalogue/shorten-catalogue all-catalogue-data)
-        wowi-catalogue-data (catalogue/filter-catalogue #(-> % :source (= :wowinterface)) all-catalogue-data)
-        github-catalogue-data (catalogue/filter-catalogue #(-> % :source (= :github)) all-catalogue-data)]
-    (catalogue/write-catalogue all-catalogue-data (core/paths :catalogue-path "full-catalogue.json"))
-    (catalogue/write-catalogue shortened-catalogue-data (core/paths :catalogue-path "short-catalogue.json"))
-    (catalogue/write-catalogue wowi-catalogue-data (core/paths :catalogue-path "wowinterface-catalogue.json"))
-    (catalogue/write-catalogue github-catalogue-data (core/paths :catalogue-path "github-catalogue.json"))))
+  [& [{:keys [source-list] :or {source-list nil}}]]
+  (let [all-catalogue-data (marshall-catalogue source-list)
+
+        source-filter (fn [source] #(-> % :source (= source)))
+
+        source-map {:wowinterface #(catalogue/filter-catalogue (source-filter :wowinterface) %)
+                    :github #(catalogue/filter-catalogue (source-filter :github) %)
+                    :short #(catalogue/shorten-catalogue %)
+                    :full identity}
+
+        source-path-map {:wowinterface "wowinterface-catalogue.json"
+                         :github "github-catalogue.json"
+                         :short "short-catalogue.json"
+                         :full "full-catalogue.json"}]
+
+    (doseq [source source-list
+            :let [data ((get source-map source) all-catalogue-data)
+                  path (get source-path-map source)]]
+      (catalogue/write-catalogue data (core/paths :catalogue-path path)))))
 
 (defn to-addon-summary
   [source source-id]
@@ -245,7 +265,7 @@
   finds addons updated in the last day using fresh data,
   deletes their cache, refreshes data again.
   remember: we can't trust the API filelist or listing pages to be complete, we have to consult both."
-  []
+  [& [{:keys [source-list]}]]
   (run! delete-cache-path (core/cache-paths-matching #"page=|cat|filelist"))
   (refresh-data)
   (wait-for-empty-queues)
