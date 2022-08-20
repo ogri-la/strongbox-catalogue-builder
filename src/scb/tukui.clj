@@ -11,11 +11,6 @@
     [utils :as utils]
     [specs :as sp]]))
 
-(defn spy
-  [x]
-  (println "spy:" x)
-  x)
-
 (def summary-list-url "https://www.tukui.org/api.php?addons")
 (def classic-summary-list-url "https://www.tukui.org/api.php?classic-addons")
 (def classic-tbc-summary-list-url "https://www.tukui.org/api.php?classic-tbc-addons")
