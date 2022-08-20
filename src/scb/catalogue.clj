@@ -14,8 +14,15 @@
   "returns a correctly formatted, ordered, catalogue given a list of addons and a datestamp.
   addon maps are converted to an `ordered-map` for diffing."
   [addon-list :addon/summary-list, datestamp :catalogue/datestamp] ;;::sp/ymd-dt]
-  (let [addon-list (mapv #(into (omap/ordered-map) (sort %))
-                         (sort-by :name addon-list))]
+  (let [addon-list (mapv (fn [addon]
+                           (into (omap/ordered-map)
+                                 (-> addon
+                                     ;; order sets
+                                     (update :tag-list (comp vec sort))
+                                     (update :game-track-list (comp vec sort))
+                                     ;; order fields
+                                     sort)))
+                         (sort-by (juxt :name :source) addon-list))]
     {:spec {:version 2}
      :datestamp datestamp
      :total (count addon-list)

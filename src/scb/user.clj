@@ -178,7 +178,7 @@
 
 (defn parse-url-content
   "downloads and parses the given URL, bypasses queues.
-  allows us to grap the exception object with `*e`"
+  allows us to grab the exception object with `*e`"
   [url]
   (let [resp {:url url
               :response (http/download url {})}]
