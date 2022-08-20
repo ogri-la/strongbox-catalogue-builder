@@ -26,6 +26,9 @@
 
 # todo bucket (no order)
 
+* tags, make `tags/category-set-to-tag-set` return an ordered list
+    - 
+
 * wowi, descriptions, filter common leading words in descriptions
     - "about", "description", "general", "general description", "what", "info", "information", "credits", "features", "intro", "introduction", "note", "overview", "preamble" (really), "purpose", "synopsis"
     - "donate", "donation", "paypal", "support", "patreon"

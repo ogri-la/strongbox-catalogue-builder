@@ -27,6 +27,14 @@
       (st/unstrument)
       (debug "spec instrumentation OFF"))))
 
+(defmacro with-instrumentation
+  [flag & body]
+  `(try
+     (instrument ~flag)
+     ~@body
+     (finally
+       (instrument (not ~flag)))))
+
 (defn nilable
   "converts a false-y `x` to `nil`, else `x`"
   [x]

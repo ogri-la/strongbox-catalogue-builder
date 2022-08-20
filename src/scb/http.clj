@@ -17,7 +17,7 @@
    [java.io File FileInputStream FileOutputStream]
    [org.apache.commons.io IOUtils]))
 
-(def expiry-offset-hours 999) ;; doesn't matter too much at this stage.
+(def expiry-offset-hours (* 7 24)) ;; doesn't matter too much at this stage.
 (def delay-between-requests 1000) ;; ms, 1sec
 
 (def ^:dynamic *default-pause* 1000) ;; ms, 1sec

@@ -194,7 +194,9 @@
            :game-track (case (:title row)
                          "WoW Retail" :retail
                          "WoW Classic" :classic
-                         "The Burning Crusade WoW Classic" :classic-tbc)})
+                         "The Burning Crusade WoW Classic" :classic-tbc
+                         ;;"Wrath of the Lich King WoW Classic" :classic-wotlk
+                         )})
 
         latest-release-list (->> (select html-snippet [:.infobox :div#download :a])
                                  (map :attrs)
