@@ -195,7 +195,7 @@
                          "WoW Retail" :retail
                          "WoW Classic" :classic
                          "The Burning Crusade WoW Classic" :classic-tbc
-                         ;;"Wrath of the Lich King WoW Classic" :classic-wotlk
+                         "Wrath of the Lich King WoW Classic" :classic-wotlk
                          )})
 
         latest-release-list (->> (select html-snippet [:.infobox :div#download :a])
@@ -589,8 +589,11 @@
         addon-data (-> addon-data
                        utils/remove-key-ns
                        (rename-keys rename-map)
-                       (update :tag-list (comp vec sort))
-                       (update :game-track-list (comp vec sort)))]
+                       ;; see `catalogue/format-catalogue-data-for-output`
+                       ;;(update :tag-list (comp vec sort))
+                       ;;(update :game-track-list (comp vec sort))
+
+                       )]
 
     addon-data))
 
