@@ -12,8 +12,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * tukui catalogue support
 * catalogue filtering and shortening
 * cli and an update script
+* classic-wotlk support
 
 ### Changed
+
+* tag-list and game-track set ordering pushed from source (wowi/tukui/github) into catalogue output formatting
+* addons are now ordered by name and then by source.
+    - for example, two addons named 'foo' will have the 'github' source appear before the 'wowinterface' source.
 
 ### Fixed
 
