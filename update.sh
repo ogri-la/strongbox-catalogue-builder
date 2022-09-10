@@ -9,9 +9,11 @@ commit_msg=$1
 
 lein run --action scrape-catalogue
 
-{
+(
     cd state
     git add .
     git commit -am "$commit_msg"
     git push
-}
+)
+
+cp state/*.json ../strongbox-catalogue/

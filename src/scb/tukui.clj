@@ -14,6 +14,7 @@
 (def summary-list-url "https://www.tukui.org/api.php?addons")
 (def classic-summary-list-url "https://www.tukui.org/api.php?classic-addons")
 (def classic-tbc-summary-list-url "https://www.tukui.org/api.php?classic-tbc-addons")
+(def classic-wotlk-summary-list-url "https://www.tukui.org/api.php?classic-wotlk-addons")
 
 (def proper-url "https://www.tukui.org/api.php?ui=%s")
 (def tukui-proper-url (format proper-url "tukui"))
@@ -46,7 +47,8 @@
         {:source (case game-track
                    :retail :tukui
                    :classic :tukui-classic
-                   :classic-tbc :tukui-classic-tbc)
+                   :classic-tbc :tukui-classic-tbc
+                   :classic-wotlk :tukui-classic-wotlk)
          :source-id (-> ti :id utils/to-int)
 
          ;; 2020-03: disabled in favour of :tag-list
@@ -102,12 +104,18 @@
   []
   (mapv #(process-tukui-item % :classic-tbc) (download classic-tbc-summary-list-url)))
 
+(defn-spec download-classic-wotlk-summaries :addon/summary-list
+  "downloads and processes all items in the tukui classic catalogue"
+  []
+  (mapv #(process-tukui-item % :classic-wotlk) (download classic-wotlk-summary-list-url)))
+
 (defn-spec download-all-summaries :addon/summary-list
   "downloads and process all items from the tukui 'live' (retail) and classic catalogues"
   []
   (vec (concat (download-retail-summaries)
                (download-classic-summaries)
                (download-classic-tbc-summaries)
+               (download-classic-wotlk-summaries)
                [(download-tukui-summary)]
                [(download-elvui-summary)])))
 
