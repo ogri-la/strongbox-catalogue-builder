@@ -276,6 +276,7 @@
 
     val))
 
+;; todo: rename `read-addon-path`
 (defn-spec read-addon-data (s/or :ok :addon/part, :error nil?)
   "reads the catalogue of addon data at the given `catalogue-path`.
   supports reading legacy catalogues by dispatching on the `[:spec :version]` number."

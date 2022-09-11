@@ -31,15 +31,17 @@
   [tukui-dt string?]
   (let [[date time] (clojure.string/split tukui-dt #" ")]
     (if-not time
-      (str date "T00:00:00Z") ;; tukui and elvui addons proper have no time component
+      ;; tukui and elvui addons proper have no time component.
+      ;; 2022-09-11: possibly not the case anymore, can't find an instance of it happening.
+      (str date "T00:00:00Z") 
       (str date "T" time "Z"))))
 
 (defn-spec process-tukui-item :addon/summary
   "process an item from a tukui catalogue into an addon-summary. slightly different values by game-track."
   [tukui-item map?, game-track ::sp/game-track]
   (let [ti tukui-item
-        ;; single case of an addon with no category :(
-        ;; 'SkullFlower UI', source-id 143
+        ;; single case of an addon with no category: 'SkullFlower UI', source-id 143
+        ;; 2022-09-11: not the case anymore, it has the category 'Plugins: ElvUI'
         category-list (if-let [c (:category ti)]
                         [c]
                         [])
@@ -118,17 +120,6 @@
                (download-classic-wotlk-summaries)
                [(download-tukui-summary)]
                [(download-elvui-summary)])))
-
-(defn-spec parse-user-string (s/or :ok :addon/source-id, :error nil?)
-  "extracts the addon ID from the given `url`, handling the edge cases of for retail tukui and elvui"
-  [url ::sp/url]
-  (let [[numeral string] (some->> url java.net.URL. .getQuery (re-find #"(?i)(?:id=(\d+)|ui=(tukui|elvui))") rest)]
-    (if numeral
-      (utils/to-int numeral)
-      (case (-> string (or "") lower-case)
-        "tukui" -1
-        "elvui" -2
-        nil))))
 
 (defn build-catalogue
   []

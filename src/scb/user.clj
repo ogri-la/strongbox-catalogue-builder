@@ -21,7 +21,9 @@
 
 (comment "user interface to catalogue builder")
 
-(def ns-list [:main :core :wowi :utils])
+(def ns-list [:main :core :utils
+              :wowi :tukui
+              ])
 
 (defn test
   [& [ns-kw fn-kw]]
