@@ -293,7 +293,7 @@
              vals
              (map first) ;; there will be 0 or many listing--* files, we want the first
              (remove nil?) ;; if there are zero, first will give us nils
-             (map core/read-addon-data)
+             (map core/read-addon-path)
              (filterv (comp (partial utils/less-than-n-days-old? age) :updated-date)))
 
         updated-recently-from-filedetails

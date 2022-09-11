@@ -22,9 +22,7 @@
         (helper/with-running-app
           (core/cleanup) ;; stops any workers
           (core/run-worker core/download-worker)
-          ;;(core/run-worker core/parser-worker)
           (core/put-item (core/get-state :download-queue) url)
-          ;;(user/wait-for-empty-queues)
           
           (Thread/sleep 250) ;; 100 is typically enough, but is slower on a first run
 

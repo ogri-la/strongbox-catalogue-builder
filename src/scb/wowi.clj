@@ -670,7 +670,7 @@
         parse-file (fn [[_ path-list]]
                      (try
                        (->> path-list
-                            (map core/read-addon-data)
+                            (map core/read-addon-path)
                             core/to-addon-summary)
                        (catch Exception e
                          (error (format "failed to convert addon data to a catalogue addon: %s" path-list))
