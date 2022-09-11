@@ -1,5 +1,8 @@
 # done
 
+* tukui, add wotlk support
+    - done
+
 * merge catalogues
     - even though we only have the one catalogue right now
     - done
@@ -7,10 +10,16 @@
 * prefer descriptions scraped from html
     - they have the tags stripped out
 
-# todo 0.0.3 release
+* tags, make `tags/category-set-to-tag-set` return an ordered list
+    - done
 
 * shorten catalogue
     - done
+
+* move github catalogue generation from strongbox
+    - having multiple catalogues will help the design adjust itself
+
+# todo 0.0.3 release
 
 * commit changes to catalogue and addon json once a day
     - need to be able to invoke a task like in strongbox
@@ -21,13 +30,7 @@
 * run on a schedule like strongbox-catalogue
     - update.sh -> starts catalogue builder -> starts a daily scrape -> commits results -> pushes
 
-* move github catalogue generation from strongbox
-    - having multiple catalogues will help the design adjust itself
-
 # todo bucket (no order)
-
-* tags, make `tags/category-set-to-tag-set` return an ordered list
-    - 
 
 * wowi, descriptions, filter common leading words in descriptions
     - "about", "description", "general", "general description", "what", "info", "information", "credits", "features", "intro", "introduction", "note", "overview", "preamble" (really), "purpose", "synopsis"

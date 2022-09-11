@@ -276,7 +276,7 @@
 
     val))
 
-(defn-spec read-addon-data (s/or :ok :addon/part, :error nil?)
+(defn-spec read-addon-path (s/or :ok :addon/part, :error nil?)
   "reads the catalogue of addon data at the given `catalogue-path`.
   supports reading legacy catalogues by dispatching on the `[:spec :version]` number."
   [path ::sp/file]
@@ -287,7 +287,7 @@
 
 (defn-spec find-read-addon-data (s/coll-of :addon/part)
   [source :addon/source, source-id :addon/source-id]
-  (mapv read-addon-data (state-paths-for-addon source source-id)))
+  (mapv read-addon-path (state-paths-for-addon source source-id)))
 
 ;; --- storing
 

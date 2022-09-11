@@ -21,13 +21,15 @@
 
 (comment "user interface to catalogue builder")
 
-(def ns-list [:main :core :wowi :utils])
+(def ns-list [:main :core :utils
+              :wowi :tukui
+              ])
 
 (defn test
   [& [ns-kw fn-kw]]
   (core/stop)
   ;;(clojure.tools.namespace.repl/refresh) ;; reloads all namespaces, including strongbox.whatever-test ones
-  ;;(utils/instrument true) ;; always test with spec checking ON
+  (utils/instrument true) ;; always test with spec checking ON
 
   (try
     ;; note! remember to update `cloverage.clj` with any new bindings
@@ -291,7 +293,7 @@
              vals
              (map first) ;; there will be 0 or many listing--* files, we want the first
              (remove nil?) ;; if there are zero, first will give us nils
-             (map core/read-addon-data)
+             (map core/read-addon-path)
              (filterv (comp (partial utils/less-than-n-days-old? age) :updated-date)))
 
         updated-recently-from-filedetails

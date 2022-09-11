@@ -54,7 +54,7 @@
 ;;
 
 (s/def ::game-track #{:retail :classic :classic-tbc :classic-wotlk})
-(s/def ::game-track-list (s/coll-of ::game-track :kind vector? :distinct true))
+(s/def ::game-track-list (s/coll-of ::game-track :distinct true))
 
 (s/def ::interface-version int?) ;; 90005, 11307, 20501
 
@@ -70,7 +70,7 @@
 ;;                                  (catch RuntimeException e
 ;;                                    false))))
 
-(def tukui-source-list #{:tukui :tukui-classic :tukui-classic-tbc})
+(def tukui-source-list #{:tukui :tukui-classic :tukui-classic-tbc :tukui-classic-wotlk})
 (s/def :addon/source (into #{:wowinterface :curseforge :github} tukui-source-list))
 (s/def :addon/source-id (s/or ::integer-id? int? ;; tukui has negative ids
                               ::string-id? string?))

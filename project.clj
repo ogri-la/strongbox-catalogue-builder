@@ -39,6 +39,7 @@
   ;;:profiles {:user {:plugins [[venantius/yagni "0.1.7"]]}}
   :plugins [[jonase/eastwood "0.9.9"]
             [lein-cljfmt "0.8.0"]
+            [lein-cloverage "1.2.4"]
             ]
 
   :eastwood {:exclude-linters [:constant-test

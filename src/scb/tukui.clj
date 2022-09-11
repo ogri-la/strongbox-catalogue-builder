@@ -14,6 +14,7 @@
 (def summary-list-url "https://www.tukui.org/api.php?addons")
 (def classic-summary-list-url "https://www.tukui.org/api.php?classic-addons")
 (def classic-tbc-summary-list-url "https://www.tukui.org/api.php?classic-tbc-addons")
+(def classic-wotlk-summary-list-url "https://www.tukui.org/api.php?classic-wotlk-addons")
 
 (def proper-url "https://www.tukui.org/api.php?ui=%s")
 (def tukui-proper-url (format proper-url "tukui"))
@@ -30,28 +31,29 @@
   [tukui-dt string?]
   (let [[date time] (clojure.string/split tukui-dt #" ")]
     (if-not time
-      (str date "T00:00:00Z") ;; tukui and elvui addons proper have no time component
+      ;; tukui and elvui addons proper have no time component.
+      ;; 2022-09-11: possibly not the case anymore, can't find an instance of it happening.
+      (str date "T00:00:00Z") 
       (str date "T" time "Z"))))
 
 (defn-spec process-tukui-item :addon/summary
   "process an item from a tukui catalogue into an addon-summary. slightly different values by game-track."
   [tukui-item map?, game-track ::sp/game-track]
   (let [ti tukui-item
-        ;; single case of an addon with no category :(
-        ;; 'SkullFlower UI', source-id 143
-        category-list (if-let [c (:category ti)]
-                        [c]
-                        [])
+        ;; single case of an addon with no category: 'SkullFlower UI', source-id 143
+        ;; 2022-09-11: not the case anymore, it has the category 'Plugins: ElvUI'
+        category-set (if-let [c (:category ti)] #{c} #{})
         addon-summary
         {:source (case game-track
                    :retail :tukui
                    :classic :tukui-classic
-                   :classic-tbc :tukui-classic-tbc)
+                   :classic-tbc :tukui-classic-tbc
+                   :classic-wotlk :tukui-classic-wotlk)
          :source-id (-> ti :id utils/to-int)
 
          ;; 2020-03: disabled in favour of :tag-list
          ;;:category-list category-list
-         :tag-list (tags/category-set-to-tag-set "tukui" category-list)
+         :tag-list (tags/category-set-to-tag-set :tukui category-set)
          :download-count (-> ti :downloads utils/to-int)
          :game-track-list [game-track]
          :label (:name ti)
@@ -102,25 +104,20 @@
   []
   (mapv #(process-tukui-item % :classic-tbc) (download classic-tbc-summary-list-url)))
 
+(defn-spec download-classic-wotlk-summaries :addon/summary-list
+  "downloads and processes all items in the tukui classic catalogue"
+  []
+  (mapv #(process-tukui-item % :classic-wotlk) (download classic-wotlk-summary-list-url)))
+
 (defn-spec download-all-summaries :addon/summary-list
   "downloads and process all items from the tukui 'live' (retail) and classic catalogues"
   []
   (vec (concat (download-retail-summaries)
                (download-classic-summaries)
                (download-classic-tbc-summaries)
+               (download-classic-wotlk-summaries)
                [(download-tukui-summary)]
                [(download-elvui-summary)])))
-
-(defn-spec parse-user-string (s/or :ok :addon/source-id, :error nil?)
-  "extracts the addon ID from the given `url`, handling the edge cases of for retail tukui and elvui"
-  [url ::sp/url]
-  (let [[numeral string] (some->> url java.net.URL. .getQuery (re-find #"(?i)(?:id=(\d+)|ui=(tukui|elvui))") rest)]
-    (if numeral
-      (utils/to-int numeral)
-      (case (-> string (or "") lower-case)
-        "tukui" -1
-        "elvui" -2
-        nil))))
 
 (defn build-catalogue
   []
