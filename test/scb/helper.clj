@@ -46,9 +46,11 @@
   `(try
      (core/start)
      ~@form
+     (println "calling stop")
+     (core/stop)
      (finally
-       (println "calling stop")
-       (core/stop))))
+       (when (core/started?)
+         (core/stop)))))
 
 (defmacro with-running-app
   [& form]

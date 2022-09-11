@@ -2,7 +2,7 @@
 set -e
 
 # always ratchet *upwards*
-fail_threshold=60
+fail_threshold=55
 
 function finish {
     # 'lein clean' wipes out the 'target' directory, including the Cloverage report.
