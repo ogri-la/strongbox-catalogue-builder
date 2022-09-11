@@ -52,7 +52,7 @@
     (helper/with-running-app
       (helper/with-instrumentation-off
         (core/put-item (core/get-state :download-queue) "foo!")
-        (Thread/sleep 150)
+        (Thread/sleep 250)  ;; 100 is typically enough, but is slower on a first run
         (is (core/empty-queue? :download-queue))
         (is (core/empty-queue? :downloaded-content-queue))
         (is (core/empty-queue? :parsed-content-queue))
