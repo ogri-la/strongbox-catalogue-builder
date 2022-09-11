@@ -42,9 +42,7 @@
   (let [ti tukui-item
         ;; single case of an addon with no category: 'SkullFlower UI', source-id 143
         ;; 2022-09-11: not the case anymore, it has the category 'Plugins: ElvUI'
-        category-list (if-let [c (:category ti)]
-                        [c]
-                        [])
+        category-set (if-let [c (:category ti)] #{c} #{})
         addon-summary
         {:source (case game-track
                    :retail :tukui
@@ -55,7 +53,7 @@
 
          ;; 2020-03: disabled in favour of :tag-list
          ;;:category-list category-list
-         :tag-list (tags/category-set-to-tag-set "tukui" category-list)
+         :tag-list (tags/category-set-to-tag-set :tukui category-set)
          :download-count (-> ti :downloads utils/to-int)
          :game-track-list [game-track]
          :label (:name ti)

@@ -23,12 +23,11 @@
                   :name "alhanaui",
                   :source :tukui,
                   :source-id 42,
-                  :tag-list #{:compilations :edited-uis},
+                  :tag-list #{:compilations :ui},
                   :updated-date "2019-07-25T17:00:42Z",
                   :url "https://www.tukui.org/addons.php?id=42"}
         fixture (-> "tukui--retail-addon.json" fixture-path utils/json-slurp first)
         ]
-    (println fixture)
     (is (= expected (tukui/process-tukui-item fixture :retail)))))
   
 (deftest process-tukui-item--classic
@@ -44,6 +43,5 @@
                   :url "https://www.tukui.org/classic-addons.php?id=36"}
         fixture (-> "tukui--classic-addon.json" fixture-path utils/json-slurp first)
         ]
-    (println fixture)
     (is (= expected (tukui/process-tukui-item fixture :classic)))))
 

@@ -29,7 +29,7 @@
   [& [ns-kw fn-kw]]
   (core/stop)
   ;;(clojure.tools.namespace.repl/refresh) ;; reloads all namespaces, including strongbox.whatever-test ones
-  ;;(utils/instrument true) ;; always test with spec checking ON
+  (utils/instrument true) ;; always test with spec checking ON
 
   (try
     ;; note! remember to update `cloverage.clj` with any new bindings

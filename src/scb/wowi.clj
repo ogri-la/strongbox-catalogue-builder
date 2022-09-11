@@ -634,7 +634,7 @@
         coerce-release (fn [release-list]
                          (mapv #(rename-keys % release-rename-map) release-list))
 
-        ;; adds game tracks to a previous release.
+        ;; adds game tracks to a previous release. a release is multiplied by the number of game tracks.
         ;; this sucks but we have no way of knowing what game track a previous release
         ;; supported unless we peek inside the zip file itself. next best thing is assume
         ;; all previous releases of the addon support the declared/detected game tracks.
@@ -643,7 +643,7 @@
                           (vec
                            (flatten
                             (for [game-track (:game-track-list addon-data)]
-                              (mapv #(assoc % :game-track game-track) release-list)))))
+                              (mapv (fn [release] (assoc release :game-track game-track)) release-list)))))
 
         addon-data (-> addon-data
                        (update :latest-release-list coerce-release)
