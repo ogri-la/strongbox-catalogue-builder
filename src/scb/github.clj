@@ -13,7 +13,7 @@
 (defn-spec build-catalogue (s/or :ok :addon/summary-list, :error nil?)
   "converts a CSV list of addons to a strongbox-compatible catalogue of addon summaries."
   []
-  (let [url "https://raw.githubusercontent.com/ogri-la/github-wow-addon-catalogue/main/addons.csv"
+  (let [url "https://raw.githubusercontent.com/ogri-la/github-wow-addon-catalogue/develop/addons.csv"
         result (-> url
                    http/download-with-backoff
                    http/sink-error
