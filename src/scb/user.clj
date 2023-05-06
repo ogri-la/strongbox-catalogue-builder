@@ -193,7 +193,12 @@
                     :wowinterface wowi/build-catalogue
                     :github github/build-catalogue}
         source-map (select-keys source-map (or source-list (keys source-map)))
-        addon-list (vec (mapcat #((second %)) source-map))]
+        addon-list (vec (mapcat #((second %)) source-map))
+        addon-list (filterv (fn [addon]
+                              (let [valid-addon? (specs/valid-or-nil :addon/summary addon)]
+                                (when (not valid-addon?)
+                                  (warn (format "failed to validate final addon for catalogue, excluding: %s (%s)" (:source-id addon) (:source addon))))
+                                valid-addon?)) addon-list)]
     (catalogue/format-catalogue-data-for-output addon-list (utils/datestamp-now-ymd))))
 
 (defn write-catalogue
