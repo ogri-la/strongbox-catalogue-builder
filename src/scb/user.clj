@@ -2,8 +2,8 @@
   (:require
    [orchestra.core :refer [defn-spec]]
    [taoensso.timbre :as timbre :refer [debug info warn error spy]]
-   [net.cgrand.enlive-html :as html :refer [select]]
-   [clojure.pprint]
+   ;;[net.cgrand.enlive-html :as html :refer [select]]
+   ;;[clojure.pprint]
    [clojure.test :as clj-test]
    [me.raynes.fs :as fs]
    [gui.diff :refer [with-gui-diff]]
@@ -22,8 +22,7 @@
 (comment "user interface to catalogue builder")
 
 (def ns-list [:main :core :utils
-              :wowi :tukui
-              ])
+              :wowi :tukui])
 
 (defn test
   [& [ns-kw fn-kw]]
