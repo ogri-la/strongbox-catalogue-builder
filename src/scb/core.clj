@@ -15,7 +15,8 @@
   (:import
    [java.util Vector]
    [java.lang InterruptedException]
-   [java.util.concurrent LinkedBlockingQueue]))
+   [java.util.concurrent LinkedBlockingQueue]
+   [java.util Base64]))
 
 (def testing? false)
 
@@ -40,7 +41,7 @@
 
 (def queue-list [:download-queue :downloaded-content-queue :parsed-content-queue])
 
-(def state nil)
+(def state (atom nil))
 
 (defn started?
   []
@@ -80,7 +81,7 @@
       (when-let [path (get path-map path)]
         (str (apply fs/file (into [path] (map str rest))))))))
 
-(def decoder (java.util.Base64/getUrlDecoder))
+(def ^java.util.Base64$Decoder decoder (java.util.Base64/getUrlDecoder))
 
 (defn decode-cache-name
   "decodes a URL-safe base64 encoded cached filename"

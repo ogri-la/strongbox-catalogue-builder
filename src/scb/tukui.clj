@@ -1,7 +1,6 @@
 (ns scb.tukui
   (:require
    [slugify.core :refer [slugify]]
-   [clojure.spec.alpha :as s]
    [clojure.string :refer [lower-case]]
    [orchestra.core :refer [defn-spec]]
    ;;[taoensso.timbre :as log :refer [debug info warn error spy]]
@@ -33,7 +32,7 @@
     (if-not time
       ;; tukui and elvui addons proper have no time component.
       ;; 2022-09-11: possibly not the case anymore, can't find an instance of it happening.
-      (str date "T00:00:00Z") 
+      (str date "T00:00:00Z")
       (str date "T" time "Z"))))
 
 (defn-spec process-tukui-item :addon/summary
