@@ -82,18 +82,6 @@ sp/placeholder
    "Data Broker" [:data]
    "Titan Panel" [:plugins]})
 
-(def tukui-replacements
-  "tukui-specific categories that are replaced"
-  {"Edited UIs & Compilations" [:ui :compilations]
-   "Full UI Replacements" [:ui]
-   "Skins" [:ui]
-   "Tooltips" [:tooltip] ;; singular
-   "Plugins: Other" [:plugins :misc]})
-
-(def tukui-supplements
-  "tukui-specific categories that gain new tags"
-  {"Map & Minimap" [:coords :ui]})
-
 (def general-replacements
   "categories shared by all addon hosts already that are replaced"
   {"Miscellaneous" [:misc]})
@@ -134,12 +122,12 @@ sp/placeholder
 (def replacement-map
   {:wowinterface (merge general-replacements wowi-replacements)
    :curseforge (merge general-replacements curse-replacements)
-   :tukui (merge general-replacements tukui-replacements)})
+   })
 
 (def supplement-map
   {:wowinterface (merge general-supplements wowi-supplements)
    :curseforge (merge general-supplements curse-supplements)
-   :tukui (merge general-supplements tukui-supplements)})
+   })
 
 ;;
 
@@ -154,7 +142,7 @@ sp/placeholder
 
 (defn-spec category-to-tag-list (s/or :singluar :addon/tag, :composite :addon/tag-list)
   "given a `category` string, converts it into one or many tags."
-  [addon-host :addon/source, category :addon/category]
+  [addon-host (s/or :ok :addon/source, :supported keyword?), category :addon/category]
   (let [replacements (get replacement-map addon-host, general-replacements)
         supplements (get supplement-map addon-host, general-supplements)
 
@@ -172,7 +160,7 @@ sp/placeholder
 
 (defn-spec category-set-to-tag-set :addon/tag-set
   "given a list of category strings, converts them into a distinct list of tags by calling `category-to-tag-list`."
-  [addon-host :addon/source, category-set :addon/category-set]
+  [addon-host (s/or :ok :addon/source, :supported keyword?), category-set :addon/category-set]
   ;; sorting cuts down on noise in diffs.
   ;; `set` because curseforge has duplicate categories and supplemental tags may introduce duplicates
   (->> category-set (map (partial category-to-tag-list addon-host)) flatten set))

@@ -1,9 +1,8 @@
 (ns scb.github
   (:require
    [scb
-    [utils :as utils]
-    
-    ]
+    [utils :as utils]]
+
    [clojure.spec.alpha :as s]
    [clojure.data.csv :as csv]
    [slugify.core :refer [slugify]]

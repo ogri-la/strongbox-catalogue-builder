@@ -70,7 +70,6 @@
     - delete there. means a new major version
 * test coverage
 * http, add retry support
-* tukui support
 * github support
 * CI
 
