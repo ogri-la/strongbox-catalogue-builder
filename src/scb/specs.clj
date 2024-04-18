@@ -53,7 +53,7 @@
 
 ;;
 
-(s/def ::game-track #{:retail :classic :classic-tbc :classic-wotlk})
+(s/def ::game-track #{:retail :classic :classic-tbc :classic-wotlk :classic-cata})
 (s/def ::game-track-list (s/coll-of ::game-track :distinct true))
 
 (s/def ::interface-version int?) ;; 90005, 11307, 20501

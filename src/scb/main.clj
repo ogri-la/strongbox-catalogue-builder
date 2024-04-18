@@ -15,9 +15,7 @@
    :scrape-catalogue #(user/daily-addon-update)
    :scrape-wowinterface-catalogue #(user/daily-addon-update {:source-list [:wowinterface]})
    ;; no distinction between scraping and writing
-   :scrape-github-catalogue #(user/daily-addon-update {:source-list [:github]})
-
-   })
+   :scrape-github-catalogue #(user/daily-addon-update {:source-list [:github]})})
 
 (defn start
   [{:keys [action]}]

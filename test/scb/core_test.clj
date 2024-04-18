@@ -5,7 +5,6 @@
    ;;[clj-http.fake :refer [with-global-fake-routes-in-isolation]]
    [scb.helper :as helper]
    [scb
-    [user :as user]
     [core :as core]]))
 
 (use-fixtures :each helper/no-http)

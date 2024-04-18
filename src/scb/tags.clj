@@ -121,13 +121,11 @@ sp/placeholder
 
 (def replacement-map
   {:wowinterface (merge general-replacements wowi-replacements)
-   :curseforge (merge general-replacements curse-replacements)
-   })
+   :curseforge (merge general-replacements curse-replacements)})
 
 (def supplement-map
   {:wowinterface (merge general-supplements wowi-supplements)
-   :curseforge (merge general-supplements curse-supplements)
-   })
+   :curseforge (merge general-supplements curse-supplements)})
 
 ;;
 

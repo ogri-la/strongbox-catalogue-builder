@@ -1,10 +1,11 @@
 (ns scb.user
+  (:refer-clojure :exclude [test])
   (:require
    [orchestra.core :refer [defn-spec]]
    [taoensso.timbre :as timbre :refer [debug info warn error spy]]
    ;;[net.cgrand.enlive-html :as html :refer [select]]
    ;;[clojure.pprint]
-   [clojure.test :as clj-test]
+   [clojure.test]
    [me.raynes.fs :as fs]
    [gui.diff :refer [with-gui-diff]]
    [scb
@@ -22,8 +23,7 @@
 
 (def ns-list [:core :utils
               :tags
-              :wowi :github
-              ])
+              :wowi :github])
 
 (defn test
   [& [ns-kw fn-kw]]
@@ -61,9 +61,9 @@
               (if fn-kw
                 ;; `test-vars` will run the test but not give feedback if test passes OR test not found
                 ;; slightly better than nothing
-                (clj-test/test-vars [(resolve (symbol (str "scb." (name ns-kw) "-test") (name fn-kw)))])
-                (clj-test/run-all-tests (re-pattern (str "scb." (name ns-kw) "-test"))))))
-          (clj-test/run-all-tests #"scb\..*-test"))))
+                (clojure.test/test-vars [(resolve (symbol (str "scb." (name ns-kw) "-test") (name fn-kw)))])
+                (clojure.test/run-all-tests (re-pattern (str "scb." (name ns-kw) "-test"))))))
+          (clojure.test/run-all-tests #"scb\..*-test"))))
     (finally
       ;; use case: we run the tests from the repl and afterwards we call `restart` to start the app.
       ;; `stop` inside `restart` will be outside of `with-redefs` and still have logging `:min-level` set to `:debug`
@@ -80,7 +80,7 @@
                   ;;http/*default-attempts* 1
                            ]
                (with-gui-diff
-                 (clj-test/run-all-tests #"scb\..*-test")))
+                 (clojure.test/run-all-tests #"scb\..*-test")))
              (finally
                nil)))
 

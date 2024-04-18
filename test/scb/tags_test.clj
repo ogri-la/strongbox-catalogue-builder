@@ -43,8 +43,7 @@
                  [:curseforge "Buff, Debuff, Spell" [:buff :debuff :spell]]
 
                  [:wowinterface "Classic - General" [:classic]]
-                 [:curseforge "Damage Dealer" [:dps]]
-                 ]]
+                 [:curseforge "Damage Dealer" [:dps]]]]
       (doseq [[addon-host given expected] cases]
         (is (= expected (tags/category-to-tag-list addon-host given))))))
 

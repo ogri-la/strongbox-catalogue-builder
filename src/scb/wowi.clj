@@ -101,7 +101,8 @@
 
 (defn extract-source-id-2
   [s]
-  (utils/str-to-int (last (re-find (re-matcher #"info(\d+)" s)))))
+  (when s
+    (utils/str-to-int (last (re-find (re-matcher #"info(\d+)" s))))))
 
 (defn-spec web-addon-url ::sp/url
   [source-id :addon/source-id]
