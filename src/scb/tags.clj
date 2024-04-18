@@ -142,7 +142,7 @@ sp/placeholder
 
 (defn-spec category-to-tag-list (s/or :singluar :addon/tag, :composite :addon/tag-list)
   "given a `category` string, converts it into one or many tags."
-  [addon-host :addon/source, category :addon/category]
+  [addon-host (s/or :ok :addon/source, :supported keyword?), category :addon/category]
   (let [replacements (get replacement-map addon-host, general-replacements)
         supplements (get supplement-map addon-host, general-supplements)
 
@@ -160,7 +160,7 @@ sp/placeholder
 
 (defn-spec category-set-to-tag-set :addon/tag-set
   "given a list of category strings, converts them into a distinct list of tags by calling `category-to-tag-list`."
-  [addon-host :addon/source, category-set :addon/category-set]
+  [addon-host (s/or :ok :addon/source, :supported keyword?), category-set :addon/category-set]
   ;; sorting cuts down on noise in diffs.
   ;; `set` because curseforge has duplicate categories and supplemental tags may introduce duplicates
   (->> category-set (map (partial category-to-tag-list addon-host)) flatten set))
