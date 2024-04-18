@@ -11,7 +11,6 @@
     [specs :as specs]
     [utils :as utils]
     [http :as http]
-    [tukui :as tukui]
     [wowi :as wowi]
     [github :as github]
     [core :as core]
@@ -22,7 +21,8 @@
 (comment "user interface to catalogue builder")
 
 (def ns-list [:main :core :utils
-              :wowi :tukui])
+              :wowi
+              ])
 
 (defn test
   [& [ns-kw fn-kw]]
@@ -188,8 +188,7 @@
 (defn marshall-catalogue
   "reads addon data for each source in given `source-list` (or all known sources) and returns a single list of addons."
   [source-list]
-  (let [source-map {:tukui tukui/build-catalogue
-                    :wowinterface wowi/build-catalogue
+  (let [source-map {:wowinterface wowi/build-catalogue
                     :github github/build-catalogue}
         source-map (select-keys source-map (or source-list (keys source-map)))
         addon-list (vec (mapcat #((second %)) source-map))
@@ -210,19 +209,17 @@
                  (fn [row]
                    (some #{(:source row)} (set source-list))))
 
-        source-map {:tukui #(catalogue/filter-catalogue (apply source specs/tukui-source-list) %)
-                    :wowinterface #(catalogue/filter-catalogue (source :wowinterface) %)
+        source-map {:wowinterface #(catalogue/filter-catalogue (source :wowinterface) %)
                     :github #(catalogue/filter-catalogue (source :github) %)
                     :short #(catalogue/shorten-catalogue %)
                     :full identity}
 
-        source-path-map {:tukui "tukui-catalogue.json"
-                         :wowinterface "wowinterface-catalogue.json"
+        source-path-map {:wowinterface "wowinterface-catalogue.json"
                          :github "github-catalogue.json"
                          :short "short-catalogue.json"
                          :full "full-catalogue.json"}
 
-        source-order [:wowinterface :github :tukui :full :short]
+        source-order [:wowinterface :github :full :short]
 
         source-list (if (empty? source-list) source-order source-list)]
 
