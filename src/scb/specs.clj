@@ -70,9 +70,8 @@
 ;;                                  (catch RuntimeException e
 ;;                                    false))))
 
-(def tukui-source-list #{:tukui :tukui-classic :tukui-classic-tbc :tukui-classic-wotlk})
-(s/def :addon/source (into #{:wowinterface :curseforge :github} tukui-source-list))
-(s/def :addon/source-id (s/or ::integer-id? int? ;; tukui has negative ids
+(s/def :addon/source #{:wowinterface :curseforge :github})
+(s/def :addon/source-id (s/or ::integer-id? int?
                               ::string-id? string?))
 (s/def :addon/category string?)
 (s/def :addon/category-set (s/coll-of :addon/category :kind set?))

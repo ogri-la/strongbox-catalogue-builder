@@ -82,18 +82,6 @@ sp/placeholder
    "Data Broker" [:data]
    "Titan Panel" [:plugins]})
 
-(def tukui-replacements
-  "tukui-specific categories that are replaced"
-  {"Edited UIs & Compilations" [:ui :compilations]
-   "Full UI Replacements" [:ui]
-   "Skins" [:ui]
-   "Tooltips" [:tooltip] ;; singular
-   "Plugins: Other" [:plugins :misc]})
-
-(def tukui-supplements
-  "tukui-specific categories that gain new tags"
-  {"Map & Minimap" [:coords :ui]})
-
 (def general-replacements
   "categories shared by all addon hosts already that are replaced"
   {"Miscellaneous" [:misc]})
@@ -134,12 +122,12 @@ sp/placeholder
 (def replacement-map
   {:wowinterface (merge general-replacements wowi-replacements)
    :curseforge (merge general-replacements curse-replacements)
-   :tukui (merge general-replacements tukui-replacements)})
+   })
 
 (def supplement-map
   {:wowinterface (merge general-supplements wowi-supplements)
    :curseforge (merge general-supplements curse-supplements)
-   :tukui (merge general-supplements tukui-supplements)})
+   })
 
 ;;
 

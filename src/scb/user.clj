@@ -20,8 +20,9 @@
 
 (comment "user interface to catalogue builder")
 
-(def ns-list [:main :core :utils
-              :wowi
+(def ns-list [:core :utils
+              :tags
+              :wowi :github
               ])
 
 (defn test

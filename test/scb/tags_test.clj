@@ -44,7 +44,7 @@
 
                  ["wowinterface" "Classic - General" [:classic]]
                  ["curseforge" "Damage Dealer" [:dps]]
-                 ["tukui" "Edited UIs & Compilations" [:ui :compilations]]]]
+                 ]]
       (doseq [[addon-host given expected] cases]
         (is (= expected (tags/category-to-tag-list addon-host given))))))
 
@@ -57,7 +57,7 @@
                  ["wowinterface" "Pets" [:battle-pets :companions :pets]]
                  ["curseforge" "Arena" [:pvp :arena]]
                  ;; composite categories are parsed into individual tags as well
-                 ["tukui" "Map & Minimap" [:coords :ui :map :minimap]]]]
+                 ]]
       (doseq [[addon-host given expected] cases]
         (is (= expected (tags/category-to-tag-list addon-host given))))))
 
