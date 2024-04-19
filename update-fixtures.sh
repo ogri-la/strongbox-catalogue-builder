@@ -10,3 +10,5 @@ curl -s https://www.wowinterface.com/downloads/info24906-AtlasWorldMapClassic.ht
 curl -s https://www.wowinterface.com/downloads/info11551-MapCoords.html > test/fixtures/wowinterface--addon-detail--single-download--supports-all.html
 
 curl -s https://www.wowinterface.com/downloads/info8149-IceHUD.html > test/fixtures/wowinterface--addon-detail--single-download--tabber.html
+
+curl -s https://www.wowinterface.com/downloads/info24870-BFAInvasionTimer.html > test/fixtures/wowinterface--addon-detail--supports-multiple.html

@@ -748,16 +748,16 @@
           expected
           {:parsed [{:created-date "2018-12-15T09:53:00Z",
                      :filename "web--detail.json",
-                     :game-track-set #{:classic :classic-tbc :retail},
+                     :game-track-set #{:classic :classic-wotlk :retail},
                      :latest-release-set #{{:download-url "https://www.wowinterface.com/downloads/landing.php?fileid=24870",
-                                            :game-track :classic-tbc,
-                                            :version "v9.2.2"}
+                                            :game-track :classic,
+                                            :version "v10.2.1"}
                                            {:download-url "https://www.wowinterface.com/downloads/landing.php?fileid=24870",
                                             :game-track :retail,
-                                            :version "v9.2.2"}
+                                            :version "v10.2.1"}
                                            {:download-url "https://www.wowinterface.com/downloads/landing.php?fileid=24870",
-                                            :game-track :classic,
-                                            :version "v9.2.2"}},
+                                            :game-track :classic-wotlk,
+                                            :version "v10.2.1"}},
                      :name "bfainvasiontimer",
                      :short-description " Please support my work on Patreon/GitHub!",
                      :source :wowinterface,
@@ -771,7 +771,7 @@
                                 :quests
                                 :titan-panel
                                 :utility},
-                     :updated-date "2022-03-22T19:51:00Z",
+                     :updated-date "2024-01-16T11:56:00Z",
                      :wowi/archived-files [],
                      :wowi/category-set #{"Character Advancement"
                                           "Data Broker"
@@ -779,10 +779,10 @@
                                           "Miscellaneous"
                                           "Titan Panel"
                                           "Utility Mods"},
-                     :wowi/checksum "5704a0862c38c8153910da299b5e95b9",
-                     :wowi/compatibility ["TBC Patch (2.5.4)"
-                                          "Classic Patch (1.14.2)"
-                                          "Eternity's End (9.2.0)"],
+                     :wowi/checksum "801276fedf4960bfa2c99f3b74acb515",
+                     :wowi/compatibility ["Seeds of Renewal (10.2.5)"
+                                          "Classic (1.15.0)"
+                                          "WOTLK Patch (3.4.3)"],
                      :wowi/compatible-with "Compatible with Retail, Classic & TBC",
                      :wowi/created-date "12-15-18 09:53 AM",
                      :wowi/description [" Please support my work on Patreon/GitHub!"
@@ -795,13 +795,13 @@
                                         "/bfainvasiontimer"
                                         "Right-click the bar anchor"
                                         "BFAInvasionTimer is open source and development is done on GitHub. You can contribute code, localization, and report issues there: https://github.com/funkydude/BFAInvasionTimer"],
-                     :wowi/downloads 4575,
+                     :wowi/downloads 5393,
                      :wowi/favorites 19,
                      :wowi/latest-release-list [{:download-url "https://www.wowinterface.com/downloads/landing.php?fileid=24870",
                                                  :game-track :retail}],
-                     :wowi/latest-release-versions [["Version" "v9.2.2"]],
+                     :wowi/latest-release-versions [["Version" "v10.2.1"]],
                      :wowi/title "BFAInvasionTimer",
-                     :wowi/updated-date "03-22-22 07:51 PM",
+                     :wowi/updated-date "01-16-24 11:56 AM",
                      :wowi/url "https://www.wowinterface.com/downloads/info24870-BFAInvasionTimer.html"}]}
 
           actual (wowi/parse-addon-detail-page fixture)]
