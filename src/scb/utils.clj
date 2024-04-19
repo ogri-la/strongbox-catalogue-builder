@@ -161,6 +161,8 @@
       "2." :classic-tbc
       ;; 3.x.x == classic (wrath of the lich king)
       "3." :classic-wotlk
+      ;; 4.x.x == classic (cata)
+      "4." :classic-cata
       :retail)))
 
 (defn-spec dump-json-file ::sp/extant-file
@@ -237,12 +239,14 @@
   (-> unix-time jt/instant str))
 
 (defn-spec guess-game-track (s/nilable ::sp/game-track)
-  "returns the first game track it finds in the given string, preferring `:classic-tbc`, then `:classic`, then `:retail` (most to least specific).
+  "returns the first game track it finds in the given string, preferring most to least specific.
   returns `nil` if no game track found."
   [string (s/nilable string?)]
   (when string
-    (let [;; matches 'classic-wotlk', 'classic_wotlk', 'classic-wrath', 'classic_wrath', 'wotlk', 'wrath'
-          classic-wotlk-regex #"(?i)(classic[\W_])?(wrath|wotlk){1}\W?"
+    (let [;; matches 'cata'. less variation this time around.
+          classic-cata-regex #"(?i)[\W_]?cata([\W_]?|$)"
+          ;; matches 'classic-wotlk', 'classic_wotlk', 'classic-wrath', 'classic_wrath', 'wotlk', 'wrath'
+          classic-wotlk-regex #"(?i)(classic[\W_])?(wrath|wotlk)([\W_]|$)?"
           ;; matches 'classic-tbc', 'classic-bc', 'classic-bcc', 'classic_tbc', 'classic_bc', 'classic_bcc', 'tbc', 'tbcc', 'bc', 'bcc'
           ;; but not 'classictbc' or 'classicbc' or 'classicbcc'
           ;; see tests.
@@ -250,6 +254,7 @@
           classic-regex #"(?i)classic|vanilla"
           retail-regex #"(?i)retail|mainline"]
       (cond
+        (re-find classic-cata-regex string) :classic-cata
         (re-find classic-wotlk-regex string) :classic-wotlk
         (re-find classic-tbc-regex string) :classic-tbc
         (re-find classic-regex string) :classic

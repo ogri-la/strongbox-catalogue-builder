@@ -101,7 +101,8 @@
 
 (defn extract-source-id-2
   [s]
-  (utils/str-to-int (last (re-find (re-matcher #"info(\d+)" s)))))
+  (when s
+    (utils/str-to-int (last (re-find (re-matcher #"info(\d+)" s))))))
 
 (defn-spec web-addon-url ::sp/url
   [source-id :addon/source-id]
@@ -379,7 +380,7 @@
          :wowi/description description
          :wowi/title title
          :wowi/url (:url downloaded-item)
-         :wowi/compatibility compatibility
+         :wowi/compatibility (vec compatibility)
          ;; we don't really need these
          :wowi/updated-date (some-> dt-updated :content first)
          :wowi/created-date (some-> dt-created :content first (swallow "unknown"))
