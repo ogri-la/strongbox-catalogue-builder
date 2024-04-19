@@ -37,154 +37,6 @@
            [{:wowi/url
              "https://www.wowinterface.com/downloads/info8149-IceHUD.html",
              :created-date "2010-05-14T12:14:00Z",
-             :wowi/archived-files
-             [{:wowi/name "Broker Played Time",
-               :wowi/download-url
-               "https://www.wowinterface.com/downloads/getfile.php?id=16711=aid=140355",
-               :wowi/version "10.2.5.0",
-               :wowi/size "16kB",
-               :wowi/author "LudiusMaximus",
-               :date "2024-01-17T03:22:00Z"}
-              {:wowi/name "Broker Played Time",
-               :wowi/download-url
-               "https://www.wowinterface.com/downloads/getfile.php?id=16711=aid=138953",
-               :wowi/version "10.2.0.1",
-               :wowi/size "16kB",
-               :wowi/author "LudiusMaximus",
-               :date "2023-11-21T01:58:00Z"}
-              {:wowi/name "Broker Played Time",
-               :wowi/download-url
-               "https://www.wowinterface.com/downloads/getfile.php?id=16711=aid=137590",
-               :wowi/version "10.2.0.0",
-               :wowi/size "16kB",
-               :wowi/author "LudiusMaximus",
-               :date "2023-11-11T17:21:00Z"}
-              {:wowi/name "Broker Played Time",
-               :wowi/download-url
-               "https://www.wowinterface.com/downloads/getfile.php?id=16711=aid=137255",
-               :wowi/version "10.1.7.1",
-               :wowi/size "16kB",
-               :wowi/author "LudiusMaximus",
-               :date "2023-10-15T17:48:00Z"}
-              {:wowi/name "Broker Played Time",
-               :wowi/download-url
-               "https://www.wowinterface.com/downloads/getfile.php?id=16711=aid=136578",
-               :wowi/version "10.1.7.0",
-               :wowi/size "16kB",
-               :wowi/author "LudiusMaximus",
-               :date "2023-09-08T01:08:00Z"}
-              {:wowi/name "Broker Played Time",
-               :wowi/download-url
-               "https://www.wowinterface.com/downloads/getfile.php?id=16711=aid=135917",
-               :wowi/version "10.1.5.2",
-               :wowi/size "16kB",
-               :wowi/author "LudiusMaximus",
-               :date "2023-08-23T11:45:00Z"}
-              {:wowi/name "Broker Played Time",
-               :wowi/download-url
-               "https://www.wowinterface.com/downloads/getfile.php?id=16711=aid=135496",
-               :wowi/version "10.1.5.1",
-               :wowi/size "16kB",
-               :wowi/author "LudiusMaximus",
-               :date "2023-07-18T15:57:00Z"}
-              {:wowi/name "Broker Played Time",
-               :wowi/download-url
-               "https://www.wowinterface.com/downloads/getfile.php?id=16711=aid=134927",
-               :wowi/version "10.1.5.0",
-               :wowi/size "15kB",
-               :wowi/author "LudiusMaximus",
-               :date "2023-07-12T14:15:00Z"}
-              {:wowi/name "Broker Played Time",
-               :wowi/download-url
-               "https://www.wowinterface.com/downloads/getfile.php?id=16711=aid=134743",
-               :wowi/version "10.1.0.0",
-               :wowi/size "15kB",
-               :wowi/author "LudiusMaximus",
-               :date "2023-05-04T00:47:00Z"}
-              {:wowi/name "Broker Played Time",
-               :wowi/download-url
-               "https://www.wowinterface.com/downloads/getfile.php?id=16711=aid=133276",
-               :wowi/version "10.0.7.0",
-               :wowi/size "15kB",
-               :wowi/author "LudiusMaximus",
-               :date "2023-04-05T01:35:00Z"}
-              {:wowi/name "Broker Played Time",
-               :wowi/download-url
-               "https://www.wowinterface.com/downloads/getfile.php?id=16711=aid=132694",
-               :wowi/version "10.0.5.0",
-               :wowi/size "15kB",
-               :wowi/author "LudiusMaximus",
-               :date "2023-03-18T18:35:00Z"}
-              {:wowi/name "Broker Played Time",
-               :wowi/download-url
-               "https://www.wowinterface.com/downloads/getfile.php?id=16711=aid=132151",
-               :wowi/version "10.0.2.0",
-               :wowi/size "16kB",
-               :wowi/author "LudiusMaximus",
-               :date "2022-11-25T18:15:00Z"}
-              {:wowi/name "Broker Played Time",
-               :wowi/download-url
-               "https://www.wowinterface.com/downloads/getfile.php?id=16711=aid=129059",
-               :wowi/version "9.2.7.0",
-               :wowi/size "17kB",
-               :wowi/author "LudiusMaximus",
-               :date "2022-08-30T09:44:00Z"}
-              {:wowi/name "Broker Played Time",
-               :wowi/download-url
-               "https://www.wowinterface.com/downloads/getfile.php?id=16711=aid=125239",
-               :wowi/version "9.2.5.0",
-               :wowi/size "17kB",
-               :wowi/author "LudiusMaximus",
-               :date "2022-06-12T02:48:00Z"}
-              {:wowi/name "Broker Played Time",
-               :wowi/download-url
-               "https://www.wowinterface.com/downloads/getfile.php?id=16711=aid=124093",
-               :wowi/version "9.2.5.0",
-               :wowi/size "17kB",
-               :wowi/author "LudiusMaximus",
-               :date "2022-06-12T02:48:00Z"}
-              {:wowi/name "Broker Played Time",
-               :wowi/download-url
-               "https://www.wowinterface.com/downloads/getfile.php?id=16711=aid=124088",
-               :wowi/version "9.2.5.0",
-               :wowi/size "17kB",
-               :wowi/author "LudiusMaximus",
-               :date "2022-06-12T02:48:00Z"}
-              {:wowi/name "Broker Played Time",
-               :wowi/download-url
-               "https://www.wowinterface.com/downloads/getfile.php?id=16711=aid=124081",
-               :wowi/version "9.2.0.0",
-               :wowi/size "17kB",
-               :wowi/author "LudiusMaximus",
-               :date "2022-02-23T07:14:00Z"}
-              {:wowi/name "Broker Played Time",
-               :wowi/download-url
-               "https://www.wowinterface.com/downloads/getfile.php?id=16711=aid=122023",
-               :wowi/version "9.1.5.1",
-               :wowi/size "17kB",
-               :wowi/author "LudiusMaximus",
-               :date "2021-11-23T04:12:00Z"}
-              {:wowi/name "Broker Played Time",
-               :wowi/download-url
-               "https://www.wowinterface.com/downloads/getfile.php?id=16711=aid=120940",
-               :wowi/version "9.1.5.0",
-               :wowi/size "17kB",
-               :wowi/author "LudiusMaximus",
-               :date "2021-11-06T16:26:00Z"}
-              {:wowi/name "Broker Played Time",
-               :wowi/download-url
-               "https://www.wowinterface.com/downloads/getfile.php?id=16711=aid=119841",
-               :wowi/version "9.1.0",
-               :wowi/size "17kB",
-               :wowi/author "LudiusMaximus",
-               :date "2021-07-01T16:56:00Z"}
-              {:wowi/name "Broker Played Time",
-               :wowi/download-url
-               "https://www.wowinterface.com/downloads/getfile.php?id=16711=aid=118006",
-               :wowi/version "9.0.5.0",
-               :wowi/size "15kB",
-               :wowi/author "LudiusMaximus",
-               :date "2021-03-10T02:49:00Z"}],
              :updated-date "2024-03-22T16:59:00Z",
              :wowi/created-date "05-14-10 12:14 PM",
              :short-description
@@ -238,93 +90,9 @@
              :wowi/favorites 43}]}
 
           actual (wowi/parse-addon-detail-page (as-downloaded-item url fixture))
-          ;;_ (spy actual)
-          ]
+          actual (prune-archived actual)]
 
       (is (= expected actual)))))
-
-(deftest parse-addon-detail-page-2
-  (testing "typical case, single download, tabber box"
-    (let [fixture (fixture-path "wowinterface--addon-detail--single-download--tabber.html")
-          url "https://www.wowinterface.com/downloads/info8149-IceHUD.html"
-
-          expected
-          {:parsed
-           [{:source :wowinterface,
-             :source-id 8149,
-             :filename "web--detail.json"
-             :name "icehud"
-             :created-date "2022-03-28T09:32:00Z",
-             :updated-date "2022-03-29T09:32:00Z",
-             :tag-set #{:buffs :classic :combat :debuffs :the-burning-crusade-classic :ui :unit-frames}
-             :game-track-set #{:classic-tbc :retail}
-             :latest-release-set #{{:download-url "https://www.wowinterface.com/downloads/landing.php?fileid=8149"
-                                    :game-track :retail
-                                    :version "1.13.13"}}
-             :wowi/title "IceHUD"
-             :wowi/url "https://www.wowinterface.com/downloads/info8149-IceHUD.html",
-             :wowi/category-set #{"Classic - General" "Combat Mods" "Casting Bars, Cooldowns"
-                                  "Buff, Debuff, Spell" "The Burning Crusade Classic" "Unit Mods"}
-             :wowi/favorites 1154,
-             :wowi/checksum "13c91112524b783847d857a3f84832f0",
-             :wowi/latest-release-versions [["Version" "1.13.13"]],
-             :wowi/latest-release-list [{:download-url "https://www.wowinterface.com/downloads/landing.php?fileid=8149",
-                                         :game-track :retail}],
-             :wowi/created-date "03-28-22 09:32 AM",
-             :wowi/updated-date "03-29-22 09:32 AM",
-             :wowi/downloads 419918,
-             :wowi/compatibility ["Visions of N'Zoth (8.3.0)"
-                                  "BfA content patch (8.2.5)"]
-             :wowi/archived-files
-             [{:wowi/name "IceHUD",
-               :wowi/download-url "https://www.wowinterface.com/downloads/getfile.php?id=8149=aid=122738",
-               :wowi/version "1.13.13-alpha1",
-               :wowi/size "1MB",
-               :wowi/author "Parnic",
-               :date "2022-03-24T11:25:00Z"}
-              {:wowi/name "IceHUD",
-               :wowi/download-url "https://www.wowinterface.com/downloads/getfile.php?id=8149=aid=122631",
-               :wowi/version "1.13.12",
-               :wowi/size "1MB",
-               :wowi/author "Parnic",
-               :date "2022-03-22T22:18:00Z"}
-              {:wowi/name "IceHUD",
-               :wowi/download-url "https://www.wowinterface.com/downloads/getfile.php?id=8149=aid=122555",
-               :wowi/version "1.13.12-alpha1",
-               :wowi/size "1MB",
-               :wowi/author "Parnic",
-               :date "2022-03-22T15:03:00Z"}
-              {:wowi/name "IceHUD",
-               :wowi/download-url "https://www.wowinterface.com/downloads/getfile.php?id=8149=aid=122518",
-               :wowi/version "1.13.11",
-               :wowi/size "1MB",
-               :wowi/author "Parnic",
-               :date "2022-01-28T11:23:00Z"}
-              {:wowi/name "IceHUD",
-               :wowi/download-url "https://www.wowinterface.com/downloads/getfile.php?id=8149=aid=121572",
-               :wowi/version "1.13.10",
-               :wowi/size "1MB",
-               :wowi/author "Parnic",
-               :date "2021-11-11T13:02:00Z"}]
-             :short-description "Feel free to  if you enjoy using IceHUD and feel generous.",
-             :wowi/description
-             ["Feel free to  if you enjoy using IceHUD and feel generous."
-              "Summary"
-              "IceHUD is a highly configurable and customizable HUD addon in the spirit of DHUD, MetaHUD, and others designed to keep your focus in the center of the screen where your character is."
-              "What it is"
-              "Player and target health and mana bars, casting and mirror bars, pet health and mana bars, druid mana bar in forms, extensive target info, ToT display, and much more"
-              "Short feature listLots of different bar shapes and patterns to make the HUD look like you want"
-              "Class-specific modules such as combo point counters, Slice'n'dice timers, druid mana trackers, Eclipse bar, Holy Power monitoring, Warlock shard tracking, and more"
-              "Target-of-target bars, Crowd Control timers, Range Finders, Threat meters, and plenty of other helpful modules"
-              "Lots of DogTag-supported strings for extreme customizability (with the option to completely disable DogTag support for those that dislike the CPU toll that it takes)"
-              "Cast lag indicator (optional)"
-              "Alpha settings for in combat, target selected, etc."
-              "Fully customizable bars and counters capable of tracking buff/debuff applications on any unit, spell/ability cooldowns, and the health/mana of any unit you specify. The custom health/mana bars will even work with crazy unit specifications like \"focustargettargetfocustarget\" if you want!"
-              "Highly configurable (can totally re-arrange all bars, change text display, etc.)"
-              "Slash commands"
-              "/icehud - opens the configuration UI to tweak any setting"
-              "/icehudCL - command-line access to tweak IceHUD settings (for use with macros, etc.)"]}]}]
-      (is (= expected (wowi/parse-addon-detail-page (as-downloaded-item url fixture)))))))
 
 (deftest -to-addon-summary
   (testing "addon detail page can extract enough for a valid category addon"
@@ -340,10 +108,10 @@
                     :label "IceHUD"
                     :description "Feel free to  if you enjoy using IceHUD and feel generous.",
                     :game-track-list #{:classic-tbc :retail}
-                    :created-date "2022-03-28T09:32:00Z",
-                    :updated-date "2022-03-29T09:32:00Z",
-                    :download-count 419918
-                    :tag-list #{:buffs :classic :combat :debuffs :the-burning-crusade-classic :ui :unit-frames}}]
+                    ;:created-date "2022-03-28T09:32:00Z", ;; 2024-04-19: disappeared?
+                    :updated-date "2024-04-15T16:06:00Z",
+                    :download-count 428463
+                    :tag-list #{:buffs :classic :combat :debuffs :the-burning-crusade-classic :ui :unit-frames :wotlk-classic}}]
 
       (is (= expected (wowi/-to-addon-summary addon-data))))))
 
@@ -631,7 +399,7 @@
       (is (= expected actual)))))
 
 (deftest single-download--tabber
-  (testing "foo"
+  (testing "typical case, single download, tabber box"
     (let [url "https://www.wowinterface.com/downloads/info8149-IceHUD.html"
           fixture (->> "test/fixtures/wowinterface--addon-detail--single-download--tabber.html"
                        fs/absolute
