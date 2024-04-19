@@ -562,7 +562,6 @@
                        (as-downloaded-item url))
 
           expected
-
           {:parsed [{:created-date "2008-11-03T19:22:00Z",
                      :filename "web--detail.json",
                      :game-track-set #{:classic
@@ -625,4 +624,103 @@
                      :wowi/url "https://www.wowinterface.com/downloads/info11551-MapCoords.html"}]}
 
           actual (wowi/parse-addon-detail-page fixture)]
+      (is (= expected actual)))))
+
+
+(deftest single-download--tabber
+  (testing "foo"
+    (let [url "https://www.wowinterface.com/downloads/info8149-IceHUD.html"
+          fixture (->> "test/fixtures/wowinterface--addon-detail--single-download--tabber.html"
+                       fs/absolute
+                       fs/normalized
+                       str
+                       (as-downloaded-item url))
+
+          expected
+          {:parsed [{:created-date "2022-03-28T09:32:00Z",
+           :filename "web--detail.json",
+           :game-track-set #{:classic-tbc :retail},
+           :latest-release-set #{{:download-url "https://www.wowinterface.com/downloads/landing.php?fileid=8149",
+                                  :game-track :retail,
+                                  :version "1.13.13"}},
+           :name "icehud",
+           :short-description "Feel free to  if you enjoy using IceHUD and feel generous.",
+           :source :wowinterface,
+           :source-id 8149,
+           :tag-set #{:buffs
+                      :classic
+                      :combat
+                      :debuffs
+                      :the-burning-crusade-classic
+                      :ui
+                      :unit-frames},
+           :updated-date "2022-03-29T09:32:00Z",
+           :wowi/archived-files [{:date "2022-03-24T11:25:00Z",
+                                  :wowi/author "Parnic",
+                                  :wowi/download-url "https://www.wowinterface.com/downloads/getfile.php?id=8149=aid=122738",
+                                  :wowi/name "IceHUD",
+                                  :wowi/size "1MB",
+                                  :wowi/version "1.13.13-alpha1"}
+                                 {:date "2022-03-22T22:18:00Z",
+                                  :wowi/author "Parnic",
+                                  :wowi/download-url "https://www.wowinterface.com/downloads/getfile.php?id=8149=aid=122631",
+                                  :wowi/name "IceHUD",
+                                  :wowi/size "1MB",
+                                  :wowi/version "1.13.12"}
+                                 {:date "2022-03-22T15:03:00Z",
+                                  :wowi/author "Parnic",
+                                  :wowi/download-url "https://www.wowinterface.com/downloads/getfile.php?id=8149=aid=122555",
+                                  :wowi/name "IceHUD",
+                                  :wowi/size "1MB",
+                                  :wowi/version "1.13.12-alpha1"}
+                                 {:date "2022-01-28T11:23:00Z",
+                                  :wowi/author "Parnic",
+                                  :wowi/download-url "https://www.wowinterface.com/downloads/getfile.php?id=8149=aid=122518",
+                                  :wowi/name "IceHUD",
+                                  :wowi/size "1MB",
+                                  :wowi/version "1.13.11"}
+                                 {:date "2021-11-11T13:02:00Z",
+                                  :wowi/author "Parnic",
+                                  :wowi/download-url "https://www.wowinterface.com/downloads/getfile.php?id=8149=aid=121572",
+                                  :wowi/name "IceHUD",
+                                  :wowi/size "1MB",
+                                  :wowi/version "1.13.10"}],
+           :wowi/category-set #{"Buff, Debuff, Spell"
+                                "Casting Bars, Cooldowns"
+                                "Classic - General"
+                                "Combat Mods"
+                                "The Burning Crusade Classic"
+                                "Unit Mods"},
+           :wowi/checksum "13c91112524b783847d857a3f84832f0",
+           :wowi/compatibility ["Visions of N'Zoth (8.3.0)"
+                                "BfA content patch (8.2.5)"],
+           :wowi/created-date "03-28-22 09:32 AM",
+           :wowi/description ["Feel free to  if you enjoy using IceHUD and feel generous."
+                              "Summary"
+                              "IceHUD is a highly configurable and customizable HUD addon in the spirit of DHUD, MetaHUD, and others designed to keep your focus in the center of the screen where your character is."
+                              "What it is"
+                              "Player and target health and mana bars, casting and mirror bars, pet health and mana bars, druid mana bar in forms, extensive target info, ToT display, and much more"
+                              "Short feature listLots of different bar shapes and patterns to make the HUD look like you want"
+                              "Class-specific modules such as combo point counters, Slice'n'dice timers, druid mana trackers, Eclipse bar, Holy Power monitoring, Warlock shard tracking, and more"
+                              "Target-of-target bars, Crowd Control timers, Range Finders, Threat meters, and plenty of other helpful modules"
+                              "Lots of DogTag-supported strings for extreme customizability (with the option to completely disable DogTag support for those that dislike the CPU toll that it takes)"
+                              "Cast lag indicator (optional)"
+                              "Alpha settings for in combat, target selected, etc."
+                              "Fully customizable bars and counters capable of tracking buff/debuff applications on any unit, spell/ability cooldowns, and the health/mana of any unit you specify. The custom health/mana bars will even work with crazy unit specifications like \"focustargettargetfocustarget\" if you want!"
+                              "Highly configurable (can totally re-arrange all bars, change text display, etc.)"
+                              "Slash commands"
+                              "/icehud - opens the configuration UI to tweak any setting"
+                              "/icehudCL - command-line access to tweak IceHUD settings (for use with macros, etc.)"],
+           :wowi/downloads 419918,
+           :wowi/favorites 1154,
+           :wowi/latest-release-list [{:download-url "https://www.wowinterface.com/downloads/landing.php?fileid=8149",
+                                       :game-track :retail}],
+           :wowi/latest-release-versions [["Version" "1.13.13"]],
+           :wowi/title "IceHUD",
+           :wowi/updated-date "03-29-22 09:32 AM",
+           :wowi/url "https://www.wowinterface.com/downloads/info8149-IceHUD.html"}]}
+
+          actual (wowi/parse-addon-detail-page fixture)
+          
+          ]
       (is (= expected actual)))))
