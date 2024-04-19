@@ -7,7 +7,7 @@
    [scb.helper :as helper :refer [fixture-path]]
    [clojure.pprint]
    [scb
-    ;;[core :as core]
+    [core :as core]
     [wowi :as wowi]]))
 
 (use-fixtures :each helper/no-http)
@@ -458,6 +458,7 @@
                        fs/absolute
                        fs/normalized
                        str)
+
           expected
           {:parsed
            [{:created-date "2019-09-11T14:22:00Z",
@@ -540,3 +541,14 @@
           ;; just drop all those releases
           actual (update-in actual [:parsed 0] #(dissoc % :wowi/archived-files))]
       (is (= expected actual)))))
+
+
+(deftest removed-author-request
+  (testing "foo"
+    (let [url "https://www.wowinterface.com/downloads/info24906-AtlasWorldMapClassic.html"
+          fixture (->> "test/fixtures/wowinterface--addon-detail--removed-author-request.html"
+                       fs/absolute
+                       fs/normalized
+                       str)
+          fixture (as-downloaded-item url fixture)]
+      (is (true? (wowi/dead-page? (wowi/to-html fixture)))))))
