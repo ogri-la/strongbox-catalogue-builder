@@ -565,12 +565,15 @@
 
           {:parsed [{:created-date "2008-11-03T19:22:00Z",
                      :filename "web--detail.json",
-                     :game-track-set #{:classic :classic-tbc :retail},
+                     :game-track-set #{:classic
+                                       :classic-tbc
+                                       :classic-wotlk
+                                       :retail},
                      :latest-release-set #{{:download-url "https://www.wowinterface.com/downloads/landing.php?fileid=11551",
-                                            :game-track :classic-tbc,
+                                            :game-track :classic,
                                             :version "1.6"}
                                            {:download-url "https://www.wowinterface.com/downloads/landing.php?fileid=11551",
-                                            :game-track :classic,
+                                            :game-track :classic-wotlk,
                                             :version "1.6"}
                                            {:download-url "https://www.wowinterface.com/downloads/landing.php?fileid=11551",
                                             :game-track :retail,
@@ -584,31 +587,41 @@
                                 :map
                                 :minimap
                                 :the-burning-crusade-classic
-                                :ui},
-                     :updated-date "2022-03-24T07:21:00Z",
+                                :ui
+                                :wotlk-classic},
+                     :updated-date "2024-03-15T17:49:00Z",
                      :wowi/archived-files [],
                      :wowi/category-set #{"Classic - General"
                                           "Map, Coords, Compasses"
-                                          "The Burning Crusade Classic"},
-                     :wowi/checksum "0be68fa2aff4fec4ec3027651dbb7621",
-                     :wowi/compatibility ["TBC Patch (2.5.4)"
-                                          "Classic Patch (1.14.2)"
-                                          "Eternity's End (9.2.0)"
-                                          "TBC Patch (2.5.3)"
-                                          "Classic Patch (1.14.1)"
-                                          "Shadowlands patch (9.1.5)"],
+                                          "The Burning Crusade Classic"
+                                          "WOTLK Classic"},
+                     :wowi/checksum "36dada275361859df29fa2dbe2ee2755",
+                     :wowi/compatibility ["Classic (1.15.1)"
+                                          "Seeds of Renewal (10.2.5)"
+                                          "Classic (1.15.0)"
+                                          "Guardians of the Dream (10.2.0)"
+                                          "WOTLK Patch (3.4.3)"
+                                          "Hot Fix (10.1.7)"
+                                          "Classic (1.14.4)"
+                                          "Fractures in Time (10.1.5)"
+                                          "WotLK Patch (3.4.2)"
+                                          "Dragonflight patch (10.0.7)"
+                                          "Embers of Neltharion (10.1.0)"
+                                          "WOTLK Patch (3.4.1)"
+                                          "Dragonflight patch (10.0.5)"
+                                          "Dragonflight (10.0.2)"],
                      :wowi/compatible-with "Compatible with Retail, Classic & TBC",
                      :wowi/created-date "11-03-08 07:22 PM",
                      :wowi/description ["Mapcoords displays your current coordinates on the minimap."
                                         "Contact:I'm open to questions and suggestions. Feel free to message me here or post in the comments."
                                         "I'm also available for support on the WoWUIDev Discord, @mention me (SDPhantom) or send a DM."],
-                     :wowi/downloads 33888,
-                     :wowi/favorites 96,
+                     :wowi/downloads 37146,
+                     :wowi/favorites 102,
                      :wowi/latest-release-list [{:download-url "https://www.wowinterface.com/downloads/landing.php?fileid=11551",
                                                  :game-track :retail}],
                      :wowi/latest-release-versions [["Version" "1.6"]],
                      :wowi/title "MapCoords",
-                     :wowi/updated-date "03-24-22 07:21 AM",
+                     :wowi/updated-date "03-15-24 05:49 PM",
                      :wowi/url "https://www.wowinterface.com/downloads/info11551-MapCoords.html"}]}
 
           actual (wowi/parse-addon-detail-page fixture)]
