@@ -533,8 +533,7 @@
                "The Burning Crusade Classic"},
              :wowi/compatibility ["WOTLK Patch (3.4.3)"],
              :wowi/favorites 68
-             :wowi/url "https://www.wowinterface.com/downloads/info25287-Skillet-Classic.html"
-             }]}
+             :wowi/url "https://www.wowinterface.com/downloads/info25287-Skillet-Classic.html"}]}
 
           fixture (as-downloaded-item url fixture)
           actual (wowi/parse-addon-detail-page fixture)

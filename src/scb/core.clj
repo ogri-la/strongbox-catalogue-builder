@@ -327,30 +327,6 @@
 
 ;; ---
 
-(defn drain-queues
-  "drains all queues from a map of BlockingQueues into a map of vectors"
-  []
-  (info "draining queues")
-  (into {} (mapv (fn [qn]
-                   [qn (drain-queue (get-state qn))]) queue-list)))
-
-(defn freeze-state
-  [path]
-  (info "freezing state:" path)
-  (let [queue-state (drain-queues)]
-    (spit path queue-state)))
-
-(defn thaw-state
-  [path]
-  (when (fs/exists? path)
-    (info "thawing state:" path)
-    (let [old-state (read-string (slurp path))
-          lists-to-queues (into {}
-                                (mapv (fn [qn]
-                                        [qn (new-queue (get old-state qn))]) queue-list))]
-      (swap! state merge lists-to-queues))
-    nil))
-
 (defn run-worker
   [worker-fn]
   (let [f (future
@@ -478,7 +454,6 @@
   (alter-var-root #'state (constantly (-start)))
   (init-logging)
   (init-state-dirs)
-  ;;(thaw-state (paths :state-file-path))
   (run-worker download-worker)
   (run-many-workers parser-worker 5)
   (run-many-workers write-content-worker 5)
@@ -496,9 +471,7 @@
   (info "stopping")
   (if (nil? state)
     (info "(not started)")
-    (cleanup)
-    ;;(freeze-state (paths :state-file-path))
-    )
+    (cleanup))
   nil)
 
 (defn restart
