@@ -7,7 +7,7 @@
    [scb.helper :as helper :refer [fixture-path]]
    [clojure.pprint]
    [scb
-    [core :as core]
+    ;;[core :as core]
     [wowi :as wowi]]))
 
 (use-fixtures :each helper/no-http)
@@ -542,7 +542,6 @@
           actual (update-in actual [:parsed 0] #(dissoc % :wowi/archived-files))]
       (is (= expected actual)))))
 
-
 (deftest removed-author-request
   (testing "foo"
     (let [url "https://www.wowinterface.com/downloads/info24906-AtlasWorldMapClassic.html"
@@ -552,3 +551,65 @@
                        str)
           fixture (as-downloaded-item url fixture)]
       (is (true? (wowi/dead-page? (wowi/to-html fixture)))))))
+
+(deftest single-download--supports-all
+  (testing "foo"
+    (let [url "https://www.wowinterface.com/downloads/info11551-MapCoords.html"
+          fixture (->> "test/fixtures/wowinterface--addon-detail--single-download--supports-all.html"
+                       fs/absolute
+                       fs/normalized
+                       str
+                       (as-downloaded-item url))
+
+          expected
+
+          {:parsed [{:created-date "2008-11-03T19:22:00Z",
+                     :filename "web--detail.json",
+                     :game-track-set #{:classic :classic-tbc :retail},
+                     :latest-release-set #{{:download-url "https://www.wowinterface.com/downloads/landing.php?fileid=11551",
+                                            :game-track :classic-tbc,
+                                            :version "1.6"}
+                                           {:download-url "https://www.wowinterface.com/downloads/landing.php?fileid=11551",
+                                            :game-track :classic,
+                                            :version "1.6"}
+                                           {:download-url "https://www.wowinterface.com/downloads/landing.php?fileid=11551",
+                                            :game-track :retail,
+                                            :version "1.6"}},
+                     :name "mapcoords",
+                     :short-description "Mapcoords displays your current coordinates on the minimap.",
+                     :source :wowinterface,
+                     :source-id 11551,
+                     :tag-set #{:classic
+                                :coords
+                                :map
+                                :minimap
+                                :the-burning-crusade-classic
+                                :ui},
+                     :updated-date "2022-03-24T07:21:00Z",
+                     :wowi/archived-files [],
+                     :wowi/category-set #{"Classic - General"
+                                          "Map, Coords, Compasses"
+                                          "The Burning Crusade Classic"},
+                     :wowi/checksum "0be68fa2aff4fec4ec3027651dbb7621",
+                     :wowi/compatibility ["TBC Patch (2.5.4)"
+                                          "Classic Patch (1.14.2)"
+                                          "Eternity's End (9.2.0)"
+                                          "TBC Patch (2.5.3)"
+                                          "Classic Patch (1.14.1)"
+                                          "Shadowlands patch (9.1.5)"],
+                     :wowi/compatible-with "Compatible with Retail, Classic & TBC",
+                     :wowi/created-date "11-03-08 07:22 PM",
+                     :wowi/description ["Mapcoords displays your current coordinates on the minimap."
+                                        "Contact:I'm open to questions and suggestions. Feel free to message me here or post in the comments."
+                                        "I'm also available for support on the WoWUIDev Discord, @mention me (SDPhantom) or send a DM."],
+                     :wowi/downloads 33888,
+                     :wowi/favorites 96,
+                     :wowi/latest-release-list [{:download-url "https://www.wowinterface.com/downloads/landing.php?fileid=11551",
+                                                 :game-track :retail}],
+                     :wowi/latest-release-versions [["Version" "1.6"]],
+                     :wowi/title "MapCoords",
+                     :wowi/updated-date "03-24-22 07:21 AM",
+                     :wowi/url "https://www.wowinterface.com/downloads/info11551-MapCoords.html"}]}
+
+          actual (wowi/parse-addon-detail-page fixture)]
+      (is (= expected actual)))))
