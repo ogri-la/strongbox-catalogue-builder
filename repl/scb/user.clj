@@ -5,6 +5,7 @@
    [clojure.test]
    [gui.diff :refer [with-gui-diff]]
    [scb
+    [main :as main]
     [utils :as utils]
     [http :as http]
     [core :as core]])

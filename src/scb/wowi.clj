@@ -196,7 +196,8 @@
                          "WoW Retail" :retail
                          "WoW Classic" :classic
                          "The Burning Crusade WoW Classic" :classic-tbc
-                         "Wrath of the Lich King WoW Classic" :classic-wotlk)})
+                         "Wrath of the Lich King WoW Classic" :classic-wotlk
+                         "Cataclysm Classic" :classic-cata)})
 
         latest-release-list (->> (select html-snippet [:.infobox :div#download :a])
                                  (map :attrs)

@@ -108,7 +108,7 @@
                     :label "IceHUD"
                     :description "Feel free to  if you enjoy using IceHUD and feel generous.",
                     :game-track-list #{:classic-tbc :retail}
-                    ;:created-date "2022-03-28T09:32:00Z", ;; 2024-04-19: disappeared?
+                    ;:created-date "2022-03-28T09:32:00Z", ;; 2024-04-19: disappeared? investigate
                     :updated-date "2024-04-15T16:06:00Z",
                     :download-count 428463
                     :tag-list #{:buffs :classic :combat :debuffs :the-burning-crusade-classic :ui :unit-frames :wotlk-classic}}]

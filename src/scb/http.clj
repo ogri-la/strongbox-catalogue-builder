@@ -17,9 +17,10 @@
    [java.io File FileInputStream FileOutputStream]
    [org.apache.commons.io IOUtils]))
 
-(def expiry-offset-hours 9999) ;; doesn't matter too much at this stage.
-(def delay-between-requests 1000) ;; ms, 1sec
+(def expiry-offset-hours 24)
+(def delay-between-requests 250) ;; ms
 
+;; retry logic. initial pause is *default-pause* and is doubled for each attempt.
 (def ^:dynamic *default-pause* 1000) ;; ms, 1sec
 (def ^:dynamic *default-attempts* 3)
 
