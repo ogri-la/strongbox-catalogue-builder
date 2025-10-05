@@ -19,7 +19,11 @@
 * move github catalogue generation from strongbox
     - having multiple catalogues will help the design adjust itself
 
-# todo 0.0.3 release
+# todo 
+
+* new example of all game tracks supports
+    - https://www.wowinterface.com/downloads/info12373
+
 
 * commit changes to catalogue and addon json once a day
     - need to be able to invoke a task like in strongbox

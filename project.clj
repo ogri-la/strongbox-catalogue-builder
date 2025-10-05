@@ -32,11 +32,12 @@
                          ;; see `gui-diff` exclusion
                          [net.cgrand/parsley "0.9.3"]]
 
-  :repl-options {:init-ns scb.user}
+  :repl-options {:init-ns scb.user} ;; see repl/scb/user.clj
 
   :main scb.main
 
   ;;:profiles {:user {:plugins [[venantius/yagni "0.1.7"]]}}
+  :profiles {:repl {:source-paths ["repl"]}}
   :plugins [[jonase/eastwood "0.9.9"]
             [lein-cljfmt "0.8.0"]
             [lein-cloverage "1.2.4"]
